@@ -1,0 +1,22 @@
+{
+  "name": "yogstation-ui",
+  "version": "0.0.1",
+  "description": "Yogstation Website UI (Beta)",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "cypress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/BASIC-BIT/yogstation-ui.git"
+  },
+  "keywords": [
+    "yogstation"
+  ],
+  "author": "BASIC-BIT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BASIC-BIT/yogstation-ui/issues"
+  },
+  "homepage": "https://github.com/BASIC-BIT/yogstation-ui#readme"
+}
