@@ -21,15 +21,28 @@
   },
   "homepage": "https://github.com/BASIC-BIT/yogstation-ui#readme",
   "dependencies": {
+    "postcss": "^7.0.14",
+    "postcss-calc": "^7.0.1",
+    "postcss-cssnext": "^3.1.0",
     "react": "^16.7.0",
-    "react-dom": "^16.7.0"
+    "react-dom": "^16.7.0",
+    "react-toolbox": "^2.0.0-beta.13"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "css-loader": "^2.1.0",
+    "cssnano": "^4.1.8",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-modules-values": "^2.0.0",
+    "postcss-preset-env": "^6.5.0",
     "react-hot-loader": "^4.6.5",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "sugarss": "^2.0.0",
     "webpack": "^4.29.1",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14"

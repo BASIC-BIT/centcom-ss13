@@ -1,11 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Main from './main';
 
-const title = 'Hello YogStation World!';
-
-ReactDOM.render(
-  <div>{title}</div>,
-  document.getElementById('app')
+ReactDOM.render(<Main />,
+  document.getElementById('root')
 );
 
 module.hot.accept();
