@@ -4,7 +4,8 @@
   "description": "Yogstation Website UI (Beta)",
   "main": "lib/index.js",
   "scripts": {
-    "test": "cypress"
+    "test": "cypress",
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,19 @@
   "bugs": {
     "url": "https://github.com/BASIC-BIT/yogstation-ui/issues"
   },
-  "homepage": "https://github.com/BASIC-BIT/yogstation-ui#readme"
+  "homepage": "https://github.com/BASIC-BIT/yogstation-ui#readme",
+  "dependencies": {
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "react-hot-loader": "^4.6.5",
+    "webpack": "^4.29.1",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
+  }
 }
