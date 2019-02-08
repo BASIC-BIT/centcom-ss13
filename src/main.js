@@ -1,15 +1,32 @@
 import React from 'react';
-import { Button } from 'react-toolbox/lib/button';
+import {Layout} from 'antd';
+import PageSidebar from "./sidebar";
+import PageContent from "./content";
+import PageFooter from "./footer";
+import PageHeader from "./header";
+import { BrowserRouter } from 'react-router-dom'
 
-const title = 'Hello YogStation World!';
+const {
+  Content,
+} = Layout;
 
 export default class Main extends React.Component {
   render() {
     return (
-      <div id="app">
-        <div>{title}</div>
-        <Button label="I'm a button." />
-      </div>
+      <BrowserRouter>
+        <div id="app">
+          <Layout>
+            <PageHeader/>
+            <Layout>
+              <PageSidebar/>
+              <Layout>
+                <PageContent/>
+                <PageFooter/>
+              </Layout>
+            </Layout>
+          </Layout>
+        </div>
+      </BrowserRouter>
     );
   }
 }

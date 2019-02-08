@@ -1,0 +1,10 @@
+#root, #app {
+    height: 100%;
+    width: 100%;
+    color: #EEE;
+}
+
+.ant-layout {
+    width: 100%;
+    height: 100%;
+}
