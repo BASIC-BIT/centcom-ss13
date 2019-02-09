@@ -2,11 +2,12 @@ import React from "react";
 import { HashRouter as Router, Route, Switch, Link, withRouter } from "react-router-dom";
 import {Breadcrumb} from "antd";
 
-import Home from './pages/home';
-import Admin from './pages/admin';
+import Home from './home';
+import Admin from './admin';
 
 const breadcrumbNameMap = {
-  '/admin': 'Admin Panel',
+  '/panel': 'User Panel',
+  '/panel/admin': 'Admin',
 };
 
 const BreadcrumbWrapper = withRouter((props) => {
@@ -48,8 +49,8 @@ class PageSwitcher extends React.Component {
     return (
       <React.Fragment>
         <Switch>
-          <Route name="admin" breadcrumbName="Admin Panel" exact path="/admin" component={wrapWithBreadcrumbs(Admin)}/>
-          <Route name="home" breadcrumbName="Home" path="/" component={wrapWithBreadcrumbs(Home)}/>
+          <Route exact path="/panel/admin" component={wrapWithBreadcrumbs(Admin)}/>
+          <Route path="/panel" component={wrapWithBreadcrumbs(Home)}/>
         </Switch>
       </React.Fragment>
     );

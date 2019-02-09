@@ -46,22 +46,23 @@ export default withRouter(class PageSidebar extends React.Component {
           <Menu.Item key="/">
             <Link to="/">
               <Icon type="desktop" />
-              <span>Home</span>
+              <span>Splash Page</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key="/admin">
-            <Link to="/admin">
-              <Icon type="pie-chart" />
-              <span>Admin Panel</span>
+          <Menu.Item key="/panel">
+            <Link to="/panel">
+              <Icon type="cloud" />
+              <span>Panel Home</span>
             </Link>
           </Menu.Item>
           <SubMenu
-            key="sub1"
-            title={<span><Icon type="user" /><span>User</span></span>}
+            key="admin_menu"
+            title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
           >
-            <Menu.Item key="3">Tom</Menu.Item>
-            <Menu.Item key="4">Bill</Menu.Item>
-            <Menu.Item key="5">Alex</Menu.Item>
+            <Menu.Item key="/panel/admin">
+              <Link to="/panel/admin">Home</Link>
+            </Menu.Item>
+            <Menu.Item key="github"><Icon type="github" /><span>Github</span></Menu.Item>
           </SubMenu>
           <SubMenu
             key="sub2"
