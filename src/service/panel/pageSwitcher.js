@@ -4,9 +4,10 @@ import {Breadcrumb} from "antd";
 
 import Home from './home';
 import Admin from './admin';
+import getCommunityContext from "../../communityArea/communityContext";
 
 const breadcrumbNameMap = {
-  '/panel': 'User Panel',
+  '/panel': 'Panel',
   '/panel/admin': 'Admin',
 };
 
@@ -25,7 +26,7 @@ const BreadcrumbWrapper = withRouter((props) => {
   });
   const breadcrumbItems = [(
     <Breadcrumb.Item key="home">
-      <Link to="/">Home</Link>
+      <Link to="/">CentCom</Link>
     </Breadcrumb.Item>
   )].concat(extraBreadcrumbItems);
   return (
@@ -49,8 +50,8 @@ class PageSwitcher extends React.Component {
     return (
       <React.Fragment>
         <Switch>
-          <Route exact path="/panel/admin" component={wrapWithBreadcrumbs(Admin)}/>
-          <Route path="/panel" component={wrapWithBreadcrumbs(Home)}/>
+          <Route path={`/panel/admin`} component={wrapWithBreadcrumbs(Admin)}/>
+          <Route path={`/panel`} component={wrapWithBreadcrumbs(Home)}/>
         </Switch>
       </React.Fragment>
     );

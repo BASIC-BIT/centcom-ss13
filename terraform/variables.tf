@@ -7,13 +7,20 @@ variable "secret_key" {
 }
 
 variable "site_url" {
-  description = "The base url of the site"
-  default = "yogs.ddmers.com"
+  description = "The base url of the site (*.thing will be used for registration, only use domains)"
+  default = "centcom.services"
 }
 
-variable "cert_domain" {
-  description = "The SSL registered domain"
-  default = "*.ddmers.com"
+variable "vanity_urls" {
+  type = "list"
+  description = "List of other domains that should have a reverse proxy to site_url"
+  default = ["centcom13.com"]
+}
+
+variable "server_subdomains" {
+  type = "list"
+  description = "List of subdomains used for servers - this should be deprecated eventually and should be managed in the database"
+  default = ["yogstation", "st13"]
 }
 
 variable "bash" {

@@ -5,7 +5,7 @@ const chardet = require('chardet');
 
 const s3 = new AWS.S3();
 
-const BUCKET_NAME = 'yogs.ddmers.com';
+const BUCKET_NAME = 'centcom.services';
 
 function getParams(name, data) {
   const type = mime.lookup(name);
