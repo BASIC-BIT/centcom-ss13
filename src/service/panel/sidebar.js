@@ -55,6 +55,12 @@ export default withRouter(class PageSidebar extends React.Component {
               <span>Panel Home</span>
             </Link>
           </Menu.Item>
+          <Menu.Item key="github">
+            <a href="https://github.com/BASIC-BIT/centcom-ss13">
+              <Icon type="github" />
+              <span>Github</span>
+            </a>
+          </Menu.Item>
           <SubMenu
             key="admin_menu"
             title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
@@ -62,19 +68,7 @@ export default withRouter(class PageSidebar extends React.Component {
             <Menu.Item key="/panel/admin">
               <Link to="/panel/admin">Home</Link>
             </Menu.Item>
-            <Menu.Item key="github"><Icon type="github" /><span>Github</span></Menu.Item>
           </SubMenu>
-          <SubMenu
-            key="sub2"
-            title={<span><Icon type="team" /><span>Team</span></span>}
-          >
-            <Menu.Item key="6">Team 1</Menu.Item>
-            <Menu.Item key="8">Team 2</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="9">
-            <Icon type="file" />
-            <span>File</span>
-          </Menu.Item>
         </Menu>
       </Sider>
     );

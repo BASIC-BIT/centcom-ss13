@@ -30,6 +30,8 @@ export default withRouter(class PageSidebar extends React.Component {
   };
 
   componentDidUpdate(prevProps) {
+    console.log('update sidebar');
+    console.log(this.props.location.pathname, prevProps.location.pathname);
     if(this.props.location.pathname !== prevProps.location.pathname) {
       this.setState({ selectedKeys: [this.props.location.pathname] });
     }
@@ -53,30 +55,45 @@ export default withRouter(class PageSidebar extends React.Component {
           </Menu.Item>
           <Menu.Item key={`/community/${this.context.community.url}/panel`}>
             <Link to={`/community/${this.context.community.url}/panel`}>
-              <Icon type="cloud" />
+              <Icon type="home" />
               <span>{this.context.community.name} Home</span>
             </Link>
+          </Menu.Item>
+          <Menu.Item key="joinserver">
+            <a href={this.context.community.serverLink}>
+              <Icon type="play-circle" />
+              <span>Join Server!</span>
+            </a>
+          </Menu.Item>
+          <Menu.Item key="github">
+            <a href={this.context.community.github}>
+              <Icon type="github" />
+              <span>Github</span>
+            </a>
+          </Menu.Item>
+          <Menu.Item key="forums">
+            <a href={this.context.community.forums}>
+              <Icon type="layout" />
+              <span>Forums</span>
+            </a>
+          </Menu.Item>
+          <Menu.Item key="wiki">
+            <a href={this.context.community.wiki}>
+              <Icon type="read" />
+              <span>Wiki</span>
+            </a>
           </Menu.Item>
           <SubMenu
             key="admin_menu"
             title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
           >
             <Menu.Item key={`/community/${this.context.community.url}/panel/admin`}>
-              <Link to={`/community/${this.context.community.url}/panel/admin`}>Home</Link>
+              <Link to={`/community/${this.context.community.url}/panel/admin`}>
+                <Icon type="dashboard" />
+                <span>Dashboard</span>
+              </Link>
             </Menu.Item>
-            <Menu.Item key="github"><Icon type="github" /><span>Github</span></Menu.Item>
           </SubMenu>
-          <SubMenu
-            key="sub2"
-            title={<span><Icon type="team" /><span>Team</span></span>}
-          >
-            <Menu.Item key="6">Team 1</Menu.Item>
-            <Menu.Item key="8">Team 2</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="9">
-            <Icon type="file" />
-            <span>File</span>
-          </Menu.Item>
         </Menu>
       </Sider>
     );

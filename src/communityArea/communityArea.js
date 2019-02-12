@@ -6,52 +6,42 @@ import SplashPage from "./splash";
 import Panel from "./panel/panel";
 import ErrorPage404 from "../error/ErrorPage404";
 import getCommunityContext from './communityContext';
+import servers from '../repositories/servers';
 
-const urlNameMap = {
-  yogstation: 'Yogstation',
-  st13: 'Startrek 13'
-};
 
 export default withRouter(class CommunityArea extends React.Component {
   static contextType = getCommunityContext();
   constructor(props) {
     super(props);
     this.state = {};
-    if(props.match.params && props.match.params.communityUrl) {
-      const communityUrl = props.match.params.communityUrl;
-      const communityName = urlNameMap[communityUrl];
+    this.updateCommunity(true);
+  }
 
-      if(communityName) {
-        this.state = {
-          communityUrl,
-          communityName,
-        };
+  updateCommunity(constructor = false) {
+    if(this.props.match.params && this.props.match.params.communityUrl && (!this.state.community || (this.state.community && this.state.community.url !== this.props.match.params.communityUrl))) {
+      const communityUrl = this.props.match.params.communityUrl;
+      const community = servers.find(server => server.url === communityUrl);
+
+      if(community) {
+        if(constructor) {
+          this.state = { community };
+        } else {
+          this.setState({
+            community,
+          });
+        }
       }
     }
   }
 
   componentDidUpdate() {
-    console.log(this.props);
-    if(this.props.match.params && this.props.match.params.communityUrl && this.state.communityUrl !== this.props.match.params.communityUrl) {
-      const communityUrl = this.props.match.params.communityUrl;
-      const communityName = urlNameMap[communityUrl];
-
-      if(communityName) {
-        this.setState({
-          communityUrl,
-          communityName,
-        });
-      }
-    }
+    this.updateCommunity();
   }
 
   wrapComponentInProps(Component) {
     return (props) => (<Component
       {...props}
-      community={{
-        url: this.state.communityUrl,
-        name: this.state.communityName,
-      }}
+      community={this.state.community}
     />);
   }
 
@@ -59,14 +49,11 @@ export default withRouter(class CommunityArea extends React.Component {
     const Provider = getCommunityContext().Provider;
     return (
       <Provider value={{
-        community: {
-          url: this.state.communityUrl,
-          name: this.state.communityName,
-        }
+        community: this.state.community,
       }}>
         <Switch>
-          <Route path={`/community/${this.state.communityUrl}/panel`} component={Panel}/>
-          <Route exact path={`/community/${this.state.communityUrl}/`} component={SplashPage}/>
+          <Route path={`/community/${this.state.community.url}/panel`} component={Panel}/>
+          <Route exact path={`/community/${this.state.community.url}/`} component={SplashPage}/>
           <Route component={ErrorPage404}/>
         </Switch>
       </Provider>
