@@ -1,0 +1,20 @@
+.errorPage {
+  padding: 20px;
+  height: 100%;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.errorTitle {
+  font-size: 40px;
+}
+
+.errorLink {
+  font-size: 28px;
+  color: #3a9ccc;
+
+  &:hover {
+    color: #0c61cc;
+  }
+}

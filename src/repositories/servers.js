@@ -7,7 +7,7 @@ export default [
     github: 'https://github.com/yogstation13/yogstation',
     serverLink: 'byond://game.yogstation.net:4133',
     wiki: 'https://wiki.yogstation.net/',
-
+    hasPanel: true,
   }, {
     key: '2',
     name: 'Star Trek 13',

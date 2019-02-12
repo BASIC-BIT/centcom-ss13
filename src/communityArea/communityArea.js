@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button} from "antd";
 import {Link} from "react-router-dom";
-import {Route, Switch, withRouter} from "react-router";
+import {Redirect, Route, Switch, withRouter} from "react-router";
 import SplashPage from "./splash";
 import Panel from "./panel/panel";
 import ErrorPage404 from "../error/ErrorPage404";
@@ -30,6 +30,12 @@ export default withRouter(class CommunityArea extends React.Component {
             community,
           });
         }
+      } else {
+        if(constructor) {
+          this.state = { notFound: true };
+        } else {
+          this.setState({ notFound: true });
+        }
       }
     }
   }
@@ -46,13 +52,19 @@ export default withRouter(class CommunityArea extends React.Component {
   }
 
   render() {
+    if(this.state.notFound) {
+      return (<Redirect push to={`/404`} />);
+    }
+    if(!this.state.community) {
+      return (<div />);
+    }
     const Provider = getCommunityContext().Provider;
     return (
       <Provider value={{
         community: this.state.community,
       }}>
         <Switch>
-          <Route path={`/community/${this.state.community.url}/panel`} component={Panel}/>
+          {this.state.community.hasPanel && <Route path={`/community/${this.state.community.url}/panel`} component={Panel}/>}
           <Route exact path={`/community/${this.state.community.url}/`} component={SplashPage}/>
           <Route component={ErrorPage404}/>
         </Switch>

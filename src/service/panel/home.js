@@ -15,7 +15,9 @@ export default class Home extends React.Component {
         key: 'name',
         render: (text, record) => (
           <span>
-            <Link to={`/community/${record.url}`}><h2 style={{margin: 'auto' }}>{record.name}</h2></Link>
+            {record.hasPanel ?
+              (<Link to={`/community/${record.url}`}><h2 style={{margin: 'auto' }}>{record.name}</h2></Link>) :
+              (<h2 style={{margin: 'auto' }}>{record.name}</h2>)}
           </span>
         ),
       },
@@ -33,7 +35,7 @@ export default class Home extends React.Component {
         key: 'panel',
         render: (text, record) => (
           <span>
-            <Link to={`/community/${record.url}/panel`}><Button>Panel</Button></Link>
+            {record.hasPanel && <Link to={`/community/${record.url}/panel`}><Button>Panel</Button></Link>}
           </span>
         ),
       },
