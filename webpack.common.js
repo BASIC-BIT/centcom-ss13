@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const lessToJs = require('less-vars-to-js');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const themeVariables = lessToJs(fs.readFileSync(path.join(__dirname, './ant-theme-vars.less'), 'utf8'))
 
@@ -83,4 +84,10 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js'
   },
+  plugins: [
+    new CopyWebpackPlugin([{
+      from: './public',
+      to: '.',
+    }]),
+  ]
 };

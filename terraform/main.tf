@@ -39,7 +39,6 @@ module "dns_domain" {
 #  }
 #}
 
-
 # s3 Bucket with Website settings
 resource "aws_s3_bucket" "site_bucket" {
   bucket = "${var.site_url}"
@@ -48,6 +47,134 @@ resource "aws_s3_bucket" "site_bucket" {
     index_document = "index.html"
     error_document = "index.html"
   }
+}
+resource "aws_s3_bucket" "centcom-server-staging" {
+  bucket = "centcom-server-staging"
+  acl = "public-read"
+  website {
+    index_document = "index.html"
+    error_document = "index.html"
+  }
+}
+
+resource "aws_iam_role" "lambda_exec" {
+  name = "serverless_example_lambda"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_lambda_function" "server_lambda" {
+  function_name = "CentComServer"
+
+  # The bucket name as created earlier with "aws s3api create-bucket"
+  s3_bucket = "${aws_s3_bucket.centcom-server-staging.bucket}"
+  s3_key    = "server.zip"
+
+  # "main" is the filename within the zip file (main.js) and "handler"
+  # is the name of the property under which the handler function was
+  # exported in that file.
+  handler = "bundle.handler"
+  runtime = "nodejs6.10"
+
+  role = "${aws_iam_role.lambda_exec.arn}"
+}
+
+resource "aws_api_gateway_rest_api" "centcom-server-api" {
+  name        = "CentcomServerApi"
+  description = "CentCom Server API"
+}
+
+resource "aws_api_gateway_resource" "centcom-server-api-proxy" {
+  rest_api_id = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  parent_id   = "${aws_api_gateway_rest_api.centcom-server-api.root_resource_id}"
+  path_part   = "{proxy+}"
+}
+
+resource "aws_api_gateway_method" "centcom-server-api-proxy" {
+  rest_api_id   = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  resource_id   = "${aws_api_gateway_resource.centcom-server-api-proxy.id}"
+  http_method   = "ANY"
+  authorization = "NONE"
+
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
+}
+
+resource "aws_api_gateway_integration" "centcom-server-api-proxy-lambda" {
+  rest_api_id = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  resource_id = "${aws_api_gateway_method.centcom-server-api-proxy.resource_id}"
+  http_method = "${aws_api_gateway_method.centcom-server-api-proxy.http_method}"
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.server_lambda.invoke_arn}"
+}
+
+resource "aws_api_gateway_method" "centcom-server-api-proxy-root" {
+  rest_api_id   = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  resource_id   = "${aws_api_gateway_rest_api.centcom-server-api.root_resource_id}"
+  http_method   = "ANY"
+  authorization = "NONE"
+
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
+}
+
+resource "aws_api_gateway_integration" "centcom-server-api-proxy-lambda-root" {
+  rest_api_id = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  resource_id = "${aws_api_gateway_method.centcom-server-api-proxy-root.resource_id}"
+  http_method = "${aws_api_gateway_method.centcom-server-api-proxy-root.http_method}"
+
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = "${aws_lambda_function.server_lambda.invoke_arn}"
+}
+
+resource "aws_api_gateway_deployment" "centcom-server-api-deployment" {
+  depends_on = [
+    "aws_api_gateway_integration.centcom-server-api-proxy-lambda",
+    "aws_api_gateway_integration.centcom-server-api-proxy-lambda-root",
+  ]
+
+  rest_api_id = "${aws_api_gateway_rest_api.centcom-server-api.id}"
+  stage_name  = "test"
+}
+
+resource "aws_lambda_permission" "centcom-server-api-lambda-permission" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.server_lambda.arn}"
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/* portion grants access from any method on any resource
+  # within the API Gateway "REST API".
+  source_arn = "${aws_api_gateway_deployment.centcom-server-api-deployment.execution_arn}/*/*"
+}
+resource "aws_lambda_alias" "centcom-server-lambda-alias" {
+  name             = "centcom-server-lambda-alias"
+  description      = "a thing"
+  function_name    = "${aws_lambda_function.server_lambda.function_name}"
+  function_version = "$LATEST"
+}
+
+output "base_url" {
+  value = "${aws_api_gateway_deployment.centcom-server-api-deployment.invoke_url}"
 }
 
 data "aws_acm_certificate" "main_cert" {

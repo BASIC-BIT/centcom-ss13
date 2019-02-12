@@ -1,13 +1,10 @@
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const mime = require('mime-types');
 const chardet = require('chardet');
 
 const s3 = new AWS.S3();
 
-const BUCKET_NAME = 'centcom.services';
-
-function getParams(name, data) {
+function getParams(bucket, name, data ) {
   const type = mime.lookup(name);
   const charset = chardet.detect(data);
 
@@ -16,7 +13,7 @@ function getParams(name, data) {
   console.log(ContentType);
 
   return {
-    Bucket: BUCKET_NAME,
+    Bucket: bucket,
     Key: name,
     Body: data,
     ACL: 'public-read',
@@ -25,14 +22,13 @@ function getParams(name, data) {
   }
 }
 
-async function putFile(name, contents) {
+async function putFile(bucket, name, contents) {
   const callbackPromise = callbackToPromise(
     (resp) => {
-      console.log(`Successfully uploaded ${name}`);
       return resp;
     }
   );
-  s3.upload(getParams(name, contents), callbackPromise);
+  await s3.upload(getParams(bucket, name, contents), callbackPromise);
 
   await callbackPromise;
 }
@@ -45,10 +41,4 @@ function callbackToPromise(callback) {
   }
 }
 
-fs.readdir('./dist', (err, items) => {
-  items.forEach(async item => {
-    const data = fs.readFileSync(`./dist/${item}`);
-    await putFile(item, data);
-  });
-  console.log(items);
-});
+exports.putFile = putFile;

@@ -6,4 +6,7 @@ terraform/.terraform
 terraform/.terraform*
 terraform/out.txt
 
-dist/bundle.js
+dist
+dist/*
+server_dist
+server_dist/*
