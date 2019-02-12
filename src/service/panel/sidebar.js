@@ -23,7 +23,6 @@ export default withRouter(class PageSidebar extends React.Component {
   }
 
   onCollapse(collapsed) {
-    console.log(collapsed);
     this.setState({ collapsed });
   };
 
@@ -40,6 +39,7 @@ export default withRouter(class PageSidebar extends React.Component {
         collapsed={this.state.collapsed}
         onCollapse={this.onCollapse.bind(this)}
         style={style}
+        width={280}
       >
         <div className="logo" />
         <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">
@@ -66,7 +66,10 @@ export default withRouter(class PageSidebar extends React.Component {
             title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
           >
             <Menu.Item key="/panel/admin">
-              <Link to="/panel/admin">Home</Link>
+              <Link to="/panel/admin">
+                <Icon type="dashboard" />
+                <span>Dashboard</span>
+              </Link>
             </Menu.Item>
           </SubMenu>
         </Menu>

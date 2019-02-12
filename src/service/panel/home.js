@@ -24,7 +24,7 @@ export default class Home extends React.Component {
         key: 'joinserver',
         render: (text, record) => (
           <span>
-            <a href={record.serverLink}><Button type="primary">Join</Button></a>
+            {record.serverLink && (<a href={record.serverLink}><Button type="primary">Join</Button></a>)}
           </span>
         ),
       },
@@ -42,7 +42,7 @@ export default class Home extends React.Component {
         key: 'forums',
         render: (text, record) => (
           <span>
-            <a href={record.forums}><Button>Forums</Button></a>
+            {record.forums && (<a href={record.forums}><Button>Forums</Button></a>)}
           </span>
         ),
       },
@@ -51,7 +51,7 @@ export default class Home extends React.Component {
         key: 'github',
         render: (text, record) => (
           <span>
-            <a href={record.github}><Button>Github</Button></a>
+            {record.github && (<a href={record.github}><Button>Github</Button></a>)}
           </span>
         ),
       },
@@ -60,7 +60,7 @@ export default class Home extends React.Component {
         key: 'wiki',
         render: (text, record) => (
           <span>
-            <a href={record.wiki}><Button>Wiki</Button></a>
+            {record.wiki && (<a href={record.wiki}><Button>Wiki</Button></a>)}
           </span>
         ),
       },

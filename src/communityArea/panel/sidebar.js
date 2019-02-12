@@ -25,13 +25,10 @@ export default withRouter(class PageSidebar extends React.Component {
   }
 
   onCollapse(collapsed) {
-    console.log(collapsed);
     this.setState({ collapsed });
   };
 
   componentDidUpdate(prevProps) {
-    console.log('update sidebar');
-    console.log(this.props.location.pathname, prevProps.location.pathname);
     if(this.props.location.pathname !== prevProps.location.pathname) {
       this.setState({ selectedKeys: [this.props.location.pathname] });
     }
@@ -44,6 +41,7 @@ export default withRouter(class PageSidebar extends React.Component {
         collapsed={this.state.collapsed}
         onCollapse={this.onCollapse.bind(this)}
         style={style}
+        width={280}
       >
         <div className="logo" />
         <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">
@@ -59,30 +57,30 @@ export default withRouter(class PageSidebar extends React.Component {
               <span>{this.context.community.name} Home</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key="joinserver">
+          {this.context.community.serverLink && <Menu.Item key="joinserver">
             <a href={this.context.community.serverLink}>
               <Icon type="play-circle" />
               <span>Join Server!</span>
             </a>
-          </Menu.Item>
-          <Menu.Item key="github">
+          </Menu.Item>}
+          {this.context.community.github && <Menu.Item key="github">
             <a href={this.context.community.github}>
               <Icon type="github" />
               <span>Github</span>
             </a>
-          </Menu.Item>
-          <Menu.Item key="forums">
+          </Menu.Item>}
+          {this.context.community.forums && <Menu.Item key="forums">
             <a href={this.context.community.forums}>
               <Icon type="layout" />
               <span>Forums</span>
             </a>
-          </Menu.Item>
-          <Menu.Item key="wiki">
+          </Menu.Item>}
+          {this.context.community.wiki && <Menu.Item key="wiki">
             <a href={this.context.community.wiki}>
               <Icon type="read" />
               <span>Wiki</span>
             </a>
-          </Menu.Item>
+          </Menu.Item>}
           <SubMenu
             key="admin_menu"
             title={<span><Icon type="pie-chart" /><span>Admin</span></span>}

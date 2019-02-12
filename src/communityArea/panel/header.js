@@ -16,9 +16,10 @@ const titleStyle = {
 export default class PageHeader extends React.Component {
   static contextType = getCommunityContext();
   render() {
+    const sloganText = this.context.community.slogan || 'The Space Station 13 Experience';
     return (
       <Header style={style}>
-        <h2 style={titleStyle}>{this.context.community.name}: The Space Station 13 Experience</h2>
+        <h2 style={titleStyle}>{this.context.community.name}: {sloganText}</h2>
       </Header>
     );
   }
