@@ -82,7 +82,7 @@ resource "aws_lambda_function" "server_lambda" {
 
   # The bucket name as created earlier with "aws s3api create-bucket"
   s3_bucket = "${aws_s3_bucket.centcom-server-staging.bucket}"
-  s3_key    = "server.zip"
+  s3_key    = "v${var.prod_lambda_deploy_version}/server.zip"
 
   # "main" is the filename within the zip file (main.js) and "handler"
   # is the name of the property under which the handler function was
@@ -91,6 +91,43 @@ resource "aws_lambda_function" "server_lambda" {
   runtime = "nodejs6.10"
 
   role = "${aws_iam_role.lambda_exec.arn}"
+
+  environment {
+    variables = {
+      RDS_HOSTNAME = "${aws_db_instance.maindb.address}"
+      RDS_USERNAME = "${aws_db_instance.maindb.username}"
+      RDS_PASSWORD = "${aws_db_instance.maindb.password}"
+      RDS_PORT = "${aws_db_instance.maindb.port}"
+    }
+  }
+}
+
+resource "aws_iam_policy" "lambda_logging" {
+  name = "lambda_logging"
+  path = "/"
+  description = "IAM policy for logging from a lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role = "${aws_iam_role.lambda_exec.name}"
+  policy_arn = "${aws_iam_policy.lambda_logging.arn}"
 }
 
 resource "aws_api_gateway_rest_api" "centcom-server-api" {

@@ -27,3 +27,13 @@ variable "bash" {
   description = "Bash runner for SSL cert"
   default = "bash"
 }
+
+variable "prod_lambda_deploy_version" {
+  description = "Version of lambda to deploy to production"
+  default = "0.0.5"
+}
+
+variable "dev_lambda_deploy_version" {
+  description = "Version of lambda to deploy to development"
+  default = "0.0.5"
+}

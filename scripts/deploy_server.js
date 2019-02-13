@@ -12,7 +12,6 @@ fs.readdir('./server_dist', async (err, items) => {
     zip.file(item, data);
   }));
   const zipContent = await zip.generateAsync({type:"nodebuffer"});
-  console.log(zipContent);
-  await putFile(SERVER_BUCKET, 'server.zip', zipContent);
+  await putFile(SERVER_BUCKET, `v${process.env.npm_package_version}/server.zip`, zipContent);
   console.log(`Successfully uploaded server.zip to server bucket`);
 });
