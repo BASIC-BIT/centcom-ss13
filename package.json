@@ -1,10 +1,11 @@
 {
   "name": "yogstation-ui",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "Yogstation Website UI (Beta)",
   "main": "lib/index.js",
   "scripts": {
-    "test": "cypress",
+    "test:at": "cypress",
+    "test:unit": "mocha --require @babel/register",
     "start": "webpack-dev-server --config ./webpack.dev.js",
     "start:server": "node ./scripts/localServerRunner.js",
     "build": "webpack --config ./webpack.prod.js",
@@ -64,6 +65,7 @@
     "sass-loader": "^7.1.0",
     "sinon": "^7.2.3",
     "style-loader": "^0.23.1",
+    "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.29.1",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14",

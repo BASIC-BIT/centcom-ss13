@@ -1,4 +1,4 @@
-module.exports = class ApiGatewayEventParser {
+export default class ApiGatewayEventParser {
   constructor(event, context) {
     this.event = event;
     this.context = context;

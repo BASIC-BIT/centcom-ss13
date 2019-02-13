@@ -1,7 +1,7 @@
 'use strict';
 require("@babel/polyfill");
 
-const ApiGatewayEventParser = require("./api-gateway-event-parser");
+import ApiGatewayEventParser from "./api-gateway-event-parser";
 
 function createResponse({
   body,
@@ -64,8 +64,11 @@ const endpoints = [
         });
       });
 
-      connection.end();
-      return output;
+      try {
+        connection.end();
+      } catch (e) {}
+
+      return output || createResponse({ body: 'Unknown error (better check that out)', statusCode: 500 });
     },
   }
 ];

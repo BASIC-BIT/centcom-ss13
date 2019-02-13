@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const EncodingPlugin = require('webpack-encoding-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: './server/main.js',
@@ -30,5 +31,20 @@ module.exports = {
   plugins: [new EncodingPlugin({
     encoding: 'iso-8859-1'
   })],
-  target: 'node'
+  target: 'node',
+  optimization: {
+    minimizer: [
+      // we specify a custom UglifyJsPlugin here to get source maps in production
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        uglifyOptions: {
+          compress: false,
+          ecma: 6,
+          mangle: false
+        },
+        sourceMap: true
+      })
+    ]
+  }
 };
