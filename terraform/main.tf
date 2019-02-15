@@ -14,6 +14,10 @@ resource "aws_db_instance" "maindb" {
   username             = "admin"
   password             = "heythispasswordwontworkanymoreidiot"
   parameter_group_name = "default.mysql5.7"
+  db_subnet_group_name = "main"
+
+  depends_on = ["aws_db_subnet_group.default"]
+  vpc_security_group_ids = ["${aws_security_group.allow_all.id}"]
 }
 
 module "dns_domain" {
@@ -100,6 +104,13 @@ resource "aws_lambda_function" "server_lambda" {
       RDS_PORT = "${aws_db_instance.maindb.port}"
     }
   }
+
+  vpc_config {
+    subnet_ids         = ["${aws_subnet.primary.id}", "${aws_subnet.secondary.id}"]
+    security_group_ids = ["${aws_security_group.allow_all.id}"]
+  }
+
+  timeout = 30
 }
 
 resource "aws_iam_policy" "lambda_logging" {
@@ -210,8 +221,16 @@ resource "aws_lambda_alias" "centcom-server-lambda-alias" {
   function_version = "$LATEST"
 }
 
-output "base_url" {
+output "server_url" {
   value = "${aws_api_gateway_deployment.centcom-server-api-deployment.invoke_url}"
+}
+
+output "client_url" {
+  value = "${aws_s3_bucket.site_bucket.website_endpoint}"
+}
+
+output "mysql_url" {
+  value = "${aws_db_instance.maindb.address}"
 }
 
 data "aws_acm_certificate" "main_cert" {
@@ -324,5 +343,56 @@ resource "aws_cloudfront_distribution" "site_distribution" {
     acm_certificate_arn = "${data.aws_acm_certificate.main_cert.arn}"
     ssl_support_method  = "sni-only"
     minimum_protocol_version = "TLSv1.1_2016" # defaults wrong, set
+  }
+}
+
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+resource "aws_subnet" "primary" {
+  vpc_id     = "${aws_vpc.main.id}"
+  cidr_block = "10.0.1.0/24"
+
+  tags = {
+    Name = "Primary"
+  }
+}
+
+resource "aws_subnet" "secondary" {
+  vpc_id     = "${aws_vpc.main.id}"
+  cidr_block = "10.0.2.0/24"
+
+  tags = {
+    Name = "Secondary"
+  }
+}
+
+resource "aws_security_group" "allow_all" {
+  name        = "allow_all"
+  description = "Allow all inbound traffic"
+  vpc_id      = "${aws_vpc.main.id}"
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_db_subnet_group" "default" {
+  name       = "main"
+  subnet_ids = ["${aws_subnet.primary.id}", "${aws_subnet.secondary.id}"]
+
+  tags = {
+    Name = "DB and Lambda VPC subnet group"
   }
 }

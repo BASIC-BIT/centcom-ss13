@@ -30,10 +30,10 @@ variable "bash" {
 
 variable "prod_lambda_deploy_version" {
   description = "Version of lambda to deploy to production"
-  default = "0.0.9"
+  default = "0.1.0"
 }
 
 variable "dev_lambda_deploy_version" {
   description = "Version of lambda to deploy to development"
-  default = "0.0.9"
+  default = "0.1.0"
 }
