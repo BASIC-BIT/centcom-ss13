@@ -92,7 +92,7 @@ resource "aws_lambda_function" "server_lambda" {
   # is the name of the property under which the handler function was
   # exported in that file.
   handler = "bundle.handler"
-  runtime = "nodejs6.10"
+  runtime = "nodejs8.10"
 
   role = "${aws_iam_role.lambda_exec.arn}"
 

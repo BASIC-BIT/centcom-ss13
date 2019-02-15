@@ -1,6 +1,6 @@
 {
   "name": "yogstation-ui",
-  "version": "0.1.0",
+  "version": "0.1.48",
   "description": "Yogstation Website UI (Beta)",
   "main": "lib/index.js",
   "scripts": {
@@ -12,6 +12,8 @@
     "start:server": "node ./scripts/localServerRunner.js",
     "build:client": "webpack --config ./webpack.prod.js",
     "build:server": "webpack --config ./webpack.server.js",
+    "terraform:refresh": "node ./scripts/refresh_terraform_outputs.js",
+    "terraform:apply": "node ./scripts/update_version_terraform.js",
     "build": "run-p build:client build:server",
     "deploy:client": "node scripts/deploy_client",
     "deploy:server": "node scripts/deploy_server",
@@ -20,8 +22,7 @@
     "full:client": "run-s test:unit build:client deploy:client",
     "full": "run-p full:server full:client",
     "version:patch": "npm version patch",
-    "apply": "node ./scripts/update_version_terraform.js",
-    "complete": "run-s version:patch full apply"
+    "complete": "run-s version:patch full terraform:apply"
   },
   "repository": {
     "type": "git",
@@ -71,6 +72,7 @@
     "mime-types": "^2.1.21",
     "mocha": "^5.2.0",
     "node-sass": "^4.11.0",
+    "proxyquire": "^2.1.0",
     "react-hot-loader": "^4.6.5",
     "sass-loader": "^7.1.0",
     "sinon": "^7.2.3",
@@ -80,6 +82,7 @@
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14",
     "webpack-encoding-plugin": "^0.2.1",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "webpack-node-externals": "^1.7.2"
   }
 }

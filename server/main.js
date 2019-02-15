@@ -2,6 +2,9 @@
 require("@babel/polyfill");
 
 import ApiGatewayEventParser from "./api-gateway-event-parser";
+import { DB } from './db_broker';
+
+const db = new DB();
 
 function createResponse({
   body,
@@ -17,15 +20,16 @@ function createResponse({
 
 const endpoints = [
   {
-    path: /^\/$/,
-    handler: (eventParser) => {
-      return createResponse({ statusCode: 200, body: `Coming soon!` });
-    },
-  },
-  {
     path: /^\/login$/,
     handler: (eventParser) => {
       return createResponse({ statusCode: 501, body: `501 Not Implemented` });
+    },
+  },
+  {
+    path: /^\/terraform_outputs$/,
+    handler: (eventParser) => {
+      const terraform_outputs = require('../generated/terraform_output.json');
+      return createResponse({ statusCode: 501, body: JSON.stringify(terraform_outputs) });
     },
   },
   {
@@ -48,38 +52,53 @@ const endpoints = [
     },
   },
   {
+    path: /^\/init/,
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'CREATE DATABASE centcom',
+          'USE centcom',
+          'CREATE TABLE communities (name VARCHAR(50), rel_url VARCHAR(50), ' +
+            'server_link VARCHAR(50), forums VARCHAR(50), github VARCHAR(50), wiki VARCHAR(50))',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/destroy/,
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'DROP DATABASE IF EXISTS centcom',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
     path: /^\/connect/,
     handler: async (eventParser) => {
-      const mysql = require('mysql');
-
-      const connection = mysql.createConnection({
-        host     : process.env.RDS_HOSTNAME,
-        user     : process.env.RDS_USERNAME,
-        password : process.env.RDS_PASSWORD,
-        port     : process.env.RDS_PORT
-      });
-
-      const output = await new Promise((resolve, reject) => {
-        connection.connect(function(err) {
-          if (err) {
-            resolve(createResponse({ body: 'Database connection failed: ' + err.stack, statusCode: 500 }));
-            return;
-          }
-
-          resolve(createResponse({ body: 'Connected to database.', statusCode: 200 }));
-        });
-      });
-
       try {
-        connection.end();
-      } catch (e) {}
-
-      return output || createResponse({ body: 'Unknown error (better check that out)', statusCode: 500 });
+        const query = 'show databases;';
+        const result = await db.query(query);
+        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
     },
   }
 ];
 
-exports.handler = async function (event, context, callback) {
+const handler = async function (event, context, callback) {
+  context.callbackWaitsForEmptyEventLoop = false;
+
   try {
     const eventParser = new ApiGatewayEventParser(event, context);
 
@@ -104,3 +123,5 @@ exports.handler = async function (event, context, callback) {
   // };
   // callback(null, response);
 };
+
+export { handler };
