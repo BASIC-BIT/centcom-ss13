@@ -221,18 +221,6 @@ resource "aws_lambda_alias" "centcom-server-lambda-alias" {
   function_version = "$LATEST"
 }
 
-output "server_url" {
-  value = "${aws_api_gateway_deployment.centcom-server-api-deployment.invoke_url}"
-}
-
-output "client_url" {
-  value = "${aws_s3_bucket.site_bucket.website_endpoint}"
-}
-
-output "mysql_url" {
-  value = "${aws_db_instance.maindb.address}"
-}
-
 data "aws_acm_certificate" "main_cert" {
   domain   = "*.${var.site_url}"
   statuses = ["ISSUED"]

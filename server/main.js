@@ -17,6 +17,12 @@ function createResponse({
 
 const endpoints = [
   {
+    path: /^\/$/,
+    handler: (eventParser) => {
+      return createResponse({ statusCode: 200, body: `Coming soon!` });
+    },
+  },
+  {
     path: /^\/login$/,
     handler: (eventParser) => {
       return createResponse({ statusCode: 501, body: `501 Not Implemented` });

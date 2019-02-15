@@ -5,15 +5,23 @@
   "main": "lib/index.js",
   "scripts": {
     "test:at": "cypress",
-    "test:unit": "mocha --require @babel/register",
-    "start": "webpack-dev-server --config ./webpack.dev.js",
+    "test:unit": "mocha --require @babel/register --recursive",
+    "test": "run-p test:at test:unit",
+    "start": "run-p start:client start:server",
+    "start:client": "webpack-dev-server --config ./webpack.dev.js",
     "start:server": "node ./scripts/localServerRunner.js",
-    "build": "webpack --config ./webpack.prod.js",
+    "build:client": "webpack --config ./webpack.prod.js",
     "build:server": "webpack --config ./webpack.server.js",
-    "build:all": "npm run build && npm run build:server",
+    "build": "run-p build:client build:server",
     "deploy:client": "node scripts/deploy_client",
     "deploy:server": "node scripts/deploy_server",
-    "deploy": "npm run deploy:client && npm run deploy:server"
+    "deploy": "npm run deploy:client && npm run deploy:server",
+    "full:server": "run-s test:unit build:server deploy:server",
+    "full:client": "run-s test:unit build:client deploy:client",
+    "full": "run-p full:server full:client",
+    "version:patch": "npm version patch",
+    "apply": "node ./scripts/update_version_terraform.js",
+    "complete": "run-s version:patch full apply"
   },
   "repository": {
     "type": "git",
