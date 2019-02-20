@@ -7,6 +7,10 @@ import { DB } from './db_broker';
 
 const db = new DB();
 
+require.extensions['.sql'] = function (module, filename) {
+  module.exports = fs.readFileSync(filename, 'utf8');
+};
+
 function createResponse({
   body,
   statusCode = 200,
@@ -71,9 +75,9 @@ const endpoints = [
     path: /^\/init/,
     handler: async (eventParser) => {
       try {
-        const initTablesSql = fs.readFileSync('./server/sql/initTables.sql').toString();
-        const setConfig = fs.readFileSync('./server/sql/setConfig.sql').toString();
-        const initServers = fs.readFileSync('./server/sql/initServers.sql').toString();
+        const initTablesSql = require('./sql/initTables.sql');
+        const setConfig = require('./sql/setConfig.sql');
+        const initServers = require('./sql/initServers.sql');
 
         const queries = [
           [initTablesSql],
@@ -92,7 +96,7 @@ const endpoints = [
     path: /^\/destroy/,
     handler: async (eventParser) => {
       try {
-        const destroy = fs.readFileSync('./server/sql/destroy.sql').toString();
+        const destroy = require('./sql/destroy.sql');
 
         const queries = [
           [destroy],
