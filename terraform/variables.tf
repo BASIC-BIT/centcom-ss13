@@ -37,3 +37,7 @@ variable "dev_lambda_deploy_version" {
   description = "Version of lambda to deploy to development"
   default = "0.1.0"
 }
+
+variable "centcom_github_oauth_token" {
+  description = "Oauth token for jenkins github access"
+}

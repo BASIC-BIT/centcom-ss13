@@ -2,6 +2,12 @@ provider "aws" {
   access_key = "${var.access_key}"
   secret_key = "${var.secret_key}"
   region = "us-east-1"
+
+  version = "~> 1.57"
+}
+
+provider "null" {
+  version = "~> 2.0"
 }
 
 resource "aws_db_instance" "maindb" {
@@ -341,6 +347,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "primary" {
   vpc_id     = "${aws_vpc.main.id}"
   cidr_block = "10.0.1.0/24"
+  availability_zone = "${data.aws_availability_zones.available.names[0]}"
 
   tags = {
     Name = "Primary"
@@ -350,6 +357,7 @@ resource "aws_subnet" "primary" {
 resource "aws_subnet" "secondary" {
   vpc_id     = "${aws_vpc.main.id}"
   cidr_block = "10.0.2.0/24"
+  availability_zone = "${data.aws_availability_zones.available.names[1]}"
 
   tags = {
     Name = "Secondary"
@@ -384,3 +392,16 @@ resource "aws_db_subnet_group" "default" {
     Name = "DB and Lambda VPC subnet group"
   }
 }
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAitEyjwuO7mI6AmUHwzli27Ks+xMihfXSgSKYPnkXoP0Z2B7+p/5vyE0uMDD+MS80ylGeS3eALku8qqZkm3Qk3NQdq9ZQAw+esSAvycpQ12fipkSiAm1C4RvTPph4zpFlHvEJjuEbv33yzn3Q0qhGLkdf+ZlDHsarjPJPVP5P2EDTCmJuquuJu17Y2Zw4qbpt83ze5p68qmag6EE+YihzbSZAS/vNACXQfGUjrcSiDg8NllHn16U2ndoEoz+SDPCdLMWF/KkYRqEUBUgzIVeQGEhYWEZQPZiafTfJVSFc8dBrgHYiupe+wQCmKGEVzuTCrkxpV/jqf8P6gwaRLoxzmQ== rsa-key-20190217"
+}
+
+variable "max_availability_zones" {
+  default = "2"
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_availability_zones" "available" {}

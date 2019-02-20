@@ -52,16 +52,35 @@ const endpoints = [
     },
   },
   {
-    path: /^\/init/,
+    path: /^\/servers/,
     handler: async (eventParser) => {
       try {
         const statements = [
-          'CREATE DATABASE centcom',
           'USE centcom',
-          'CREATE TABLE communities (name VARCHAR(50), rel_url VARCHAR(50), ' +
-            'server_link VARCHAR(50), forums VARCHAR(50), github VARCHAR(50), wiki VARCHAR(50))',
+          'SELECT * FROM servers',
         ];
         const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/init/,
+    handler: async (eventParser) => {
+      try {
+        const initTablesSql = require('./sql/initTables.sql');
+        const setConfig = require('./sql/setConfig.sql');
+        const initServers = require('./sql/initServers.sql');
+
+        const queries = [
+          [initTablesSql],
+          [setConfig],
+          [initServers],
+        ];
+
+        const result = await db.multiQuery(queries);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
         return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
@@ -72,10 +91,13 @@ const endpoints = [
     path: /^\/destroy/,
     handler: async (eventParser) => {
       try {
-        const statements = [
-          'DROP DATABASE IF EXISTS centcom',
+        const destroy = require('./sql/destroy.sql');
+
+        const queries = [
+          [destroy],
         ];
-        const result = await db.multiQuery(statements);
+
+        const result = await db.multiQuery(queries);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
         return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
