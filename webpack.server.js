@@ -13,6 +13,15 @@ module.exports = {
         exclude: /node_modules/,
         use: ['babel-loader']
       },
+      {
+        test: /\.(sql)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {},
+          },
+        ],
+      },
     ]
   },
   resolve: {
