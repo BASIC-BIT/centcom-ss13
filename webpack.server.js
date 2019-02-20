@@ -16,10 +16,11 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.json'],
+    extensions: ['.js', '.jsx', '.json', '.sql'],
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, './server')
+      path.resolve(__dirname, './server'),
+      path.resolve(__dirname, './generated')
     ]
   },
   output: {

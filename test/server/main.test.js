@@ -116,10 +116,10 @@ describe('CentCom Server', () => {
     expect(output.statusCode).to.equal(200);
   });
 
-  it('should return 200 when running database init', async () => {
+  it('should return 200 when running database destroy', async () => {
     const event = { path: '/destroy' };
     mysqlQueryStub
-    .withArgs('DROP DATABASE IF EXISTS centcom')
+    .withArgs('DROP DATABASE IF EXISTS centcom;')
     .yieldsRight(undefined, 'Destroy finished', { foo: 'bar' });
 
     const output = await promisify(handler.handler)(event, {});
@@ -128,13 +128,9 @@ describe('CentCom Server', () => {
     expect(output.statusCode).to.equal(200);
   });
 
-  it('should return 200 when running database destroy', async () => {
+  it('should return 200 when running database init', async () => {
     const event = { path: '/init' };
     mysqlQueryStub
-    .withArgs('CREATE DATABASE centcom; ' +
-      'USE centcom; ' +
-      'CREATE TABLE communities (name VARCHAR(50), rel_url VARCHAR(50), ' +
-      'server_link VARCHAR(50), forums VARCHAR(50), github VARCHAR(50), wiki VARCHAR(50))')
     .yieldsRight(undefined, 'Init finished!', { foo: 'bar' });
 
     const output = await promisify(handler.handler)(event, {});

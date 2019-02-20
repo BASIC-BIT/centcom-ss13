@@ -76,7 +76,8 @@ module.exports = {
     extensions: ['.js', '.jsx', '.css', '.scss', '.sass', '.json'],
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, './src')
+      path.resolve(__dirname, './src'),
+      path.resolve(__dirname, './generated')
     ]
   },
   output: {

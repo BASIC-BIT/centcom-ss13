@@ -1,6 +1,7 @@
 'use strict';
 require("@babel/polyfill");
 
+import fs from 'fs';
 import ApiGatewayEventParser from "./api-gateway-event-parser";
 import { DB } from './db_broker';
 
@@ -70,9 +71,9 @@ const endpoints = [
     path: /^\/init/,
     handler: async (eventParser) => {
       try {
-        const initTablesSql = require('./sql/initTables.sql');
-        const setConfig = require('./sql/setConfig.sql');
-        const initServers = require('./sql/initServers.sql');
+        const initTablesSql = fs.readFileSync('./server/sql/initTables.sql').toString();
+        const setConfig = fs.readFileSync('./server/sql/setConfig.sql').toString();
+        const initServers = fs.readFileSync('./server/sql/initServers.sql').toString();
 
         const queries = [
           [initTablesSql],
@@ -91,7 +92,7 @@ const endpoints = [
     path: /^\/destroy/,
     handler: async (eventParser) => {
       try {
-        const destroy = require('./sql/destroy.sql');
+        const destroy = fs.readFileSync('./server/sql/destroy.sql').toString();
 
         const queries = [
           [destroy],
