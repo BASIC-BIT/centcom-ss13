@@ -7,32 +7,38 @@ const breadcrumbStyle = {
   paddingBottom: '20px',
 };
 
+const NO_BREADCRUMB_URLS = [
+  '/panel',
+];
+
 class BreadcrumbWrapper extends React.Component {
   static contextType = getCommunityContext();
 
   getBreadcrumbNameMap() {
-    let breadcrumbNameMap = {};
-    if(this.context && this.context.community) {
-      breadcrumbNameMap = {
-        ...breadcrumbNameMap,
-        [`/community/${this.context.community.url}/panel`]: `${this.context.community.name} Home`,
-        [`/community/${this.context.community.url}/panel/admin`]: 'Admin Panel',
-      };
-    }
-
-    breadcrumbNameMap = {
-      ...breadcrumbNameMap,
-      '/panel': 'CentCom Panel',
+    let breadcrumbNameMap = {
+      '/panel': 'Home',
       '/panel/admin': 'Admin',
     };
+
+    if(this.context.config && this.context.config.community_name) {
+      breadcrumbNameMap = {
+        ...breadcrumbNameMap,
+        '/panel': `${this.context.config.community_name} Home`,
+      };
+    }
 
     return breadcrumbNameMap;
   }
 
   render() {
     const { location } = this.props;
+
+    if(NO_BREADCRUMB_URLS.includes(location.pathname)) {
+      return this.props.children;
+    }
+
     const pathSnippets = location.pathname.split('/').filter(i => i);
-    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+    const breadcrumbItems = pathSnippets.map((_, index) => {
       const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
       const breadcrumbName = this.getBreadcrumbNameMap()[url];
 
@@ -48,17 +54,6 @@ class BreadcrumbWrapper extends React.Component {
         </Breadcrumb.Item>
       );
     });
-    let breadcrumbItems = extraBreadcrumbItems;
-    if(this.context && this.context.community) {
-      breadcrumbItems = [
-        ...[(
-          <Breadcrumb.Item key="home">
-            <Link to="/panel">CentCom Panel</Link>
-          </Breadcrumb.Item>
-        )],
-        ...breadcrumbItems,
-      ];
-    }
     return (
       <React.Fragment>
         <div style={breadcrumbStyle}>

@@ -14,7 +14,7 @@ export default class PageFooter extends React.Component {
   static contextType = getCommunityContext();
   render() {
     return (
-      <Footer style={style}>CentCom - SS13 Management Platform</Footer>
+      <Footer style={style}>{this.context.config.footer_text}</Footer>
     );
   }
 }

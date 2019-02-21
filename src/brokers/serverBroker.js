@@ -12,7 +12,7 @@ class ServerBroker {
         if(err) {
           reject(err);
         } else {
-          resolve(JSON.parse(results));
+          resolve(JSON.parse(results.body));
         }
       });
     });

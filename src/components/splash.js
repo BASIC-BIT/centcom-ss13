@@ -9,12 +9,12 @@ const splashStyle = {
   paddingTop: '200px',
 };
 
-export default withRouter(class SplashPage extends React.Component {
+export default class SplashPage extends React.Component {
   static contextType = getCommunityContext();
   render() {
     return (
       <div style={splashStyle}>
-        <h1>{this.context.config.community_name}</h1>
+        <h1>{this.context.config.community_name}</h1> {/* TODO: Fix config so this works */}
         <div>
           <Link to={`/panel`}>
             <Button type="primary" style={{ margin: '10px' }}>Enter the Bridge</Button>
@@ -23,4 +23,4 @@ export default withRouter(class SplashPage extends React.Component {
       </div>
     );
   }
-});
+};

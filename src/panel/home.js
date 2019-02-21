@@ -19,16 +19,7 @@ export default class Home extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      loading: true,
-    };
-
-    this.getServers();
-  }
-
-  async getServers() {
-    const servers = await db.getServers();
-    this.setState({ servers, loading: false });
+    this.state = {};
   }
 
   render() {
@@ -38,7 +29,7 @@ export default class Home extends React.Component {
 
     const serverListColumns = [
       {
-        title: '',
+        title: 'Servers',
         key: 'name',
         render: (text, server) => (
           <span>
@@ -66,9 +57,10 @@ export default class Home extends React.Component {
       },
     ];
 
+    console.log(this.context.servers);
     return (
       <div>
-        <Table style={tableStyle} dataSource={this.state.servers} columns={serverListColumns}/>
+        <Table style={tableStyle} dataSource={this.context.servers} columns={serverListColumns}/>
       </div>
     )
   }
