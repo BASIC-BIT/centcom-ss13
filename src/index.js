@@ -6,4 +6,6 @@ ReactDOM.render(<Main />,
   document.getElementById('root')
 );
 
-module.hot.accept();
+if(module.hot && module.hot.accept) {
+  module.hot.accept();
+}
