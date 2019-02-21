@@ -71,6 +71,27 @@ const endpoints = [
     },
   },
   {
+    path: /^\/config/,
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'USE centcom;',
+          'SELECT * FROM config;',
+        ];
+        const result = await db.multiQuery(statements);
+
+        const formattedResults = result[1].reduce((output, { cfg_key, cfg_value }) => ({
+          ...output,
+          [cfg_key]: cfg_value
+        }), {});
+
+        return createResponse({ body: JSON.stringify(formattedResults), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
     path: /^\/init/,
     handler: async (eventParser) => {
       try {

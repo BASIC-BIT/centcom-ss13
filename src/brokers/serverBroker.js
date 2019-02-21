@@ -8,7 +8,7 @@ class ServerBroker {
 
   query(queryString) {
     return new Promise((resolve, reject) => {
-      xhr.get(`${this.serverUrl}/${queryString}`, (err, results) => {
+      xhr.get(`${this.serverUrl}${queryString}`, (err, results) => {
         if(err) {
           reject(err);
         } else {
@@ -18,8 +18,12 @@ class ServerBroker {
     });
   }
 
-  getCommunities() {
-    return this.query('/communities');
+  getServers() {
+    return this.query('/servers');
+  }
+
+  getConfig() {
+    return this.query('/config');
   }
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout, DatePicker } from 'antd';
+import getCommunityContext from '../utils/communityContext';
 
 const {
   Header,
@@ -13,10 +14,12 @@ const titleStyle = {
 };
 
 export default class PageHeader extends React.Component {
+  static contextType = getCommunityContext();
   render() {
+    const sloganText = this.context.community.slogan || 'The Space Station 13 Experience';
     return (
       <Header style={style}>
-        <h2 style={titleStyle}>CentCom - A Space Station 13 Management System in the Cloud</h2>
+        <h2 style={titleStyle}>{this.context.community.name}: {sloganText}</h2>
       </Header>
     );
   }

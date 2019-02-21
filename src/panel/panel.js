@@ -4,21 +4,21 @@ import PageSidebar from "./sidebar";
 import PageContent from "./content";
 import PageFooter from "./footer";
 import PageHeader from "./header";
+import {withRouter} from "react-router";
 
-
-export default class Panel extends React.Component {
+export default withRouter(class Panel extends React.Component {
   render() {
     return (
+      <Layout>
+        <PageHeader/>
         <Layout>
-          <PageHeader/>
+          <PageSidebar/>
           <Layout>
-            <PageSidebar/>
-            <Layout>
-              <PageContent/>
-              <PageFooter/>
-            </Layout>
+            <PageContent/>
+            <PageFooter/>
           </Layout>
         </Layout>
+      </Layout>
     );
   }
-}
+});

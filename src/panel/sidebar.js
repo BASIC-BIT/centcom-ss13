@@ -2,6 +2,7 @@ import React from 'react';
 import {Layout, Menu, Icon,} from 'antd';
 import {Link} from "react-router-dom";
 import {withRouter} from "react-router";
+import getCommunityContext from '../utils/communityContext';
 
 const {
   Sider,
@@ -14,6 +15,7 @@ const style = {
 };
 
 export default withRouter(class PageSidebar extends React.Component {
+  static contextType = getCommunityContext();
   constructor(props) {
     super(props);
     this.state = {
@@ -43,30 +45,48 @@ export default withRouter(class PageSidebar extends React.Component {
       >
         <div className="logo" />
         <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">
-          <Menu.Item key="/">
-            <Link to="/">
+          <Menu.Item key={`/community/${this.context.community.url}`}>
+            <Link to={`/community/${this.context.community.url}`}>
               <Icon type="desktop" />
               <span>Splash Page</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key="/panel">
-            <Link to="/panel">
-              <Icon type="cloud" />
-              <span>Panel Home</span>
+          <Menu.Item key={`/community/${this.context.community.url}/panel`}>
+            <Link to={`/community/${this.context.community.url}/panel`}>
+              <Icon type="home" />
+              <span>{this.context.community.name} Home</span>
             </Link>
           </Menu.Item>
-          <Menu.Item key="github">
-            <a href="https://github.com/BASIC-BIT/centcom-ss13">
+          {this.context.community.serverLink && <Menu.Item key="joinserver">
+            <a href={this.context.community.serverLink}>
+              <Icon type="play-circle" />
+              <span>Join Server!</span>
+            </a>
+          </Menu.Item>}
+          {this.context.community.github && <Menu.Item key="github">
+            <a href={this.context.community.github}>
               <Icon type="github" />
               <span>Github</span>
             </a>
-          </Menu.Item>
+          </Menu.Item>}
+          {this.context.community.forums && <Menu.Item key="forums">
+            <a href={this.context.community.forums}>
+              <Icon type="layout" />
+              <span>Forums</span>
+            </a>
+          </Menu.Item>}
+          {this.context.community.wiki && <Menu.Item key="wiki">
+            <a href={this.context.community.wiki}>
+              <Icon type="read" />
+              <span>Wiki</span>
+            </a>
+          </Menu.Item>}
           <SubMenu
             key="admin_menu"
             title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
           >
-            <Menu.Item key="/panel/admin">
-              <Link to="/panel/admin">
+            <Menu.Item key={`/community/${this.context.community.url}/panel/admin`}>
+              <Link to={`/community/${this.context.community.url}/panel/admin`}>
                 <Icon type="dashboard" />
                 <span>Dashboard</span>
               </Link>

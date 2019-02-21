@@ -1,5 +1,5 @@
 import React from 'react';
-import getCommunityContext from '../communityContext';
+import getCommunityContext from '../utils/communityContext';
 
 export default class Admin extends React.Component {
   static contextType = getCommunityContext();

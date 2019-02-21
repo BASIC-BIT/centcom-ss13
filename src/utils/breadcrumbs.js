@@ -1,4 +1,4 @@
-import getCommunityContext from "../communityArea/communityContext";
+import getCommunityContext from "./communityContext";
 import React from "react";
 import {Link, withRouter} from "react-router-dom";
 import {Breadcrumb} from "antd";

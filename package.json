@@ -12,17 +12,18 @@
     "start:server": "node ./scripts/localServerRunner.js",
     "build:client": "webpack --config ./webpack.prod.js",
     "build:server": "webpack --config ./webpack.server.js",
+    "git:amend": "git commit --amend --no-edit",
     "terraform:refresh": "node ./scripts/refresh_terraform_outputs.js",
     "terraform:apply": "node ./scripts/update_version_terraform.js",
     "build": "run-p build:client build:server",
     "deploy:client": "node scripts/deploy_client",
     "deploy:server": "node scripts/deploy_server",
     "deploy": "npm run deploy:client && npm run deploy:server",
-    "full:server": "run-s test:unit build:server deploy:server",
-    "full:client": "run-s test:unit build:client deploy:client",
-    "full": "run-p full:server full:client",
+    "verify:server": "run-s test:unit build:server",
+    "verify:client": "run-s test:unit build:client",
+    "verify": "run-p verify:server verify:client",
     "version:patch": "npm version patch",
-    "complete": "run-s version:patch full terraform:apply"
+    "complete": "run-s terraform:refresh verify version:patch build git:amend deploy terraform:apply"
   },
   "repository": {
     "type": "git",
@@ -51,7 +52,8 @@
     "react-dom": "^16.7.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "shelljs": "^0.8.3"
+    "shelljs": "^0.8.3",
+    "xhr": "^2.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",

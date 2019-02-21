@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layout } from 'antd';
+import getCommunityContext from '../utils/communityContext';
 
 const {
   Footer,
@@ -10,9 +11,10 @@ const style = {
 };
 
 export default class PageFooter extends React.Component {
+  static contextType = getCommunityContext();
   render() {
     return (
-      <Footer style={style}>Beta version - Please use our bug tracker to report issues.</Footer>
+      <Footer style={style}>CentCom - SS13 Management Platform</Footer>
     );
   }
 }
