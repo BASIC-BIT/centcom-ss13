@@ -1,6 +1,9 @@
 import React from 'react';
 import {Col, Card, Tabs, Icon} from "antd";
 import getCommunityContext from "../../utils/communityContext";
+import Info from "./serverStats/info";
+import LastRound from "./serverStats/lastRound";
+import Health from "./serverStats/health";
 
 const panelCardStyle = {
   backgroundColor: 'transparent',
@@ -30,27 +33,15 @@ export default class ServerDetails extends React.Component {
             type="card"
             className="server-stats-menu"
           >
-            <Tabs.TabPane
-              tab={<span><Icon type="info-circle" />Info</span>}
-              key="info"
-              className="server-stats-menu-item"
-            >
-              It's uh, up!
-            </Tabs.TabPane>
-            <Tabs.TabPane
+            <Info tab={<span><Icon type="info-circle" />Info</span>} key="info" />
+            <LastRound
               tab={<span><Icon type="arrow-left" />Last Round</span>}
               key="lastRound"
-              className="server-stats-menu-item"
-            >
-              It was a round!
-            </Tabs.TabPane>
-            <Tabs.TabPane
+            />
+            <Health
               tab={<span><Icon type="medicine-box" />Health</span>}
               key="health"
-              className="server-stats-menu-item"
-            >
-              What am I, a doctor or a moon-shuttle conductor?
-            </Tabs.TabPane>
+            />
           </Tabs>
         </Card>
       </Col>
