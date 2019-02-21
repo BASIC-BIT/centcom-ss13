@@ -2,7 +2,7 @@ import React from 'react';
 import {Layout, DatePicker, Breadcrumb} from 'antd';
 import {Link} from "react-router-dom";
 import PageSwitcher from "./pageSwitcher";
-import getCommunityContext from '../utils/communityContext';
+import getCommunityContext from '../../utils/communityContext';
 
 const {
   Content,

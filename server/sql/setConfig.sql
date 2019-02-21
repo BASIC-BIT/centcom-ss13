@@ -7,4 +7,6 @@ VALUES
     ('forums_url', 'https://forums.yogstation.net/index.php'),
     ('github_url', 'https://github.com/yogstation13/yogstation'),
     ('wiki_url', 'https://wiki.yogstation.net/'),
-    ('footer_text', 'CentCom - SS13 Management Platform - ');
+    ('footer_text', 'CentCom - SS13 Management Platform - '),
+    ('panel_header_text', 'YogStation13'),
+    ('splash_title_text', 'YogStation13');

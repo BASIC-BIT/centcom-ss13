@@ -1,9 +1,9 @@
 require('@babel/polyfill');
 
 import React from 'react';
-import getCommunityContext from '../utils/communityContext';
-import DB from '../brokers/serverBroker';
-import LoadingIndicator from "../components/loadingIndicator";
+import getCommunityContext from '../../utils/communityContext';
+import DB from '../../brokers/serverBroker';
+import LoadingIndicator from "../loadingIndicator";
 import {Button, Table} from "antd";
 import {Link} from "react-router-dom";
 

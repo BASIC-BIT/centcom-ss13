@@ -1,7 +1,7 @@
 import React from 'react';
 import {Redirect, Route, Switch} from "react-router";
 import ErrorPage404 from "./error/ErrorPage404";
-import Panel from './panel/panel';
+import Panel from './components/panel/panel';
 import Splash from './components/splash';
 import getCommunityContext from "./utils/communityContext";
 import DB from './brokers/serverBroker';

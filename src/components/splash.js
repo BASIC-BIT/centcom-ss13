@@ -14,7 +14,7 @@ export default class SplashPage extends React.Component {
   render() {
     return (
       <div style={splashStyle}>
-        <h1>{this.context.config.community_name}</h1> {/* TODO: Fix config so this works */}
+        <h1>{this.context.config.splash_title_text}</h1>
         <div>
           <Link to={`/panel`}>
             <Button type="primary" style={{ margin: '10px' }}>Enter the Bridge</Button>
