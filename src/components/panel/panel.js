@@ -14,7 +14,7 @@ export default withRouter(class Panel extends React.Component {
         <Layout>
           <PageSidebar/>
           <Layout>
-            <PageContent/>
+            <PageContent />
             <PageFooter/>
           </Layout>
         </Layout>

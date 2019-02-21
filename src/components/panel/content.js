@@ -11,6 +11,7 @@ const {
 const style = {
   color: '#333',
   padding: '14px',
+  minHeight: 'unset',
 };
 
 export default class PageContent extends React.Component {

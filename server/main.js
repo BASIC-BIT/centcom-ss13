@@ -84,14 +84,11 @@ const endpoints = [
           'SELECT * FROM config;',
         ];
         const result = await db.multiQuery(statements);
-        console.log('Raw config output: ', result);
 
         const formattedResults = result[1].reduce((output, { cfg_key, cfg_value }) => ({ // TODO: Fix config to return the right stuff
           ...output,
           [cfg_key]: cfg_value
         }), {});
-        console.log('Formatted config output: ', formattedResults);
-
 
         return createResponse({ body: JSON.stringify(formattedResults), statusCode: 200 });
       } catch (e) {

@@ -41,7 +41,7 @@ export default withRouter(class PageSidebar extends React.Component {
         collapsed={this.state.collapsed}
         onCollapse={this.onCollapse.bind(this)}
         style={style}
-        width={280}
+        width={200}
       >
         <div className="logo" />
         <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">

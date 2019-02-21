@@ -10,6 +10,5 @@ fs.readdir('./dist', async (err, items) => {
     await putFile(FRONT_END_BUCKET, item, data);
     console.log(`Successfully uploaded ${item} to client bucket`);
   }));
-  console.log(items);
 });
 

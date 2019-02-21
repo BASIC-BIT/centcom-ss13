@@ -10,8 +10,6 @@ function getParams(bucket, name, data ) {
 
   const ContentType = `${type}${charset ? `; charset=${charset}` : ''}`;
 
-  console.log(ContentType);
-
   return {
     Bucket: bucket,
     Key: name,
