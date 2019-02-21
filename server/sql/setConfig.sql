@@ -12,4 +12,5 @@ VALUES
     ('splash_title_text', 'YogStation13'),
     ('twitter_url', 'https://twitter.com/Yogstation_13'),
     ('steam_url', 'https://steamcommunity.com/groups/yogstation13'),
+    ('discord_url', 'https://discord.gg/0keg6hQH05Ha8OfO'),
     ('donate_url', 'https://www.yogstation.net/index.php?do=donate');

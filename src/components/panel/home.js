@@ -1,6 +1,13 @@
 import React from 'react';
 import getCommunityContext from '../../utils/communityContext';
-
+import {Row} from "antd";
+import ServerDetails from "../widgets/serverDetails";
+import Statistics from "../widgets/statistics";
+import AboutUs from "../widgets/aboutUs";
+import Intro from "../widgets/intro";
+const containerStyle = {
+  minWidth: '300px',
+};
 export default class Home extends React.Component {
   static contextType = getCommunityContext();
 
@@ -12,8 +19,13 @@ export default class Home extends React.Component {
 
   render() {
     return (
-      <div>
-        Put some normal user facing data and links here
+      <div style={containerStyle}>
+        <Row gutter={20} type="flex" justify="space-between">
+          <Intro/>
+          <AboutUs/>
+          <ServerDetails/>
+          <Statistics/>
+        </Row>
       </div>
     )
   }
