@@ -9,7 +9,7 @@ VALUES
     ('wiki_url', 'https://wiki.yogstation.net/'),
     ('footer_text', 'CentCom - SS13 Management Platform'),
     ('panel_header_text', 'YogStation13'),
-    ('splash_title_text', 'YogStation13')
+    ('splash_title_text', 'YogStation13'),
     ('twitter_url', 'https://twitter.com/Yogstation_13'),
     ('steam_url', 'https://steamcommunity.com/groups/yogstation13'),
     ('donate_url', 'https://www.yogstation.net/index.php?do=donate');
