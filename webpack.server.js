@@ -13,17 +13,17 @@ module.exports = {
         exclude: /node_modules/,
         use: ['babel-loader']
       },
-      {
-        test: /\.(sql)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[path][name].[ext]',
-            },
-          },
-        ],
-      },
+      // {
+      //   test: /\.(sql)$/,
+      //   use: [
+      //     {
+      //       loader: 'file-loader',
+      //       options: {
+      //         name: '[path][name].[ext]',
+      //       },
+      //     },
+      //   ],
+      // },
     ]
   },
   resolve: {
@@ -40,9 +40,11 @@ module.exports = {
     filename: 'bundle.js',
     libraryTarget: 'umd'
   },
-  plugins: [new EncodingPlugin({
-    encoding: 'iso-8859-1'
-  })],
+  plugins: [
+    new EncodingPlugin({
+      encoding: 'iso-8859-1'
+    }),
+  ],
   target: 'node',
   optimization: {
     minimizer: [

@@ -61,6 +61,7 @@
     "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-import": "^1.11.0",
+    "babel-plugin-inline-import": "^3.0.0",
     "chai": "^4.2.0",
     "chance": "^1.0.18",
     "copy-webpack-plugin": "^4.6.0",

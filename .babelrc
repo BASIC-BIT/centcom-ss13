@@ -5,6 +5,11 @@
   ],
   "plugins": [
     ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": true }],
-    "@babel/plugin-proposal-class-properties"
+    "@babel/plugin-proposal-class-properties",
+    ["babel-plugin-inline-import", {
+      "extensions": [
+        ".sql"
+      ]
+    }]
   ]
 }
