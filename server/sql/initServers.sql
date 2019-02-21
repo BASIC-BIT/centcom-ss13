@@ -1,4 +1,4 @@
-DELETE FROM config WHERE 1=1;
+DELETE FROM servers WHERE 1=1;
 
 INSERT INTO
     servers (name, url, description, access_level)
