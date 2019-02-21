@@ -13,12 +13,17 @@ const db = new DB();
 function createResponse({
                           body,
                           statusCode = 200,
-                          headers,
+                          headers = {},
                         } = {}) {
   return {
     statusCode,
     ...(body && { body }),
-    ...(headers && { headers }),
+    headers: {
+      "Access-Control-Allow-Headers": 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+      "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT',
+      "Access-Control-Allow-Origin": '*',
+      ...headers,
+    },
   }
 }
 
