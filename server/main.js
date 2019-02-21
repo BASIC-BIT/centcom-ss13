@@ -2,7 +2,7 @@
 require("@babel/polyfill");
 
 import ApiGatewayEventParser from "./api-gateway-event-parser";
-import { DB } from './db_broker';
+import {DB} from './db_broker';
 import initTablesSql from './sql/initTables.sql';
 import setConfig from './sql/setConfig.sql';
 import initServers from './sql/initServers.sql';
@@ -11,10 +11,10 @@ import destroy from './sql/destroy.sql';
 const db = new DB();
 
 function createResponse({
-  body,
-  statusCode = 200,
-  headers,
-} = {}) {
+                          body,
+                          statusCode = 200,
+                          headers,
+                        } = {}) {
   return {
     statusCode,
     ...(body && { body }),
@@ -40,19 +40,19 @@ const endpoints = [
     path: /^\/test$/,
     handler: (eventParser) => {
       const date = new Date();
-      return createResponse({ body: `Hello world! Current Time: ${date.toString()}`});
+      return createResponse({ body: `Hello world! Current Time: ${date.toString()}` });
     },
   },
   {
     path: /^\/event/,
     handler: (eventParser) => {
-      return createResponse({ body: JSON.stringify(eventParser.getEvent())});
+      return createResponse({ body: JSON.stringify(eventParser.getEvent()) });
     },
   },
   {
     path: /^\/context/,
     handler: (eventParser) => {
-      return createResponse({ body: JSON.stringify(eventParser.getContext())});
+      return createResponse({ body: JSON.stringify(eventParser.getContext()) });
     },
   },
   {
@@ -134,6 +134,18 @@ const endpoints = [
         return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
+  }, {
+    path: /.*/,
+    method: 'OPTIONS',
+    handler: async (eventParser) => {
+      return createResponse({
+        headers: {
+          "Access-Control-Allow-Headers": 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+          "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT',
+          "Access-Control-Allow-Origin": '*',
+        }
+      });
+    },
   }
 ];
 
@@ -143,14 +155,16 @@ const handler = async function (event, context, callback) {
   try {
     const eventParser = new ApiGatewayEventParser(event, context);
 
-    const endpointMatch = endpoints.find(endpoint => eventParser.regexTestPath(endpoint.path));
+    const endpointMatch = endpoints.find(endpoint =>
+      (endpoint.method || 'GET') === eventParser.getMethod() &&
+      eventParser.regexTestPath(endpoint.path));
 
-    if(endpointMatch) {
+    if (endpointMatch) {
       callback(null, await endpointMatch.handler(eventParser));
     } else {
       callback(null, createResponse({ statusCode: 404 }));
     }
-  } catch(e) {
+  } catch (e) {
     callback(null, createResponse({ statusCode: 500, body: e.stack }));
   }
 
@@ -165,4 +179,4 @@ const handler = async function (event, context, callback) {
   // callback(null, response);
 };
 
-export { handler };
+export {handler};

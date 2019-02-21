@@ -24,6 +24,16 @@ describe('CentCom Server', () => {
   let handler;
   let mysqlStub;
 
+  function createRequest({
+    path = '/',
+    httpMethod = 'GET',
+  } = {}) {
+    return {
+      path,
+      httpMethod,
+    };
+  }
+
   beforeEach(() => {
     originalEnvironmentVariables = process.env;
     sandbox = sinon.createSandbox();
@@ -79,7 +89,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return 200 from /test endpoint', (done) => {
-    handler.handler({ path: '/test' }, {}, (error, output) => {
+    handler.handler(createRequest({ path: '/test' }), {}, (error, output) => {
       expect(output.body).to.include('Hello world! Current Time: ');
       expect(output.statusCode).to.equal(200);
       done();
@@ -87,7 +97,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return input event from /event endpoint', (done) => {
-    const event = { path: '/event', foo: 'bar' };
+    const event = createRequest({ path: '/event' });
     handler.handler(event, {}, (error, output) => {
       expect(output.body).to.include(JSON.stringify(event));
       expect(output.statusCode).to.equal(200);
@@ -96,7 +106,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return 501 Not Implemented for /login', (done) => {
-    const event = { path: '/login' };
+    const event = createRequest({ path: '/login' });
     handler.handler(event, {}, (error, output) => {
       expect(output.body).to.include('501 Not Implemented');
       expect(output.statusCode).to.equal(501);
@@ -105,7 +115,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return 200 when connecting to database', async () => {
-    const event = { path: '/connect' };
+    const event = createRequest({ path: '/connect' });
     mysqlQueryStub
     .withArgs('show databases;')
     .yieldsRight(undefined, 'Database list', { foo: 'bar' });
@@ -117,7 +127,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return 200 when running database destroy', async () => {
-    const event = { path: '/destroy' };
+    const event = createRequest({ path: '/destroy' });
     mysqlQueryStub
     .withArgs('DROP DATABASE IF EXISTS centcom;')
     .yieldsRight(undefined, 'Destroy finished', { foo: 'bar' });
@@ -129,7 +139,7 @@ describe('CentCom Server', () => {
   });
 
   it('should return 200 when running database init', async () => {
-    const event = { path: '/init' };
+    const event = createRequest({ path: '/init' });
     mysqlQueryStub
     .yieldsRight(undefined, 'Init finished!', { foo: 'bar' });
 
@@ -140,7 +150,7 @@ describe('CentCom Server', () => {
   });
 
   it.skip('should end gracefully', async () => {
-    const event = { path: '/connect' };
+    const event = createRequest({ path: '/connect' });
 
     const output = await promisify(handler.handler)(event, {});
 
