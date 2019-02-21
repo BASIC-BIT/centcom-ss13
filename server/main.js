@@ -64,7 +64,7 @@ const endpoints = [
           'SELECT * FROM servers;',
         ];
         const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
       } catch (e) {
         return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
