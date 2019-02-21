@@ -26,7 +26,6 @@ const walk = function(basePath, dirPath = '', origin = true) {
 };
 
 const filePaths = walk('./server_dist');
-console.log(filePaths);
 const zip = new JSZip();
 filePaths.map(async item => {
   const data = fs.readFileSync(`./server_dist/${item}`);

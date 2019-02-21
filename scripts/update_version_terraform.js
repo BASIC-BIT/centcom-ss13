@@ -2,14 +2,12 @@ const shell = require('shelljs');
 const fs = require('fs');
 const path = require('path');
 
-console.log(process.env);
 const variables = {
   prod_lambda_deploy_version: process.env.npm_package_version,
   dev_lambda_deploy_version: process.env.npm_package_version,
 
 };
 
-console.log(variables);
 const terraformCommand = `terraform apply ${Object.entries(variables)
 .map(([key, value]) => `-var '${key}=${value}'`)
 .join(' ')}`;

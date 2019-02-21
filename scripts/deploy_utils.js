@@ -21,21 +21,17 @@ function getParams(bucket, name, data ) {
 }
 
 async function putFile(bucket, name, contents) {
-  const callbackPromise = callbackToPromise(
-    (resp) => {
-      return resp;
-    }
-  );
-  await s3.upload(getParams(bucket, name, contents), callbackPromise);
+  const params = getParams(bucket, name, contents);
+  const [ error, results ] = await new Promise((resolve, reject) => {
+    s3.upload(params, (...args) => resolve(args));
+  });
+  if(error) {
+    throw error;
+  }
 
-  await callbackPromise;
-}
-
-function callbackToPromise(callback) {
-  return (...args) => {
-    return new Promise((resolve, reject) => {
-      resolve(callback(...args));
-    });
+  return {
+    query: params,
+    results,
   }
 }
 

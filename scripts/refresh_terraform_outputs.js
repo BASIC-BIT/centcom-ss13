@@ -5,8 +5,6 @@ const rawOutput = shell.cd('./terraform').exec('terraform output -json');
 
 const output = JSON.parse(rawOutput);
 
-console.log(Object.keys(output));
-
 fs.writeFile("../generated/terraform_output.json", JSON.stringify(output), function(err) {
   if (err) {
     return console.log(err);
