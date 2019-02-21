@@ -1,6 +1,6 @@
 import mysql from 'mysql';
 
-const buildQuery = (statements = []) => statements.join('; ');
+const buildQuery = (statements = []) => statements.join('\n');
 
 class DB {
   constructor() {

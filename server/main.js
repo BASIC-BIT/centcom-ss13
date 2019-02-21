@@ -60,8 +60,8 @@ const endpoints = [
     handler: async (eventParser) => {
       try {
         const statements = [
-          'USE centcom',
-          'SELECT * FROM servers',
+          'USE centcom;',
+          'SELECT * FROM servers;',
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
