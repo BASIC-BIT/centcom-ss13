@@ -1,11 +1,14 @@
 import React from 'react';
 import {Icon, Statistic, Tabs, Row, Col} from "antd";
+import Skeleton from "antd/es/skeleton/index";
+import getCommunityContext from "../../../utils/communityContext";
 
 const MILLIS_IN_HOUR = 1000 * 60 * 60;
 const MILLIS_IN_MINUTE = 1000 * 60;
 const MILLIS_IN_SECOND = 1000;
 
 export default class Info extends React.Component {
+  static contextType = getCommunityContext();
   constructor(props) {
     super(props);
     const roundStart = Date.now() - (MILLIS_IN_HOUR * 2) + (MILLIS_IN_MINUTE * 2) + (MILLIS_IN_SECOND * 37);
@@ -42,23 +45,35 @@ export default class Info extends React.Component {
     return `${`${hours}`.padStart(1, '0')}:${`${minutes}`.padStart(2, '0')}:${`${seconds}`.padStart(2, '0')}`;
   }
 
+  getContent() {
+    if(this.context.loading) {
+      return (<Skeleton active />);
+    }
+
+    return (
+      <React.Fragment>
+        <Row gutter={20} type="flex" justify="space-between">
+          <Col span={10}>
+            <Statistic title="Round Type" value={"Secret"} />
+          </Col>
+          <Col span={10}>
+            <Statistic prefix="#" title="Current Round" value={23623} />
+          </Col>
+          <Col span={10}>
+            <Statistic prefix={<Icon type="hourglass" />} title="Round Time" value={this.state.displayRoundTime} />
+          </Col>
+        </Row>
+      </React.Fragment>
+    );
+  }
+
   render() {
     return (
       <Tabs.TabPane
         {...this.props}
         className="server-stats-menu-item"
       >
-        <Row gutter={20} type="flex" justify="space-between">
-          <Col span={10}>
-            <Statistic prefix={<Icon type="robot" />} title="Round Type" value={"Secret"} />
-          </Col>
-          <Col span={10}>
-            <Statistic prefix={<Icon type="rocket" />} title="Round #" value={23623} />
-          </Col>
-          <Col span={10}>
-            <Statistic prefix={<Icon type="hourglass" />} title="Round Length" value={this.state.displayRoundTime} />
-          </Col>
-        </Row>
+        {this.getContent()}
       </Tabs.TabPane>
     );
   }

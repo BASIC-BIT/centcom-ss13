@@ -68,3 +68,20 @@
 .server-stats-menu-item {
 
 }
+
+.sidebar-loading-container {
+  background-color: unset;
+
+  & > .ant-spin-blur {
+  }
+
+  & > .ant-spin-container {
+    &:after {
+      background-color: #0000;
+    }
+  }
+}
+
+.panelIntro {
+  min-height: 120px;
+}

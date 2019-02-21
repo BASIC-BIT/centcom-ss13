@@ -47,15 +47,16 @@ export default class RootContainer extends React.Component {
     if (this.state.error) {
       return (<Redirect push to={`/404`}/>);
     }
-    if(this.state.loading) {
-      return (<LoadingIndicator center />);
-    }
+    // if(this.state.loading) {
+    //   return (<LoadingIndicator center />);
+    // }
 
     const Provider = getCommunityContext().Provider;
     return (
       <Provider value={{
         servers: this.state.servers,
         config: this.state.config,
+        loading: this.state.loading,
       }}>
         <Switch>
           <Route path="/panel" component={Panel}/>

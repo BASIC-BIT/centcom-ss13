@@ -1,5 +1,5 @@
 import React from 'react';
-import {Table, Col, Card, Button} from "antd";
+import {Table, Col, Card, Button, Spin} from "antd";
 import getCommunityContext from "../../utils/communityContext";
 
 const panelCardStyle = {
@@ -50,15 +50,17 @@ export default class Servers extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Card title="Servers" style={panelCardStyle}>
-          <Table
-            showHeader={false}
-            style={tableStyle}
-            dataSource={this.context.servers}
-            columns={serverListColumns}
-            pagination={false}
-          />
-        </Card>
+        <Spin spinning={this.context.loading}>
+          <Card title="Servers" style={panelCardStyle}>
+            <Table
+              showHeader={false}
+              style={tableStyle}
+              dataSource={this.context.servers || []}
+              columns={serverListColumns}
+              pagination={false}
+            />
+          </Card>
+        </Spin>
       </Col>
     )
   }

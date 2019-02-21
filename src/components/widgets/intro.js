@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Col, Card, Row, Divider} from "antd";
+import {Button, Col, Card, Row, Divider, Spin} from "antd";
 import getCommunityContext from "../../utils/communityContext";
 import {Link} from "react-router-dom";
 
@@ -25,6 +25,7 @@ export default class Intro extends React.Component {
       },
     };
   }
+
   getIntroColProps() {
     return {
       xs: 24,
@@ -36,15 +37,29 @@ export default class Intro extends React.Component {
     };
   }
 
+  getContent() {
+    if (this.context.loading) {
+      return (
+        <Spin><div className="panelIntro"></div></Spin>
+      );
+    }
+
+    return (
+      <div className="panelIntro">
+        <h1 style={{ fontSize: '35px' }}>{this.context.config.panel_home_intro_text}</h1>
+        <a href={this.context.servers.find(server => server.name === 'Main').url}>
+          <Button type="primary" style={{ margin: '10px' }}>Join Server!</Button>
+        </a>
+      </div>
+    );
+  }
+
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
         <Row type="flex" justify="center" style={{ textAlign: 'center' }}>
           <Col className="gutter-row" {...this.getIntroColProps()}>
-            <h1 style={{ fontSize: '35px' }}>{this.context.config.panel_home_intro_text}</h1>
-            <a href={this.context.servers.find(server => server.name === 'Main').url}>
-              <Button type="primary" style={{ margin: '10px' }}>Join Server!</Button>
-            </a>
+            {this.getContent()}
           </Col>
         </Row>
         <Divider/>

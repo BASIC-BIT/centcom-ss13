@@ -1,7 +1,9 @@
 import React from 'react';
-import {Icon, Statistic, Tabs, Row, Col} from "antd";
+import {Icon, Statistic, Tabs, Row, Col, Skeleton} from "antd";
+import getCommunityContext from "../../../utils/communityContext";
 
 export default class Health extends React.Component {
+  static contextType = getCommunityContext();
   getHealthStatistic(value) {
     let icon;
 
@@ -19,12 +21,14 @@ export default class Health extends React.Component {
       <span>{icon} {value}</span>
     );
   }
-  render() {
+
+  getContent() {
+    if(this.context.loading) {
+      return (<Skeleton active />);
+    }
+
     return (
-      <Tabs.TabPane
-        {...this.props}
-        className="server-stats-menu-item"
-      >
+      <React.Fragment>
         <Row gutter={20} type="flex" justify="space-between">
           <Col span={10}>
             <Statistic title="SS13 Server" value={"Online"} formatter={this.getHealthStatistic} />
@@ -39,6 +43,17 @@ export default class Health extends React.Component {
             <Statistic title="Database" value={"Error"} formatter={this.getHealthStatistic} />
           </Col>
         </Row>
+      </React.Fragment>
+    );
+  }
+
+  render() {
+    return (
+      <Tabs.TabPane
+        {...this.props}
+        className="server-stats-menu-item"
+      >
+        {this.getContent()}
       </Tabs.TabPane>
     );
   }

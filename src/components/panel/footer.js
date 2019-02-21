@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout } from 'antd';
+import {Layout, Spin} from 'antd';
 import getCommunityContext from '../../utils/communityContext';
 
 const {
@@ -13,6 +13,10 @@ const style = {
 export default class PageFooter extends React.Component {
   static contextType = getCommunityContext();
   render() {
+    if(this.context.loading) {
+      return (<Footer style={style}><Spin /></Footer>);
+    }
+
     return (
       <Footer style={style}>{this.context.config.footer_text}</Footer>
     );
