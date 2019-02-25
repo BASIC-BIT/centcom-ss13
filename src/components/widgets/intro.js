@@ -44,10 +44,12 @@ export default class Intro extends React.Component {
       );
     }
 
+    const mainServer = this.context.servers.find(server => server.name === 'Main');
+
     return (
       <div className="panelIntro">
         <h1 style={{ fontSize: '35px' }}>{this.context.config.panel_home_intro_text}</h1>
-        <a href={this.context.servers.find(server => server.name === 'Main').url}>
+        <a href={`byond://${mainServer.url}:${mainServer.port}`}>
           <Button type="primary" style={{ margin: '10px' }}>Join Server!</Button>
         </a>
       </div>

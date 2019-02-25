@@ -85,3 +85,42 @@
 .panelIntro {
   min-height: 120px;
 }
+
+.bold {
+  font-weight: bold;
+}
+
+.bookMenuContainer {
+  position: relative;
+  .bookContentContainer {
+    padding-top: 10px;
+    .buttonContainer {
+      margin-bottom: 20px;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+
+      .button {
+        margin: 5px 5px 5px 0;
+      }
+    }
+
+    .inputField {
+      margin: 5px;
+    }
+
+    .section {
+      margin: 10px 10px 10px 0;
+    }
+  }
+
+  .createBookButtonContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+    .createBookButton {
+      flex: 0 0 auto;
+    }
+  }
+}

@@ -2,6 +2,8 @@ CREATE DATABASE centcom;
 
 USE centcom;
 
-CREATE TABLE servers (name VARCHAR(50), url VARCHAR(100), access_level VARCHAR(20));
+CREATE TABLE servers (name VARCHAR(50), url VARCHAR(100), port INT, access_level VARCHAR(20));
 
 CREATE TABLE config (cfg_key VARCHAR(50) UNIQUE, cfg_value VARCHAR(200));
+
+CREATE TABLE books (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, title VARCHAR(100), content VARCHAR(2000));

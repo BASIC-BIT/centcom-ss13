@@ -27,7 +27,7 @@ const serverListColumns = [
     key: 'joinserver',
     render: (text, server) => (
       <span>
-            <a href={server.url}><Button type="primary">Join!</Button></a>
+            <a href={`byond://${server.url}:${server.port}`}><Button type="primary">Join!</Button></a>
           </span>
     ),
   },

@@ -20,7 +20,7 @@ function createResponse({
     ...(body && { body }),
     headers: {
       "Access-Control-Allow-Headers": 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-      "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT',
+      "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT,DELETE',
       "Access-Control-Allow-Origin": '*',
       ...headers,
     },
@@ -71,7 +71,7 @@ const endpoints = [
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
       } catch (e) {
-        return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
+        return createResponse({ body: `Error running servers\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
   },
@@ -85,7 +85,7 @@ const endpoints = [
         ];
         const result = await db.multiQuery(statements);
 
-        const formattedResults = result[1].reduce((output, { cfg_key, cfg_value }) => ({ // TODO: Fix config to return the right stuff
+        const formattedResults = result[1].reduce((output, { cfg_key, cfg_value }) => ({
           ...output,
           [cfg_key]: cfg_value
         }), {});
@@ -124,7 +124,99 @@ const endpoints = [
         const result = await db.multiQuery(queries);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
-        return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
+        return createResponse({ body: `Error running destroy\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/health/,
+    handler: async (eventParser) => {
+      let healthOutput = {
+        db: false, //Guilty until proven innocent
+        server: true, //That's me, so we're probably good here
+      };
+      try {
+        const query = 'show databases;';
+        const result = await db.query(query);
+
+        if(query && query.length) {
+          healthOutput.db = true;
+        }
+        return createResponse({ body: JSON.stringify(result), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running health\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/books/,
+    method: 'GET',
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'USE centcom;',
+          'SELECT * FROM books;',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running book get\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/books/,
+    method: 'PUT',
+    handler: async (eventParser) => {
+      try {
+        const bookId = parseInt(eventParser.regexMatchPath(/^\/books\/([0-9]+)/)[1]);
+        const book = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `UPDATE books SET title = "${book.title}", content = "${book.content}" WHERE id = ${bookId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book update\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/books/,
+    method: 'POST',
+    handler: async (eventParser) => {
+      try {
+        const book = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `INSERT INTO books (title, content) VALUES (${book.title}, ${book.content});`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book create\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/books/,
+    method: 'DELETE',
+    handler: async (eventParser) => {
+      try {
+        const bookId = parseInt(eventParser.regexMatchPath(/^\/books\/([0-9]+)/)[1]);
+
+        const statements = [
+          'USE centcom;',
+          `DELETE FROM books WHERE id = ${bookId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book delete\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
   },
@@ -146,7 +238,7 @@ const endpoints = [
       return createResponse({
         headers: {
           "Access-Control-Allow-Headers": 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-          "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT',
+          "Access-Control-Allow-Methods": 'GET,OPTIONS,POST,PUT,DELETE',
           "Access-Control-Allow-Origin": '*',
         }
       });

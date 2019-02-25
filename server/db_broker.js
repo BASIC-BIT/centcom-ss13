@@ -25,6 +25,7 @@ class DB {
 
   query(query) {
     return new Promise((resolve, reject) => {
+      console.log(query);
       this.connection.query(query, (err, results, fields) => {
         if(err) {
           reject(err);

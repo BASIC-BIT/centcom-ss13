@@ -92,6 +92,12 @@ export default withRouter(class PageSidebar extends React.Component {
                   <span>Dashboard</span>
                 </Link>
               </Menu.Item>
+              <Menu.Item key={`/panel/admin/book`}>
+                <Link to={`/panel/admin/book`}>
+                  <Icon type="book" />
+                  <span>Book Editor</span>
+                </Link>
+              </Menu.Item>
             </SubMenu>
           </Menu>
         </Spin>

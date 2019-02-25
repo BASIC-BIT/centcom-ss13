@@ -25,12 +25,14 @@ describe('CentCom Server', () => {
   let mysqlStub;
 
   function createRequest({
-    path = '/',
-    httpMethod = 'GET',
-  } = {}) {
+                           path = '/',
+                           httpMethod = 'GET',
+                           body = undefined,
+                         } = {}) {
     return {
       path,
       httpMethod,
+      body,
     };
   }
 
@@ -155,5 +157,74 @@ describe('CentCom Server', () => {
     const output = await promisify(handler.handler)(event, {});
 
     sinon.assert.calledOnce(mysqlEndStub);
+  });
+
+  describe('CRUD books', () => {
+    describe('create', () => {
+      it('should create new book', (done) => {
+        mysqlQueryStub
+        .withArgs('USE centcom;\nINSERT INTO books (title, content) VALUES (foo, bar);')
+        .yieldsRight(undefined, 'Created!', { foo: 'bar' });
+        const event = createRequest({
+          path: '/books',
+          httpMethod: 'POST',
+          body: JSON.stringify({ title: 'foo', content: 'bar' })
+        });
+        handler.handler(event, {}, (error, output) => {
+          expect(output.body).to.include('Created!');
+          expect(output.statusCode).to.equal(201);
+          done();
+        });
+      });
+    });
+    describe('update', () => {
+      it('should update existing book', (done) => {
+        mysqlQueryStub
+        .withArgs('USE centcom;\nUPDATE books SET title = "foo", content = "bar" WHERE id = 1;')
+        .yieldsRight(undefined, 'Updated!', { foo: 'bar' });
+        const event = createRequest({
+          path: '/books/1',
+          httpMethod: 'PUT',
+          body: JSON.stringify({ title: 'foo', content: 'bar' })
+        });
+        handler.handler(event, {}, (error, output) => {
+          expect(output.body).to.include('Updated!');
+          expect(output.statusCode).to.equal(204);
+          done();
+        });
+      });
+    });
+    describe('read', () => {
+      it('should read existing books', (done) => {
+        mysqlQueryStub
+        .withArgs('USE centcom;\nSELECT * FROM books;')
+        .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+        const event = createRequest({
+          path: '/books',
+          httpMethod: 'GET',
+        });
+        handler.handler(event, {}, (error, output) => {
+          expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
+          expect(output.statusCode).to.equal(200);
+          done();
+        });
+      });
+    });
+    describe('delete', () => {
+      it('should delete a book', (done) => {
+        mysqlQueryStub
+        .withArgs('USE centcom;\nDELETE FROM books WHERE id = 1;')
+        .yieldsRight(undefined, 'Deleted!', { foo: 'bar' });
+        const event = createRequest({
+          path: '/books/1',
+          httpMethod: 'DELETE',
+        });
+        handler.handler(event, {}, (error, output) => {
+          expect(output.body).to.include('Deleted!');
+          expect(output.statusCode).to.equal(202);
+          done();
+        });
+      });
+    });
   });
 });

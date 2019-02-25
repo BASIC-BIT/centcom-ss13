@@ -33,6 +33,7 @@ export default class ApiGatewayEventParser {
   }
 
   getBody() {
+    console.log(this.event.body);
     return this.event.body;
   }
 }

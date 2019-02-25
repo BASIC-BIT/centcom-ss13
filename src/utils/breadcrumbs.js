@@ -18,6 +18,7 @@ class BreadcrumbWrapper extends React.Component {
     let breadcrumbNameMap = {
       '/panel': 'Home',
       '/panel/admin': 'Admin',
+      '/panel/admin/book': 'Book Manager',
     };
 
     if(this.context.config && this.context.config.community_name) {
