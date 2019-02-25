@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Layout, Menu, Affix, Input, Popconfirm, message} from "antd";
-import getCommunityContext from "../../utils/communityContext";
+import { connect } from 'react-redux'
+import actions from '../../actions/index';
 import LoadingIndicator from "../loadingIndicator";
 import DB from '../../brokers/serverBroker';
 
@@ -10,28 +11,37 @@ const { TextArea } = Input;
 
 const { Sider, Content } = Layout;
 
-export default class BookEditor extends React.Component {
-  state = {
-    titleInput: '',
-    contentInput: '',
-  };
+class BookEditor extends React.Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      titleInput: '',
+      contentInput: '',
+    };
+
+    this.props.fetchBooks();
+  }
   contentContainer = React.createRef();
-  static contextType = getCommunityContext();
 
   handleMenuSelect({ key }) {
     this.setState({ selectedKey: parseInt(key), editing: false, deleting: false, creating: false, });
   }
 
   getBooks() {
-    return this.context.books;
+    return this.props.books;
+  }
+
+  componentWillUnmount() {
+    console.log('Book editor unmounting');
   }
 
   getContent() {
-    if(this.context.loading) {
+    if(this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
-    if(!this.state.creating && !this.state.selectedKey) {
+    if(!this.state.creating && (!this.state.selectedKey || !this.getCurrentBook())) {
       return (
         <div>Select a book from the side menu.</div>
       );
@@ -101,8 +111,12 @@ export default class BookEditor extends React.Component {
     return this.getBooks().find(book => book.id === this.state.selectedKey);
   }
 
+  isLoading() {
+    return !this.props.books;
+  }
+
   getMenuItems() {
-    if(this.context.loading) {
+    if(this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
@@ -134,7 +148,7 @@ export default class BookEditor extends React.Component {
     try {
       const response = await db.updateBook(book);
 
-      console.log(response);
+      this.props.fetchBooks();
 
       this.setState({ loading: false, editing: false, deleting: false });
     } catch(e) {
@@ -152,7 +166,7 @@ export default class BookEditor extends React.Component {
     try {
       const response = await db.createBook(book);
 
-      console.log(response);
+      this.props.fetchBooks();
 
       this.setState({ loading: false, creating: false });
     } catch(e) {
@@ -183,6 +197,8 @@ export default class BookEditor extends React.Component {
     try {
       const response = await db.deleteBook(this.state.selectedKey);
 
+      await this.props.fetchBooks();
+
       this.setState({ loading: false, deleting: false, editing: false });
     } catch(e) {
       message.error('Error deleting book.');
@@ -211,3 +227,16 @@ export default class BookEditor extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    books: state.books,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(BookEditor);

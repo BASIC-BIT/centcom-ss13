@@ -6,7 +6,6 @@ import Panel from './components/panel/panel';
 import Splash from './components/splash';
 import getCommunityContext from "./utils/communityContext";
 import DB from './brokers/serverBroker';
-import LoadingIndicator from "./components/loadingIndicator";
 
 const db = new DB();
 
@@ -33,12 +32,33 @@ export default class RootContainer extends React.Component {
     }
   }
 
+  async getConfig() {
+    this.setState({ config: undefined });
+    const config = await this.wrapInCatchDefault('config', db.getConfig.bind(db), {});
+    this.setState({ config });
+    return config;
+  }
+
+  async getBooks() {
+    this.setState({ books: undefined });
+    const books = await this.wrapInCatchDefault('books', db.getBooks.bind(db), [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]);
+    this.setState({ books });
+    return books;
+  }
+
+  async getServers() {
+    this.setState({ servers: undefined });
+    const servers = await this.wrapInCatchDefault('servers', db.getServers.bind(db), []);
+    this.setState({ servers });
+    return servers;
+  }
+
   async getData() {
     try {
       const [servers, config, books] = await Promise.all([
-        this.wrapInCatchDefault('servers', db.getServers.bind(db), []),
-        this.wrapInCatchDefault('config', db.getConfig.bind(db), {}),
-        this.wrapInCatchDefault('books', db.getBooks.bind(db), [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]),
+        this.getServers(),
+        this.getConfig(),
+        this.getBooks(),
       ]);
 
       this.setState({
