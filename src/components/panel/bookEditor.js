@@ -12,6 +12,8 @@ const { Sider, Content } = Layout;
 
 export default class BookEditor extends React.Component {
   state = {
+    titleInput: '',
+    contentInput: '',
   };
   contentContainer = React.createRef();
   static contextType = getCommunityContext();
@@ -70,11 +72,18 @@ export default class BookEditor extends React.Component {
     );
   }
 
+  changeTitle(e) {
+    this.setState({ titleInput: e.target.value });
+  }
+  changeContent(e) {
+    this.setState({ contentInput: e.target.value });
+  }
+
   displayEditScreen() {
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Title: </span><Input className="inputField" defaultValue={this.state.titleInput} /></div>
-        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} defaultValue={this.state.contentInput} /></div>
+        <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
+        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
       </React.Fragment>
     )
   }
@@ -82,8 +91,8 @@ export default class BookEditor extends React.Component {
   displayCreateScreen() {
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Title: </span><Input className="inputField" defaultValue={this.state.titleInput} /></div>
-        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} defaultValue={this.state.contentInput} /></div>
+        <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
+        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
       </React.Fragment>
     )
   }

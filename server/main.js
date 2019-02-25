@@ -6,6 +6,7 @@ import {DB} from './db_broker';
 import initTablesSql from './sql/initTables.sql';
 import setConfig from './sql/setConfig.sql';
 import initServers from './sql/initServers.sql';
+import initBooks from './sql/initBooks.sql';
 import destroy from './sql/destroy.sql';
 
 const db = new DB();
@@ -104,6 +105,7 @@ const endpoints = [
           [initTablesSql],
           [setConfig],
           [initServers],
+          [initBooks],
         ];
 
         const result = await db.multiQuery(queries);
@@ -191,7 +193,7 @@ const endpoints = [
         const book = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO books (title, content) VALUES (${book.title}, ${book.content});`,
+          `INSERT INTO books (title, content) VALUES ("${book.title}", "${book.content}");`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });

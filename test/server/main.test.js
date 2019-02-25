@@ -163,7 +163,7 @@ describe('CentCom Server', () => {
     describe('create', () => {
       it('should create new book', (done) => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nINSERT INTO books (title, content) VALUES (foo, bar);')
+        .withArgs('USE centcom;\nINSERT INTO books (title, content) VALUES ("foo", "bar");')
         .yieldsRight(undefined, 'Created!', { foo: 'bar' });
         const event = createRequest({
           path: '/books',
