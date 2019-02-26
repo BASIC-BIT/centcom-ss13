@@ -2,7 +2,6 @@ import React from 'react';
 
 require('@babel/polyfill');
 
-import getCommunityContext from '../../utils/communityContext';
 import {Row} from "antd";
 import ServerDetails from "../widgets/serverDetails";
 import Servers from "../widgets/servers";
@@ -13,7 +12,6 @@ const containerStyle = {
 };
 
 export default class Admin extends React.Component {
-  static contextType = getCommunityContext();
 
   state = {
     current: 'info',

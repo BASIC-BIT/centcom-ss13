@@ -1,7 +1,9 @@
 import React from 'react';
 import {Button, Col, Card, Row, Divider, Spin} from "antd";
-import getCommunityContext from "../../utils/communityContext";
 import {Link} from "react-router-dom";
+import {withRouter} from "react-router";
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const panelCardStyle = {
   backgroundColor: 'transparent',
@@ -9,9 +11,7 @@ const panelCardStyle = {
   margin: '10px',
 };
 
-export default class Intro extends React.Component {
-  static contextType = getCommunityContext();
-
+class Intro extends React.Component {
   getDefaultWidgetColProps() {
     return {
       xs: 24,
@@ -38,17 +38,17 @@ export default class Intro extends React.Component {
   }
 
   getContent() {
-    if (this.context.loading) {
+    if (!this.props.servers || !this.props.config) {
       return (
         <Spin><div className="panelIntro"></div></Spin>
       );
     }
 
-    const mainServer = this.context.servers.find(server => server.name === 'Main');
+    const mainServer = this.props.servers.find(server => server.name === 'Main');
 
     return (
       <div className="panelIntro">
-        <h1 style={{ fontSize: '35px' }}>{this.context.config.panel_home_intro_text}</h1>
+        <h1 style={{ fontSize: '35px' }}>{this.props.config.panel_home_intro_text}</h1>
         <a href={`byond://${mainServer.url}:${mainServer.port}`}>
           <Button type="primary" style={{ margin: '10px' }}>Join Server!</Button>
         </a>
@@ -68,4 +68,18 @@ export default class Intro extends React.Component {
       </Col>
     );
   }
+}
+
+const mapStateToProps = (state) => {
+  return {
+    config: state.app.config,
+    servers: state.app.servers,
+  }
 };
+
+const mapDispatchToProps = { ...actions };
+
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Intro));

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Layout, DatePicker, Spin} from 'antd';
-import getCommunityContext from '../../utils/communityContext';
+import actions from "../../actions";
+import {connect} from "react-redux";
 
 const {
   Header,
@@ -13,17 +14,29 @@ const titleStyle = {
   color: '#EEE',
 };
 
-export default class PageHeader extends React.Component {
-  static contextType = getCommunityContext();
+class PageHeader extends React.Component {
   render() {
-    if(this.context.loading) {
+    if(!this.props.config) {
       return (<Header style={style}><Spin /></Header>);
     }
 
     return (
       <Header style={style}>
-        <h2 style={titleStyle}>{this.context.config.panel_header_text}</h2>
+        <h2 style={titleStyle}>{this.props.config.panel_header_text}</h2>
       </Header>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    config: state.app.config,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PageHeader);

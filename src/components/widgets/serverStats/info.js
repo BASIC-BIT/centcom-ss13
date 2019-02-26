@@ -1,14 +1,14 @@
 import React from 'react';
 import {Icon, Statistic, Tabs, Row, Col} from "antd";
 import Skeleton from "antd/es/skeleton/index";
-import getCommunityContext from "../../../utils/communityContext";
+import {connect} from "react-redux";
+import actions from "../../../actions";
 
 const MILLIS_IN_HOUR = 1000 * 60 * 60;
 const MILLIS_IN_MINUTE = 1000 * 60;
 const MILLIS_IN_SECOND = 1000;
 
-export default class Info extends React.Component {
-  static contextType = getCommunityContext();
+class Info extends React.Component {
   constructor(props) {
     super(props);
     const roundStart = Date.now() - (MILLIS_IN_HOUR * 2) + (MILLIS_IN_MINUTE * 2) + (MILLIS_IN_SECOND * 37);
@@ -46,7 +46,7 @@ export default class Info extends React.Component {
   }
 
   getContent() {
-    if(this.context.loading) {
+    if(!this.props.servers) {
       return (<Skeleton active />);
     }
 
@@ -78,3 +78,16 @@ export default class Info extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    servers: state.app.servers,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Info);

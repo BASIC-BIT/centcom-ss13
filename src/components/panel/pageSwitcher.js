@@ -3,13 +3,11 @@ import { Route, Switch, withRouter } from "react-router-dom";
 
 import Home from './home';
 import Admin from './admin';
-import getCommunityContext from '../../utils/communityContext';
 import { wrapWithBreadcrumbs } from "../../utils/breadcrumbs";
 import ErrorPage404 from "../../error/ErrorPage404";
 import BookEditor from "./bookEditor";
 
 class PageSwitcher extends React.Component {
-  static contextType = getCommunityContext();
   render() {
     return (
       <React.Fragment>

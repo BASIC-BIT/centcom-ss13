@@ -1,6 +1,7 @@
 import React from 'react';
 import {Row, Col, Card, Icon, Statistic, Spin, Skeleton} from "antd";
-import getCommunityContext from "../../utils/communityContext";
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const panelCardStyle = {
   backgroundColor: 'transparent',
@@ -8,9 +9,7 @@ const panelCardStyle = {
   margin: '10px',
 };
 
-export default class Statistics extends React.Component {
-  static contextType = getCommunityContext();
-
+class Statistics extends React.Component {
   getDefaultWidgetColProps() {
     return {
       xs: 24,
@@ -23,7 +22,7 @@ export default class Statistics extends React.Component {
   }
 
   getContent() {
-    if(this.context.loading) {
+    if(!this.props.servers) {
       return (<Skeleton active />);
     }
 
@@ -50,7 +49,7 @@ export default class Statistics extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={this.context.loading}>
+        <Spin spinning={!this.props.servers}>
           <Card title="Statistics" style={panelCardStyle}>
             {this.getContent()}
           </Card>
@@ -59,3 +58,16 @@ export default class Statistics extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    servers: state.app.servers,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Statistics);

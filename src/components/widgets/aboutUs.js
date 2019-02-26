@@ -1,9 +1,10 @@
 import React from 'react';
 import {Button, Row, Col, Card, Divider, Icon, Spin, Skeleton} from "antd";
-import getCommunityContext from "../../utils/communityContext";
 import TwitterIcon from "../icons/twitterIcon";
 import SteamIcon from "../icons/steamIcon";
 import DiscordIcon from "../icons/discordIcon";
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const panelCardStyle = {
   backgroundColor: 'transparent',
@@ -22,9 +23,7 @@ const iconLinkStyle = {
   height: '100%',
 };
 
-export default class AboutUs extends React.Component {
-  static contextType = getCommunityContext();
-
+class AboutUs extends React.Component {
   getDefaultWidgetColProps() {
     return {
       xs: 24,
@@ -36,9 +35,13 @@ export default class AboutUs extends React.Component {
     };
   }
 
+  isLoading() {
+    return !this.props.config;
+  }
+
   wrapWithLinkIfExists(Component, configKey) {
-    if(this.context.config && this.context.config[configKey]) {
-     return (<a href={this.context.config[configKey]} style={iconLinkStyle}><Component /></a>)
+    if(this.props.config && this.props.config[configKey]) {
+     return (<a href={this.props.config[configKey]} style={iconLinkStyle}><Component /></a>)
     }
 
     return <Component />
@@ -55,7 +58,7 @@ export default class AboutUs extends React.Component {
   }
 
   getAboutUs() {
-    if(this.context.loading) {
+    if(this.isLoading()) {
       return <Skeleton active />
     }
 
@@ -75,7 +78,7 @@ export default class AboutUs extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={this.context.loading}>
+        <Spin spinning={this.isLoading()}>
           <Card title="About Us" style={panelCardStyle}>
             {this.getAboutUs()}
             <Divider />
@@ -88,3 +91,16 @@ export default class AboutUs extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    config: state.app.config,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(AboutUs);

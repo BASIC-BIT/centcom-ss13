@@ -1,11 +1,11 @@
 import React from 'react';
 import {Icon, Statistic, Tabs, Row, Col, Skeleton} from "antd";
-import getCommunityContext from "../../../utils/communityContext";
+import {connect} from "react-redux";
+import actions from "../../../actions";
 
-export default class LastRound extends React.Component {
-  static contextType = getCommunityContext();
+class LastRound extends React.Component {
   getContent() {
-    if(this.context.loading) {
+    if(!this.props.servers) {
       return (<Skeleton active />);
     }
 
@@ -49,3 +49,16 @@ export default class LastRound extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    servers: state.app.servers,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LastRound);

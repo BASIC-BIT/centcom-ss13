@@ -19,8 +19,6 @@ class BookEditor extends React.Component {
       titleInput: '',
       contentInput: '',
     };
-
-    this.props.fetchBooks();
   }
   contentContainer = React.createRef();
 
@@ -30,10 +28,6 @@ class BookEditor extends React.Component {
 
   getBooks() {
     return this.props.books;
-  }
-
-  componentWillUnmount() {
-    console.log('Book editor unmounting');
   }
 
   getContent() {
@@ -230,7 +224,7 @@ class BookEditor extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    books: state.books,
+    books: state.app.books,
   }
 };
 

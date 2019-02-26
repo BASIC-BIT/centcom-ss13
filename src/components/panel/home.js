@@ -1,5 +1,4 @@
 import React from 'react';
-import getCommunityContext from '../../utils/communityContext';
 import {Row} from "antd";
 import ServerDetails from "../widgets/serverDetails";
 import Statistics from "../widgets/statistics";
@@ -9,7 +8,6 @@ const containerStyle = {
   minWidth: '300px',
 };
 export default class Home extends React.Component {
-  static contextType = getCommunityContext();
 
   constructor(props) {
     super(props);

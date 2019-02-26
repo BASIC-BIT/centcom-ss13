@@ -2,7 +2,9 @@ import React from 'react';
 import {Layout, Menu, Icon, Spin,} from 'antd';
 import {Link} from "react-router-dom";
 import {withRouter} from "react-router";
-import getCommunityContext from '../../utils/communityContext';
+import PageHeader from "./header";
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const {
   Sider,
@@ -14,8 +16,7 @@ const style = {
   color: '#EEE',
 };
 
-export default withRouter(class PageSidebar extends React.Component {
-  static contextType = getCommunityContext();
+class PageSidebar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,6 +35,10 @@ export default withRouter(class PageSidebar extends React.Component {
     }
   }
 
+  isLoading() {
+    return !this.props.config;
+  }
+
   render() {
     return (
       <Sider
@@ -44,7 +49,7 @@ export default withRouter(class PageSidebar extends React.Component {
         width={200}
       >
         <div className="logo" />
-        <Spin spinning={this.context.loading} wrapperClassName="sidebar-loading-container">
+        <Spin spinning={this.isLoading()} wrapperClassName="sidebar-loading-container">
           <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">
             <Menu.Item key={`/`}>
               <Link to={`/`}>
@@ -52,32 +57,32 @@ export default withRouter(class PageSidebar extends React.Component {
                 <span>Splash Page</span>
               </Link>
             </Menu.Item>
-            {this.context.config && this.context.config.community_name && <Menu.Item key={`/panel`}>
+            {this.props.config && this.props.config.community_name && <Menu.Item key={`/panel`}>
               <Link to={`/panel`}>
                 <Icon type="home" />
-                <span>{this.context.config.community_name} Home</span>
+                <span>{this.props.config.community_name} Home</span>
               </Link>
             </Menu.Item>}
-            {/*{this.context.community.serverLink && <Menu.Item key="joinserver">*/}
-              {/*<a href={this.context.community.serverLink}>*/}
+            {/*{this.props.community.serverLink && <Menu.Item key="joinserver">*/}
+              {/*<a href={this.props.community.serverLink}>*/}
                 {/*<Icon type="play-circle" />*/}
                 {/*<span>Join Server!</span>*/}
               {/*</a>*/}
             {/*</Menu.Item>}*/}
-            {this.context.config && this.context.config.github_url && <Menu.Item key="github">
-              <a href={this.context.config.github_url}>
+            {this.props.config && this.props.config.github_url && <Menu.Item key="github">
+              <a href={this.props.config.github_url}>
                 <Icon type="github" />
                 <span>Github</span>
               </a>
             </Menu.Item>}
-            {this.context.config && this.context.config.forums_url && <Menu.Item key="forums">
-              <a href={this.context.config.forums_url}>
+            {this.props.config && this.props.config.forums_url && <Menu.Item key="forums">
+              <a href={this.props.config.forums_url}>
                 <Icon type="layout" />
                 <span>Forums</span>
               </a>
             </Menu.Item>}
-            {this.context.config && this.context.config.wiki_url && <Menu.Item key="wiki">
-              <a href={this.context.config.wiki_url}>
+            {this.props.config && this.props.config.wiki_url && <Menu.Item key="wiki">
+              <a href={this.props.config.wiki_url}>
                 <Icon type="read" />
                 <span>Wiki</span>
               </a>
@@ -104,4 +109,17 @@ export default withRouter(class PageSidebar extends React.Component {
       </Sider>
     );
   }
-});
+}
+
+const mapStateToProps = (state) => {
+  return {
+    config: state.app.config,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PageSidebar));

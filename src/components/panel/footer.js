@@ -1,6 +1,7 @@
 import React from 'react';
 import {Layout, Spin} from 'antd';
-import getCommunityContext from '../../utils/communityContext';
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const {
   Footer,
@@ -10,15 +11,27 @@ const style = {
   color: '#333',
 };
 
-export default class PageFooter extends React.Component {
-  static contextType = getCommunityContext();
+class PageFooter extends React.Component {
   render() {
-    if(this.context.loading) {
+    if(!this.props.config) {
       return (<Footer style={style}><Spin /></Footer>);
     }
 
     return (
-      <Footer style={style}>{this.context.config.footer_text}</Footer>
+      <Footer style={style}>{this.props.config.footer_text}</Footer>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    config: state.app.config,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(PageFooter);

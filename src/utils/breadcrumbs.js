@@ -1,7 +1,8 @@
-import getCommunityContext from "./communityContext";
 import React from "react";
 import {Link, withRouter} from "react-router-dom";
 import {Breadcrumb} from "antd";
+import {connect} from "react-redux";
+import actions from "../actions";
 
 const breadcrumbStyle = {
   paddingBottom: '20px',
@@ -12,7 +13,6 @@ const NO_BREADCRUMB_URLS = [
 ];
 
 class BreadcrumbWrapper extends React.Component {
-  static contextType = getCommunityContext();
 
   getBreadcrumbNameMap() {
     let breadcrumbNameMap = {
@@ -21,10 +21,10 @@ class BreadcrumbWrapper extends React.Component {
       '/panel/admin/book': 'Book Manager',
     };
 
-    if(this.context.config && this.context.config.community_name) {
+    if(this.props.config && this.props.config.community_name) {
       breadcrumbNameMap = {
         ...breadcrumbNameMap,
-        '/panel': `${this.context.config.community_name} Home`,
+        '/panel': `${this.props.config.community_name} Home`,
       };
     }
 
@@ -68,9 +68,20 @@ class BreadcrumbWrapper extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    servers: state.app.servers,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
 class BreadcrumbWrappedComponent extends React.Component {
   render() {
-    const BreadcrumbWrapperWithRouter = withRouter(BreadcrumbWrapper);
+    const BreadcrumbWrapperWithRouter = withRouter(connect(
+      mapStateToProps,
+      mapDispatchToProps,
+    )(BreadcrumbWrapper));
     return (
       <BreadcrumbWrapperWithRouter {...this.props}>
         {this.props.children}

@@ -1,9 +1,11 @@
 import React from 'react';
 import {Col, Card, Tabs, Icon, Spin} from "antd";
-import getCommunityContext from "../../utils/communityContext";
 import Info from "./serverStats/info";
 import LastRound from "./serverStats/lastRound";
 import Health from "./serverStats/health";
+import {withRouter} from "react-router";
+import {connect} from "react-redux";
+import actions from "../../actions";
 
 const panelCardStyle = {
   backgroundColor: 'transparent',
@@ -11,9 +13,7 @@ const panelCardStyle = {
   margin: '10px',
 };
 
-export default class ServerDetails extends React.Component {
-  static contextType = getCommunityContext();
-
+class ServerDetails extends React.Component {
   getDefaultWidgetColProps() {
     return {
       xs: 24,
@@ -28,7 +28,7 @@ export default class ServerDetails extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={this.context.loading}>
+        <Spin spinning={!this.props.servers}>
           <Card title="Server Stats" style={panelCardStyle}>
             <Tabs
               type="card"
@@ -50,3 +50,16 @@ export default class ServerDetails extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    servers: state.app.servers,
+  }
+};
+
+const mapDispatchToProps = { ...actions };
+
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ServerDetails));

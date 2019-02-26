@@ -16,10 +16,24 @@ function setServers(servers) {
   };
 }
 
+function setLoadingServers(loading) {
+  return {
+    type: 'SET_LOADING_SERVERS',
+    data: loading,
+  };
+}
+
 function setConfig(config) {
   return {
     type: 'SET_CONFIG',
     data: config,
+  };
+}
+
+function setLoadingConfig(loading) {
+  return {
+    type: 'SET_LOADING_CONFIG',
+    data: loading,
   };
 }
 
@@ -30,19 +44,58 @@ function setBooks(books) {
   };
 }
 
+function setLoadingBooks(loading) {
+  return {
+    type: 'SET_LOADING_BOOKS',
+    data: loading,
+  };
+}
+
 function fetchBooks() {
-  return async (dispatch) => {
-    dispatch(setBooks(await db.getBooks()));
+  return async (dispatch, getState) => {
+    const { loadingBooks } = getState();
+    if(!loadingBooks) {
+      dispatch(setLoadingBooks(true));
+      try {
+        const books = await db.getBooks();
+        dispatch(setBooks(books));
+        dispatch(setLoadingBooks(false));
+      } catch(e) {
+        dispatch(setLoadingBooks(false));
+      }
+    }
   }
 }
+
 function fetchConfig() {
-  return async (dispatch) => {
-    dispatch(setConfig(await db.getConfig()));
+  return async (dispatch, getState) => {
+    const { loadingConfig } = getState();
+    if(!loadingConfig) {
+      dispatch(setLoadingConfig(true));
+      try {
+        const config = await db.getConfig();
+        dispatch(setConfig(config));
+        dispatch(setLoadingConfig(false));
+      } catch(e) {
+        dispatch(setLoadingConfig(false));
+      }
+    }
   }
 }
+
 function fetchServers() {
-  return async (dispatch) => {
-    dispatch(setServers(await db.getServers()));
+  return async (dispatch, getState) => {
+    const { loadingServers } = getState();
+    if(!loadingServers) {
+      dispatch(setLoadingServers(true));
+      try {
+        const servers = await db.getServers();
+        dispatch(setServers(servers));
+        dispatch(setLoadingServers(false));
+      } catch(e) {
+        dispatch(setLoadingServers(false));
+      }
+    }
   }
 }
 
@@ -54,4 +107,7 @@ export default {
   fetchBooks,
   fetchConfig,
   fetchServers,
+  setLoadingServers,
+  setLoadingConfig,
+  setLoadingBooks,
 }
