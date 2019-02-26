@@ -133,7 +133,7 @@ class BookEditor extends React.Component {
       books: this.props.books.filter(book => book.category_id === category.id),
     }));
 
-    const leftoverBooks = this.props.books.filter(book => !categories.every(category => category.books.some(testBook => testBook.id === book.id)));
+    const leftoverBooks = this.props.books.filter(book => categories.every(category => !category.books.some(testBook => testBook.id === book.id)));
 
     const finalCategories = [
       ...categories,
