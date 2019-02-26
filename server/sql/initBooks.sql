@@ -4,8 +4,8 @@ INSERT INTO
     books (title, content, section_id)
 VALUES
     ('Hello world!', 'This is a book!', 100),
-    ('WGW', 'One day...', 101);
-    ('Foo', 'Bar', 100);
+    ('WGW', 'One day...', 101),
+    ('Foo', 'Bar', 100),
     ('Baz', 'Quux', 102);
 
 DELETE FROM book_categories WHERE 1=1;
