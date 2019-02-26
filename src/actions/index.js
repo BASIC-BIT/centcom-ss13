@@ -51,19 +51,38 @@ function setLoadingBooks(loading) {
   };
 }
 
+function setBookCategories(bookCategories) {
+  return {
+    type: 'SET_BOOK_CATEGORIES',
+    data: bookCategories,
+  };
+}
+
+function setLoadingBookCategories(loading) {
+  return {
+    type: 'SET_LOADING_BOOK_CATEGORIES',
+    data: loading,
+  };
+}
+
 function fetchBooks() {
   return async (dispatch, getState) => {
     const { app } = getState();
     const { loadingBooks } = app;
     if(!loadingBooks) {
       dispatch(setLoadingBooks(true));
+      dispatch(setLoadingBookCategories(true));
       dispatch(setBooks(undefined));
+      dispatch(setBookCategories(undefined));
       try {
-        const books = await db.getBooks();
+        const [books, bookCategories] = await Promise.all([db.getBooks(), db.getBookCategories()]);
         dispatch(setBooks(books));
+        dispatch(setBookCategories(bookCategories));
         dispatch(setLoadingBooks(false));
+        dispatch(setLoadingBookCategories(false));
       } catch(e) {
         dispatch(setLoadingBooks(false));
+        dispatch(setLoadingBookCategories(false));
       }
     }
   }

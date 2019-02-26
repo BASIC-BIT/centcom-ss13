@@ -52,6 +52,22 @@ class ServerBroker {
   deleteBook(id) {
     return this.query(`/books/${id}`, { method: 'DELETE' });
   }
+
+  getBookCategories() {
+    return this.query('/bookCategories');
+  }
+
+  createBookCategory(bookCategory) {
+    return this.query(`/bookCategories`, { body: JSON.stringify(bookCategory), method: 'POST' });
+  }
+
+  updateBookCategory(bookCategory) {
+    return this.query(`/bookCategories/${bookCategory.id}`, { body: JSON.stringify(bookCategory), method: 'PUT' });
+  }
+
+  deleteBookCategory(id) {
+    return this.query(`/bookCategories/${id}`, { method: 'DELETE' });
+  }
 }
 
 export default ServerBroker;

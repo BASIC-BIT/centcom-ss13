@@ -71,6 +71,10 @@ class BookEditor extends React.Component {
           <span className="bold">Title:</span>
           <pre>{book.title}</pre>
         </div>
+        <div className="section">
+          <span className="bold">Category:</span>
+          {book.section_id ? this.state.bookCategories.find(category => category.id === book.section_id) : 'None'}
+        </div>
         <div className="content section">
           <span className="bold">Content:</span>
           <pre>
@@ -101,7 +105,7 @@ class BookEditor extends React.Component {
     return (
       <React.Fragment>
         <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
-        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
+        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
       </React.Fragment>
     )
   }
@@ -237,6 +241,7 @@ class BookEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     books: state.app.books,
+    bookCategories: state.app.bookCategories,
   }
 };
 

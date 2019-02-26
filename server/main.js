@@ -223,6 +223,78 @@ const endpoints = [
     },
   },
   {
+    path: /^\/bookCategories/,
+    method: 'GET',
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'USE centcom;',
+          'SELECT * FROM book_categories;',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running book categories get\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/bookCategories/,
+    method: 'PUT',
+    handler: async (eventParser) => {
+      try {
+        const bookCategoryId = parseInt(eventParser.regexMatchPath(/^\/bookCategories\/([0-9]+)/)[1]);
+        const bookCategory = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `UPDATE book_categories SET name = "${bookCategory.name}", color = "${bookCategory.color}" WHERE id = ${bookCategoryId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book categories update\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/bookCategories/,
+    method: 'POST',
+    handler: async (eventParser) => {
+      try {
+        const bookCategory = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `INSERT INTO book_categories (name, color) VALUES ("${bookCategory.name}", "${bookCategory.color}");`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book categories create\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/bookCategories/,
+    method: 'DELETE',
+    handler: async (eventParser) => {
+      try {
+        const bookCategoryId = parseInt(eventParser.regexMatchPath(/^\/bookCategories\/([0-9]+)/)[1]);
+
+        const statements = [
+          'USE centcom;',
+          `DELETE FROM book_categories WHERE id = ${bookCategoryId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running book categories delete\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
     path: /^\/connect/,
     handler: async (eventParser) => {
       try {

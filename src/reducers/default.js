@@ -21,6 +21,10 @@ export default function defaultState(state = initialState, action) {
       return merge(state, { books: action.data });
     case 'SET_LOADING_BOOKS':
       return merge(state, { loadingBooks: action.data });
+    case 'SET_BOOK_CATEGORIES':
+      return merge(state, { bookCategories: action.data });
+    case 'SET_LOADING_BOOK_CATEGORIES':
+      return merge(state, { loadingBookCategories: action.data });
     default:
       return state
   }
