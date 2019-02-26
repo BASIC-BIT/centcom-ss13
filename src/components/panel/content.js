@@ -11,6 +11,8 @@ const style = {
   color: '#333',
   padding: '14px',
   minHeight: 'unset',
+  display: 'flex',
+  flexDirection: 'column',
 };
 
 export default class PageContent extends React.Component {

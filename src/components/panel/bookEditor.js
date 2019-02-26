@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Layout, Menu, Affix, Input, Popconfirm, message} from "antd";
+import {Button, Layout, Menu, Affix, Input, Popconfirm, message, Icon} from "antd";
 import { connect } from 'react-redux'
 import actions from '../../actions/index';
 import LoadingIndicator from "../loadingIndicator";
@@ -67,10 +67,15 @@ class BookEditor extends React.Component {
     const book = this.getCurrentBook();
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Title:</span> {book.title}</div>
-        <div className="section"><span className="bold">Content:</span></div>
-        <div>
-          {book.content}
+        <div className="section">
+          <span className="bold">Title:</span>
+          <pre>{book.title}</pre>
+        </div>
+        <div className="content section">
+          <span className="bold">Content:</span>
+          <pre>
+            {book.content}
+          </pre>
         </div>
       </React.Fragment>
     );
@@ -87,7 +92,7 @@ class BookEditor extends React.Component {
     return (
       <React.Fragment>
         <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
-        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
+        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
       </React.Fragment>
     )
   }
@@ -96,7 +101,7 @@ class BookEditor extends React.Component {
     return (
       <React.Fragment>
         <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
-        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={4} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
+        <div className="section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
       </React.Fragment>
     )
   }
@@ -109,13 +114,20 @@ class BookEditor extends React.Component {
     return !this.props.books;
   }
 
+  refresh() {
+    this.props.fetchBooks();
+  }
+
   getMenuItems() {
     if(this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
     const menuItems = [
-      (<div className="createBookButtonContainer"><Button key="create" type="primary" className="createBookButton" onClick={this.startCreate.bind(this)}>Create</Button></div>),
+      (<div className="createBookButtonContainer">
+        <Button key="create" type="primary" className="createBookButton" onClick={this.startCreate.bind(this)}>Create</Button>
+        <Button key="refresh" className="refreshButton" onClick={this.refresh.bind(this)}><Icon type="redo" /></Button>
+      </div>),
       ...this.getBooks().map(book => (<Menu.Item key={book.id}>{book.title}</Menu.Item>)),
     ];
 
@@ -202,8 +214,8 @@ class BookEditor extends React.Component {
 
   render() {
     return (
-      <Layout style={{ padding: '24px 0', background: '#fff' }} className="bookMenuContainer">
-        <Sider width={200} style={{ background: '#fff' }}>
+      <Layout style={{ padding: '24px 0 0 0', background: '#fff' }} className="bookMenuContainer">
+        <Sider width={250} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
             defaultOpenKeys={['sub1']}

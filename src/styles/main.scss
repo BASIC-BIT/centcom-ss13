@@ -86,14 +86,22 @@
   min-height: 120px;
 }
 
-.bold {
-  font-weight: bold;
-}
-
 .bookMenuContainer {
+  .bold {
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+
+  pre {
+    white-space: pre-wrap;
+  }
+
   position: relative;
   .bookContentContainer {
     padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     .buttonContainer {
       margin-bottom: 20px;
       position: absolute;
@@ -110,7 +118,23 @@
     }
 
     .section {
+      &.content {
+        flex: 1 0 auto;
+      }
+
       margin: 10px 10px 10px 0;
+
+      flex: 0 0 auto;
+
+      display: flex;
+      flex-direction: column;
+
+      .bold {
+        flex: 0 0 auto;
+      }
+      textarea {
+        flex: 1 0 auto;
+      }
     }
   }
 

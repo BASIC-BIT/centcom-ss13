@@ -53,9 +53,11 @@ function setLoadingBooks(loading) {
 
 function fetchBooks() {
   return async (dispatch, getState) => {
-    const { loadingBooks } = getState();
+    const { app } = getState();
+    const { loadingBooks } = app;
     if(!loadingBooks) {
       dispatch(setLoadingBooks(true));
+      dispatch(setBooks(undefined));
       try {
         const books = await db.getBooks();
         dispatch(setBooks(books));
@@ -69,7 +71,8 @@ function fetchBooks() {
 
 function fetchConfig() {
   return async (dispatch, getState) => {
-    const { loadingConfig } = getState();
+    const { app } = getState();
+    const { loadingConfig } = app;
     if(!loadingConfig) {
       dispatch(setLoadingConfig(true));
       try {
@@ -85,7 +88,8 @@ function fetchConfig() {
 
 function fetchServers() {
   return async (dispatch, getState) => {
-    const { loadingServers } = getState();
+    const { app } = getState();
+    const { loadingServers } = app;
     if(!loadingServers) {
       dispatch(setLoadingServers(true));
       try {
