@@ -6,6 +6,7 @@ import LoadingIndicator from "../loadingIndicator";
 import DB from '../../brokers/serverBroker';
 
 const db = new DB();
+const SubMenu = Menu.SubMenu;
 
 const { TextArea } = Input;
 
@@ -73,7 +74,7 @@ class BookEditor extends React.Component {
         </div>
         <div className="section">
           <span className="bold">Category:</span>
-          {book.section_id ? this.state.bookCategories.find(category => category.id === book.section_id) : 'None'}
+          {book.category_id ? this.props.bookCategories.find(category => category.id === book.category_id).name : 'None'}
         </div>
         <div className="content section">
           <span className="bold">Content:</span>
@@ -115,7 +116,7 @@ class BookEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.books;
+    return !this.props.books || !this.props.bookCategories;
   }
 
   refresh() {
@@ -126,6 +127,37 @@ class BookEditor extends React.Component {
     if(this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
+
+    const categories = this.props.bookCategories.map(category => ({
+      ...category,
+      books: this.props.books.filter(book => book.category_id === category.id),
+    }));
+
+    const leftoverBooks = this.props.books.filter(book => !categories.every(category => category.books.some(testBook => testBook.id === book.id)));
+
+    const finalCategories = [
+      ...categories,
+      {
+        id: 'Unassigned',
+        name: 'Unassigned',
+        books: leftoverBooks,
+      },
+    ];
+
+    const displayCategories = finalCategories
+    .map(category => (
+      <SubMenu title={category.name}>
+        {category.books.map(book => (<Menu.Item key={book.id}>{book.title}</Menu.Item>))}
+      </SubMenu>
+    ));
+
+    return [
+      (<div className="createBookButtonContainer">
+        <Button key="create" type="primary" className="createBookButton" onClick={this.startCreate.bind(this)}>Create</Button>
+        <Button key="refresh" className="refreshButton" onClick={this.refresh.bind(this)}><Icon type="redo" /></Button>
+      </div>),
+      ...displayCategories,
+    ];
 
     const menuItems = [
       (<div className="createBookButtonContainer">

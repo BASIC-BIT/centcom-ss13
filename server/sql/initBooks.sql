@@ -1,7 +1,7 @@
 DELETE FROM books WHERE 1=1;
 
 INSERT INTO
-    books (title, content, section_id)
+    books (title, content, category_id)
 VALUES
     ('Hello world!', 'This is a book!', 100),
     ('WGW', 'One day...', 101),
