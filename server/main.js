@@ -225,6 +225,78 @@ const endpoints = [
     },
   },
   {
+    path: /^\/permissions/,
+    method: 'GET',
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'USE centcom;',
+          'SELECT * FROM permissions;',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running permission get\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/permissions/,
+    method: 'PUT',
+    handler: async (eventParser) => {
+      try {
+        const permissionId = parseInt(eventParser.regexMatchPath(/^\/permissions\/([0-9]+)/)[1]);
+        const permission = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `UPDATE permissions SET name = "${permission.name}", description = "${permission.description}" WHERE id = ${permissionId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running permission update\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/permissions/,
+    method: 'POST',
+    handler: async (eventParser) => {
+      try {
+        const permission = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `INSERT INTO permissions (name, description) VALUES ("${permission.name}", "${permission.description}");`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running permission create\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/permissions/,
+    method: 'DELETE',
+    handler: async (eventParser) => {
+      try {
+        const permissionId = parseInt(eventParser.regexMatchPath(/^\/permissions\/([0-9]+)/)[1]);
+
+        const statements = [
+          'USE centcom;',
+          `DELETE FROM permissions WHERE id = ${permissionId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running permission delete\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
     path: /^\/bookCategories/,
     method: 'GET',
     handler: async (eventParser) => {

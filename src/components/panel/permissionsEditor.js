@@ -27,8 +27,8 @@ class PermissionsEditor extends React.Component {
     return (
       <React.Fragment>
         <div className="section">
-          <span className="bold">Key:</span>
-          <pre>{object.key}</pre>
+          <span className="bold">Name:</span>
+          <pre>{object.name}</pre>
         </div>
         <div className="section">
           <span className="bold">Description:</span>
@@ -38,8 +38,8 @@ class PermissionsEditor extends React.Component {
     );
   }
 
-  changeKey(e, setInputHandler) {
-    setInputHandler('key', e.target.value);
+  changeName(e, setInputHandler) {
+    setInputHandler('name', e.target.value);
   }
 
   changeDescription(e, setInputHandler) {
@@ -49,9 +49,9 @@ class PermissionsEditor extends React.Component {
   displayEditScreen(object, listState, setInputHandler) {
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Key: </span><Input className="inputField"
-                                                                             value={listState.input.key}
-                                                                             onChange={(e) => this.changeKey(e, setInputHandler)}/>
+        <div className="section"><span className="bold">Name: </span><Input className="inputField"
+                                                                             value={listState.input.name}
+                                                                             onChange={(e) => this.changeName(e, setInputHandler)}/>
         </div>
         <div className="section"><span className="bold">Description: </span><Input className="inputField"
                                                                            value={listState.input.description}
@@ -72,7 +72,7 @@ class PermissionsEditor extends React.Component {
   getMenuItems() {
     return this.props.permissions
     .sort(sortAlphabeticalByKey('description'))
-    .map(permission => (<Menu.Item key={permission.key}>{permission.key}</Menu.Item>));
+    .map(permission => (<Menu.Item key={permission.name}>{permission.name}</Menu.Item>));
   }
 
   async performEdit(object) {
