@@ -62,7 +62,7 @@ class PermissionsEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.permissions;
+    return !this.props.permissions || this.props.loadingPermissions;
   }
 
   refresh() {
@@ -114,6 +114,7 @@ class PermissionsEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     permissions: state.app.permissions,
+    loadingPermissions: state.app.loadingPermissions,
   }
 };
 

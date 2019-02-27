@@ -125,6 +125,7 @@ function fetchServers() {
     const { loadingServers } = app;
     if(!loadingServers) {
       dispatch(setLoadingServers(true));
+      dispatch(setServers(undefined));
       try {
         const servers = await db.getServers();
         dispatch(setServers(servers));
@@ -142,6 +143,7 @@ function fetchPermissions() {
     const { loadingPermissions } = app;
     if(!loadingPermissions) {
       dispatch(setLoadingPermissions(true));
+      dispatch(setPermissions(undefined));
       try {
         const permissions = await db.getPermissions();
         dispatch(setPermissions(permissions));
