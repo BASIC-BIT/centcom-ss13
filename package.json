@@ -1,6 +1,6 @@
 {
   "name": "yogstation-ui",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "description": "Yogstation Website UI (Beta)",
   "main": "lib/index.js",
   "scripts": {
