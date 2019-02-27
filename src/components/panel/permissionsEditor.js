@@ -72,7 +72,7 @@ class PermissionsEditor extends React.Component {
   getMenuItems() {
     return this.props.permissions
     .sort(sortAlphabeticalByKey('description'))
-    .map(permission => (<Menu.Item key={permission.name}>{permission.name}</Menu.Item>));
+    .map(permission => (<Menu.Item key={permission.id}>{permission.name}</Menu.Item>));
   }
 
   async performEdit(object) {
