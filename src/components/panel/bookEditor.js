@@ -1,18 +1,16 @@
 import React from 'react';
-import {Button, Layout, Menu, Input, Icon, Select} from "antd";
+import {Button, Menu, Input, Select} from "antd";
 import {connect} from 'react-redux'
 import actions from '../../actions/index';
 import DB from '../../brokers/serverBroker';
 import BookCategoriesModal from './bookCategoriesModal';
 import EditableList from './editableList';
-import {sortAlphabeticalByKey, sortNumericallyByKey} from "../../utils/sorters";
+import {sortAlphabeticalByKey} from "../../utils/sorters";
 
 const db = new DB();
 const SubMenu = Menu.SubMenu;
 
 const { TextArea } = Input;
-
-const { Sider, Content } = Layout;
 
 class BookEditor extends React.Component {
   constructor(props) {

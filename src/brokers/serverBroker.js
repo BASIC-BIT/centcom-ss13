@@ -53,6 +53,22 @@ class ServerBroker {
     return this.query(`/books/${id}`, { method: 'DELETE' });
   }
 
+  getPermissions() {
+    return this.query('/permissions');
+  }
+
+  createPermission(permission) {
+    return this.query(`/permissions`, { body: JSON.stringify(permission), method: 'POST' });
+  }
+
+  updatePermission(permission) {
+    return this.query(`/permissions/${permission.id}`, { body: JSON.stringify(permission), method: 'PUT' });
+  }
+
+  deletePermission(id) {
+    return this.query(`/permissions/${id}`, { method: 'DELETE' });
+  }
+
   getBookCategories() {
     return this.query('/bookCategories');
   }

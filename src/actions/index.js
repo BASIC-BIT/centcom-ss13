@@ -44,6 +44,13 @@ function setBooks(books) {
   };
 }
 
+function setPermissions(permissions) {
+  return {
+    type: 'SET_PERMISSIONS',
+    data: permissions,
+  };
+}
+
 function setLoadingBooks(loading) {
   return {
     type: 'SET_LOADING_BOOKS',
@@ -61,6 +68,13 @@ function setBookCategories(bookCategories) {
 function setLoadingBookCategories(loading) {
   return {
     type: 'SET_LOADING_BOOK_CATEGORIES',
+    data: loading,
+  };
+}
+
+function setLoadingPermissions(loading) {
+  return {
+    type: 'SET_LOADING_PERMISSIONS',
     data: loading,
   };
 }
@@ -122,15 +136,35 @@ function fetchServers() {
   }
 }
 
+function fetchPermissions() {
+  return async (dispatch, getState) => {
+    const { app } = getState();
+    const { loadingPermissions } = app;
+    if(!loadingPermissions) {
+      dispatch(setLoadingPermissions(true));
+      try {
+        const permissions = await db.getPermissions();
+        dispatch(setPermissions(permissions));
+        dispatch(setLoadingPermissions(false));
+      } catch(e) {
+        dispatch(setLoadingPermissions(false));
+      }
+    }
+  }
+}
+
 export default {
   setLoading,
   setServers,
   setConfig,
   setBooks,
+  setPermissions,
   fetchBooks,
   fetchConfig,
   fetchServers,
+  fetchPermissions,
   setLoadingServers,
   setLoadingConfig,
   setLoadingBooks,
+  setLoadingPermissions,
 }

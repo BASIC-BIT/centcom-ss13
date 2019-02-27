@@ -19,3 +19,9 @@ CREATE TABLE books (
     category_id INT,
     FOREIGN KEY (category_id) REFERENCES book_categories(id)
 );
+
+CREATE TABLE permissions (
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    key VARCHAR(100) NOT NULL,
+    name VARCHAR(100)
+);

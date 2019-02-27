@@ -103,6 +103,12 @@ class PageSidebar extends React.Component {
                   <span>Book Editor</span>
                 </Link>
               </Menu.Item>
+              <Menu.Item key={`/panel/admin/permissions`}>
+                <Link to={`/panel/admin/permissions`}>
+                  <Icon type="file-protect" />
+                  <span>Permissions</span>
+                </Link>
+              </Menu.Item>
             </SubMenu>
           </Menu>
         </Spin>
