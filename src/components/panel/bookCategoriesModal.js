@@ -41,9 +41,18 @@ class BookCategoriesModal extends React.Component {
     this.props.closeHandler();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.bookCategories !== this.props.bookCategories) {
       this.setState({ bookCategories: this.props.bookCategories });
+    }
+
+    if(prevProps.visible !== this.props.visible) { //becoming visible or hiding
+      if(this.props.visible) {
+        this.props.fetchBooks();
+      }
+      this.setState({
+        selectedKey: undefined,
+      })
     }
   }
 
@@ -146,27 +155,18 @@ class BookCategoriesModal extends React.Component {
 
     return (
       <div className="bookCategoriesContentContainer" ref={this.contentContainer}>
-        <Affix
-          target={() => this.contentContainer && this.contentContainer.current}
-          offsetTop={-30}
-        >
-          <div className="buttonContainer">
-            <Button key="create" type="primary" className="createBookCategoryButton button"
-                    onClick={this.startCreate.bind(this)}>Create</Button>
-            <Button key="refresh" className="refreshButton button" onClick={this.refresh.bind(this)}><Icon
-              type="redo"/></Button>
-            {!this.state.creating && this.state.selectedKey &&
-            (<React.Fragment>
-              <Popconfirm title="Are you sure delete this category?" onConfirm={this.delete.bind(this)}
-                          onCancel={this.cancelDelete.bind(this)} okText="Delete" cancelText="Cancel">
-                <Button className="button" type="danger" onClick={this.startDelete.bind(this)}>Delete</Button>
-              </Popconfirm>
-            </React.Fragment>)}
-          </div>
-        </Affix>
         {(!this.state.selectedKey || !this.getCurrentBookCategory()) ?
           (<div>Select a category from the side menu.</div>) :
           this.displayCategory()}
+        <div className="buttonContainer">
+          {!this.state.creating && this.state.selectedKey &&
+          (<React.Fragment>
+            <Popconfirm title="Are you sure delete this category?" onConfirm={this.delete.bind(this)}
+                        onCancel={this.cancelDelete.bind(this)} okText="Delete" cancelText="Cancel">
+              <Button className="button" type="danger" onClick={this.startDelete.bind(this)}>Delete</Button>
+            </Popconfirm>
+          </React.Fragment>)}
+        </div>
       </div>
     );
   }
@@ -180,14 +180,21 @@ class BookCategoriesModal extends React.Component {
         onOk={this.handleSave.bind(this)}
         onCancel={this.props.closeHandler}
         okText="Save"
+        destroyOnClose={true}
+        bodyStyle={{ maxHeight: 600 }}
       >
-        <Layout style={{ background: '#fff' }} className="bookCategoriesMenuContainer">
+        <Layout style={{ background: '#fff', height: '100%', width: '100%', }} className="bookCategoriesMenuContainer">
           <Sider width={200} style={{ background: '#fff' }}>
+            <div className="createBookCategoriesButtonContainer" style={{ height: '42px' }}>
+              <Button key="create" type="primary" className="createBookCategoryButton button"
+                      onClick={this.startCreate.bind(this)}>Create</Button>
+              <Button key="refresh" className="refreshButton button" onClick={this.refresh.bind(this)}><Icon type="redo"/></Button>
+            </div>
             <Menu
               mode="inline"
-              style={{ height: '100%' }}
               onSelect={this.handleMenuSelect.bind(this)}
               selectedKeys={this.state.selectedKey ? [`${this.state.selectedKey}`] : []}
+              style={{ maxHeight: 400, overflowY: 'auto', overflowX: 'hidden', }}
             >
               {this.getMenuItems()}
             </Menu>

@@ -304,7 +304,7 @@ class BookEditor extends React.Component {
   render() {
     return (
       <Layout style={{ padding: '24px 0 0 0', background: '#fff' }} className="bookMenuContainer">
-        <Sider width={250} style={{ background: '#fff' }}>
+        <Sider width={250} style={{ background: '#fff', overflowY: 'auto', }}>
           <div className="createBookButtonContainer">
             <Button key="create" type="primary" className="createBookButton"
                     onClick={this.startCreate.bind(this)}>Create</Button>
@@ -315,7 +315,7 @@ class BookEditor extends React.Component {
           <Menu
             mode="inline"
             defaultOpenKeys={['sub1']}
-            style={{ height: '100%' }}
+            style={{}}
             onSelect={this.handleMenuSelect.bind(this)}
             selectedKeys={this.state.selectedKey ? [`${this.state.selectedKey}`] : []}
           >

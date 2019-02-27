@@ -172,7 +172,7 @@
     .buttonContainer {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 5px;
+      margin-top: 10px;
       .button {
         flex: 0 1 auto;
       }
@@ -180,6 +180,22 @@
 
     .inputField {
       margin: 5px;
+    }
+  }
+
+  .createBookCategoriesButtonContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 10px;
+
+    .createBookButton {
+      flex: 0 1 auto;
+    }
+
+    .refreshButton {
+      flex: 0 1 auto;
     }
   }
 }
