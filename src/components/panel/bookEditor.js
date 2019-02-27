@@ -1,9 +1,10 @@
 import React from 'react';
 import {Button, Layout, Menu, Affix, Input, Popconfirm, message, Icon} from "antd";
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import actions from '../../actions/index';
 import LoadingIndicator from "../loadingIndicator";
 import DB from '../../brokers/serverBroker';
+import BookCategoriesModal from './bookCategoriesModal';
 
 const db = new DB();
 const SubMenu = Menu.SubMenu;
@@ -13,7 +14,7 @@ const { TextArea } = Input;
 const { Sider, Content } = Layout;
 
 class BookEditor extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -21,6 +22,7 @@ class BookEditor extends React.Component {
       contentInput: '',
     };
   }
+
   contentContainer = React.createRef();
 
   handleMenuSelect({ key }) {
@@ -32,11 +34,11 @@ class BookEditor extends React.Component {
   }
 
   getContent() {
-    if(this.isLoading()) {
+    if (this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
-    if(!this.state.creating && (!this.state.selectedKey || !this.getCurrentBook())) {
+    if (!this.state.creating && (!this.state.selectedKey || !this.getCurrentBook())) {
       return (
         <div>Select a book from the side menu.</div>
       );
@@ -50,10 +52,15 @@ class BookEditor extends React.Component {
           offsetTop={-30}
         >
           {this.state.editing && <Button className="button" type="primary" onClick={this.edit.bind(this)}>Save</Button>}
-          {this.state.creating && <Button className="button" type="primary" onClick={this.create.bind(this)}>Create</Button>}
-          {(this.state.editing || this.state.creating) && <Button className="button" onClick={this.cancel.bind(this)}>Cancel</Button>}
-          {!this.state.editing && !this.state.creating && <Button className="button" type="primary" onClick={this.startEdit.bind(this)}>Edit</Button>}
-          {!this.state.creating && this.state.selectedKey && <Popconfirm title="Are you sure delete this book?" onConfirm={this.delete.bind(this)} onCancel={this.cancelDelete.bind(this)} okText="Delete" cancelText="Cancel">
+          {this.state.creating &&
+          <Button className="button" type="primary" onClick={this.create.bind(this)}>Create</Button>}
+          {(this.state.editing || this.state.creating) &&
+          <Button className="button" onClick={this.cancel.bind(this)}>Cancel</Button>}
+          {!this.state.editing && !this.state.creating &&
+          <Button className="button" type="primary" onClick={this.startEdit.bind(this)}>Edit</Button>}
+          {!this.state.creating && this.state.selectedKey &&
+          <Popconfirm title="Are you sure delete this book?" onConfirm={this.delete.bind(this)}
+                      onCancel={this.cancelDelete.bind(this)} okText="Delete" cancelText="Cancel">
             <Button className="button" type="danger" onClick={this.startDelete.bind(this)}>Delete</Button>
           </Popconfirm>}
         </Affix>
@@ -89,6 +96,7 @@ class BookEditor extends React.Component {
   changeTitle(e) {
     this.setState({ titleInput: e.target.value });
   }
+
   changeContent(e) {
     this.setState({ contentInput: e.target.value });
   }
@@ -96,8 +104,14 @@ class BookEditor extends React.Component {
   displayEditScreen() {
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
-        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
+        <div className="section"><span className="bold">Title: </span><Input className="inputField"
+                                                                             value={this.state.titleInput}
+                                                                             onChange={this.changeTitle.bind(this)}/>
+        </div>
+        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7}
+                                                                                         value={this.state.contentInput}
+                                                                                         onChange={this.changeContent.bind(this)}/>
+        </div>
       </React.Fragment>
     )
   }
@@ -105,8 +119,14 @@ class BookEditor extends React.Component {
   displayCreateScreen() {
     return (
       <React.Fragment>
-        <div className="section"><span className="bold">Title: </span><Input className="inputField" value={this.state.titleInput} onChange={this.changeTitle.bind(this)} /></div>
-        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7} value={this.state.contentInput} onChange={this.changeContent.bind(this)} /></div>
+        <div className="section"><span className="bold">Title: </span><Input className="inputField"
+                                                                             value={this.state.titleInput}
+                                                                             onChange={this.changeTitle.bind(this)}/>
+        </div>
+        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7}
+                                                                                         value={this.state.contentInput}
+                                                                                         onChange={this.changeContent.bind(this)}/>
+        </div>
       </React.Fragment>
     )
   }
@@ -123,8 +143,16 @@ class BookEditor extends React.Component {
     this.props.fetchBooks();
   }
 
+  showBookCategoriesModal() {
+    this.setState({ bookCategoriesModalVisible: true });
+  }
+
+  hideBookCategoriesModal() {
+    this.setState({ bookCategoriesModalVisible: false });
+  }
+
   getMenuItems() {
-    if(this.isLoading()) {
+    if (this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
@@ -151,23 +179,7 @@ class BookEditor extends React.Component {
       </SubMenu>
     ));
 
-    return [
-      (<div className="createBookButtonContainer">
-        <Button key="create" type="primary" className="createBookButton" onClick={this.startCreate.bind(this)}>Create</Button>
-        <Button key="refresh" className="refreshButton" onClick={this.refresh.bind(this)}><Icon type="redo" /></Button>
-      </div>),
-      ...displayCategories,
-    ];
-
-    const menuItems = [
-      (<div className="createBookButtonContainer">
-        <Button key="create" type="primary" className="createBookButton" onClick={this.startCreate.bind(this)}>Create</Button>
-        <Button key="refresh" className="refreshButton" onClick={this.refresh.bind(this)}><Icon type="redo" /></Button>
-      </div>),
-      ...this.getBooks().map(book => (<Menu.Item key={book.id}>{book.title}</Menu.Item>)),
-    ];
-
-    return menuItems;
+    return displayCategories;
   }
 
   startEdit() {
@@ -193,7 +205,7 @@ class BookEditor extends React.Component {
       this.props.fetchBooks();
 
       this.setState({ loading: false, editing: false, deleting: false });
-    } catch(e) {
+    } catch (e) {
       message.error('Error editing book.');
       this.setState({ loading: false });
     }
@@ -211,7 +223,7 @@ class BookEditor extends React.Component {
       this.props.fetchBooks();
 
       this.setState({ loading: false, creating: false });
-    } catch(e) {
+    } catch (e) {
       message.error('Error creating book.');
       this.setState({ loading: false });
     }
@@ -226,7 +238,14 @@ class BookEditor extends React.Component {
   }
 
   startCreate() {
-    this.setState({ creating: true, titleInput: '', contentInput: '', editing: false, deleting: false, selectedKey: undefined });
+    this.setState({
+      creating: true,
+      titleInput: '',
+      contentInput: '',
+      editing: false,
+      deleting: false,
+      selectedKey: undefined
+    });
   }
 
   cancel() {
@@ -242,7 +261,7 @@ class BookEditor extends React.Component {
       await this.props.fetchBooks();
 
       this.setState({ loading: false, deleting: false, editing: false });
-    } catch(e) {
+    } catch (e) {
       message.error('Error deleting book.');
       this.setState({ loading: false, deleting: false, error: true });
     }
@@ -252,6 +271,13 @@ class BookEditor extends React.Component {
     return (
       <Layout style={{ padding: '24px 0 0 0', background: '#fff' }} className="bookMenuContainer">
         <Sider width={250} style={{ background: '#fff' }}>
+          <div className="createBookButtonContainer">
+            <Button key="create" type="primary" className="createBookButton"
+                    onClick={this.startCreate.bind(this)}>Create</Button>
+            <Button key="editCategories" className="editCategoriesButton"
+                    onClick={this.showBookCategoriesModal.bind(this)}>Categories</Button>
+            <Button key="refresh" className="refreshButton" onClick={this.refresh.bind(this)}><Icon type="redo"/></Button>
+          </div>
           <Menu
             mode="inline"
             defaultOpenKeys={['sub1']}
@@ -264,6 +290,10 @@ class BookEditor extends React.Component {
         </Sider>
         <Content style={{ padding: '0 24px', minHeight: 280 }}>
           {this.getContent()}
+          <BookCategoriesModal
+            visible={this.state.bookCategoriesModalVisible}
+            closeHandler={this.hideBookCategoriesModal.bind(this)}
+          />
         </Content>
       </Layout>
     );
