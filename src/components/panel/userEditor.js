@@ -29,7 +29,7 @@ class UsersEditor extends React.Component {
         <div className="section">
           <span className="bold">Nickname:</span>
           <pre>{object.nickname}</pre>
-        </div>
+        </div>  
         <div className="section">
           <span className="bold">Email:</span>
           <pre>{object.email}</pre>
@@ -83,7 +83,7 @@ class UsersEditor extends React.Component {
 
   getMenuItems() {
     return this.props.users
-    .sort(sortAlphabeticalByKey('description'))
+    .sort(sortAlphabeticalByKey('nickname'))
     .map(user => (<Menu.Item key={user.id}>{user.nickname}</Menu.Item>));
   }
 

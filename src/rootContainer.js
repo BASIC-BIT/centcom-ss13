@@ -15,6 +15,7 @@ class RootContainer extends React.Component {
     this.props.fetchConfig();
     this.props.fetchBooks();
     this.props.fetchPermissions();
+    this.props.fetchUsers();
   }
   render() {
     return (
