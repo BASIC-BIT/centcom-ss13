@@ -72,8 +72,10 @@ class BookCategoriesModal extends React.Component {
       return (null);
     }
 
-    return this.state.bookCategories.map(bookCategory => (
-      <Menu.Item key={bookCategory.id}>{bookCategory.name}</Menu.Item>));
+    return this.state.bookCategories
+      .sort((a, b) => (a.id - b.id))
+      .map(bookCategory => (
+        <Menu.Item key={bookCategory.id}>{bookCategory.name}</Menu.Item>));
   }
 
   getCurrentBookCategory() {
@@ -102,7 +104,7 @@ class BookCategoriesModal extends React.Component {
           name: e.target.value,
         },
         ...otherCategories,
-      ]
+      ],
     })
   }
 
@@ -133,19 +135,31 @@ class BookCategoriesModal extends React.Component {
     this.props.fetchBooks();
   }
 
+  getHighestCategoryId() {
+    return this.state.bookCategories.reduce((acc, cur) => ((!acc || cur.id > acc) ? cur.id : acc), undefined);
+  }
+
   startCreate() {
-    const id = Math.random().toString().slice(2,11);
+    const id = this.getHighestCategoryId() + 1;
     this.setState({
       bookCategories: [
         ...this.state.bookCategories,
         {
-          id: parseInt(id),
+          id: id,
           name: '',
           color: '',
         },
       ],
-      selectedKey: parseInt(id),
+      selectedKey: id,
     });
+    console.log([
+      ...this.state.bookCategories,
+      {
+        id: id,
+        name: '',
+        color: '',
+      },
+    ]);
   }
 
   getContent() {
