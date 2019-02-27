@@ -158,6 +158,78 @@
   }
 }
 
+.editableListMenuContainer {
+  .bold {
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    margin: 0;
+  }
+
+  position: relative;
+  .editableListContentContainer {
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .buttonContainer {
+      margin-bottom: 20px;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+
+      .button {
+        margin: 5px 5px 5px 0;
+      }
+    }
+
+    .inputField {
+      margin: 5px;
+    }
+
+    .section {
+      &.content {
+        flex: 1 0 auto;
+      }
+
+      margin: 10px 10px 10px 0;
+
+      flex: 0 0 auto;
+
+      display: flex;
+      flex-direction: column;
+
+      .bold {
+        flex: 0 0 auto;
+      }
+      textarea {
+        flex: 1 0 auto;
+      }
+    }
+  }
+
+  .editableListCreateButtonContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-bottom: 10px;
+
+    .editableListCreateButton {
+      flex: 0 1 auto;
+    }
+    .editCategoriesButton {
+      flex: 0 1 auto;
+    }
+    .refreshButton {
+      flex: 0 1 auto;
+    }
+  }
+}
+
 .bookCategoriesMenuContainer {
   .bold {
     font-weight: bold;

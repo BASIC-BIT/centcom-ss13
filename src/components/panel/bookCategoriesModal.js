@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import LoadingIndicator from "../loadingIndicator";
 import DB from '../../brokers/serverBroker';
 import {message} from "antd/lib/index";
+import {sortAlphabeticalByKey} from "../../utils/sorters";
 
 const db = new DB();
 
@@ -22,6 +23,7 @@ class BookCategoriesModal extends React.Component {
   }
 
   async handleSave() {
+    this.setState({ loading: true });
     const updateBookCategories = this.state.bookCategories.filter(category =>
       this.props.bookCategories.map(dbCategory => dbCategory.id).includes(category.id));
     const newBookCategories = this.state.bookCategories.filter(category =>
@@ -37,6 +39,7 @@ class BookCategoriesModal extends React.Component {
     console.log(createResults);
 
     this.props.fetchBooks();
+    this.setState({ loading: false });
 
     this.props.closeHandler();
   }
@@ -73,7 +76,7 @@ class BookCategoriesModal extends React.Component {
     }
 
     return this.state.bookCategories
-      .sort((a, b) => (a.id - b.id))
+      .sort(sortAlphabeticalByKey('name'))
       .map(bookCategory => (
         <Menu.Item key={bookCategory.id}>{bookCategory.name}</Menu.Item>));
   }
@@ -124,7 +127,7 @@ class BookCategoriesModal extends React.Component {
 
       await this.props.fetchBooks();
 
-      this.setState({ loading: false });
+      this.setState({ loading: false, selectedKey: undefined });
     } catch (e) {
       message.error('Error deleting category.');
       this.setState({ loading: false });
