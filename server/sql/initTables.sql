@@ -6,6 +6,16 @@ CREATE TABLE servers (name VARCHAR(50), url VARCHAR(100), port INT, access_level
 
 CREATE TABLE config (cfg_key VARCHAR(50) UNIQUE NOT NULL, cfg_value VARCHAR(200) NOT NULL);
 
-CREATE TABLE books (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, title VARCHAR(100) NOT NULL, content VARCHAR(2000), category_id INT);
+CREATE TABLE books (
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    content VARCHAR(2000),
+    category_id INT,
+    FOREIGN KEY (category_id) REFERENCES book_categories(id)
+);
 
-CREATE TABLE book_categories (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, name VARCHAR(100) NOT NULL, color VARCHAR(6));
+CREATE TABLE book_categories (
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    color VARCHAR(6)
+);

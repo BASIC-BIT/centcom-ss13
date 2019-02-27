@@ -175,7 +175,7 @@ const endpoints = [
         const book = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `UPDATE books SET title = "${book.title}", content = "${book.content}" WHERE id = ${bookId};`,
+          `UPDATE books SET title = "${book.title}", content = "${book.content}", category_id = ${book.category_id || 'null'} WHERE id = ${bookId};`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 204 });
@@ -193,7 +193,7 @@ const endpoints = [
         const book = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO books (title, content) VALUES ("${book.title}", "${book.content}");`,
+          `INSERT INTO books (title, content, category_id) VALUES ("${book.title}", "${book.content}", ${book.category_id || 'null'});`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });

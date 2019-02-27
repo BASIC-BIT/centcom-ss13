@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Layout, Menu, Affix, Input, Popconfirm, message, Icon} from "antd";
+import {Button, Layout, Menu, Affix, Input, Popconfirm, message, Icon, Select} from "antd";
 import {connect} from 'react-redux'
 import actions from '../../actions/index';
 import LoadingIndicator from "../loadingIndicator";
@@ -71,8 +71,17 @@ class BookEditor extends React.Component {
     );
   }
 
+  handleCategoryChange(e) {
+    if(e === 'none') {
+      this.setState({ categoryIdInput: undefined });
+    } else {
+      this.setState({ categoryIdInput: e });
+    }
+  }
+
   displayBookContent() {
     const book = this.getCurrentBook();
+
     return (
       <React.Fragment>
         <div className="section">
@@ -81,7 +90,7 @@ class BookEditor extends React.Component {
         </div>
         <div className="section">
           <span className="bold">Category:</span>
-          {book.category_id ? this.props.bookCategories.find(category => category.id === book.category_id).name : 'None'}
+          {book.category_id ? this.props.bookCategories.find(category => category.id === book.category_id).name : 'Unassigned'}
         </div>
         <div className="content section">
           <span className="bold">Content:</span>
@@ -101,12 +110,29 @@ class BookEditor extends React.Component {
     this.setState({ contentInput: e.target.value });
   }
 
+  getCategorySelector() {
+    const Option = Select.Option;
+
+    const categoryOptions = (
+      <Select className="inputField" defaultValue={this.state.categoryIdInput || 'none'} onChange={this.handleCategoryChange.bind(this)}>
+        {this.props.bookCategories.map(category => (<Option value={category.id} key={category.id}>{category.name}</Option>))}
+        <Option value="none">Unassigned</Option>
+      </Select>
+    );
+
+    return categoryOptions;
+  }
+
   displayEditScreen() {
     return (
       <React.Fragment>
         <div className="section"><span className="bold">Title: </span><Input className="inputField"
                                                                              value={this.state.titleInput}
                                                                              onChange={this.changeTitle.bind(this)}/>
+        </div>
+        <div className="section">
+          <span className="bold">Category:</span>
+          {this.getCategorySelector()}
         </div>
         <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7}
                                                                                          value={this.state.contentInput}
@@ -122,6 +148,10 @@ class BookEditor extends React.Component {
         <div className="section"><span className="bold">Title: </span><Input className="inputField"
                                                                              value={this.state.titleInput}
                                                                              onChange={this.changeTitle.bind(this)}/>
+        </div>
+        <div className="section">
+          <span className="bold">Category:</span>
+          {this.getCategorySelector()}
         </div>
         <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7}
                                                                                          value={this.state.contentInput}
@@ -189,6 +219,7 @@ class BookEditor extends React.Component {
       editing: true,
       titleInput: book.title,
       contentInput: book.content,
+      categoryIdInput: book.category_id,
     });
   }
 
@@ -197,6 +228,7 @@ class BookEditor extends React.Component {
       id: this.state.selectedKey,
       title: this.state.titleInput,
       content: this.state.contentInput,
+      category_id: this.state.categoryIdInput,
     };
 
     try {
@@ -215,6 +247,7 @@ class BookEditor extends React.Component {
     const book = {
       title: this.state.titleInput,
       content: this.state.contentInput,
+      category_id: this.state.categoryIdInput,
     };
 
     try {
@@ -242,6 +275,7 @@ class BookEditor extends React.Component {
       creating: true,
       titleInput: '',
       contentInput: '',
+      categoryIdInput: undefined,
       editing: false,
       deleting: false,
       selectedKey: undefined

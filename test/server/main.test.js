@@ -163,12 +163,12 @@ describe('CentCom Server', () => {
     describe('create', () => {
       it('should create new book', (done) => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nINSERT INTO books (title, content) VALUES ("foo", "bar");')
+        .withArgs('USE centcom;\nINSERT INTO books (title, content, category_id) VALUES ("foo", "bar", 15);')
         .yieldsRight(undefined, 'Created!', { foo: 'bar' });
         const event = createRequest({
           path: '/books',
           httpMethod: 'POST',
-          body: JSON.stringify({ title: 'foo', content: 'bar' })
+          body: JSON.stringify({ title: 'foo', content: 'bar', category_id: 15 })
         });
         handler.handler(event, {}, (error, output) => {
           expect(output.body).to.include('Created!');
@@ -180,12 +180,12 @@ describe('CentCom Server', () => {
     describe('update', () => {
       it('should update existing book', (done) => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nUPDATE books SET title = "foo", content = "bar" WHERE id = 1;')
+        .withArgs('USE centcom;\nUPDATE books SET title = "foo", content = "bar", category_id = 15 WHERE id = 1;')
         .yieldsRight(undefined, 'Updated!', { foo: 'bar' });
         const event = createRequest({
           path: '/books/1',
           httpMethod: 'PUT',
-          body: JSON.stringify({ title: 'foo', content: 'bar' })
+          body: JSON.stringify({ title: 'foo', content: 'bar', category_id: 15 })
         });
         handler.handler(event, {}, (error, output) => {
           expect(output.body).to.include('Updated!');
