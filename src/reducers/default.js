@@ -29,6 +29,10 @@ export default function defaultState(state = initialState, action) {
       return merge(state, { permissions: action.data });
     case 'SET_LOADING_PERMISSIONS':
       return merge(state, { loadingPermissions: action.data });
+    case 'SET_USERS':
+      return merge(state, { users: action.data });
+    case 'SET_LOADING_USERS':
+      return merge(state, { loadingUsers: action.data });
     default:
       return state
   }

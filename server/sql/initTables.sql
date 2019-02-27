@@ -25,3 +25,10 @@ CREATE TABLE permissions (
     name VARCHAR(100) UNIQUE NOT NULL,
     description VARCHAR(100)
 );
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    nickname VARCHAR(100),
+    email VARCHAR(100),
+    byond_key VARCHAR(100)
+);

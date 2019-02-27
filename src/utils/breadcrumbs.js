@@ -20,6 +20,7 @@ class BreadcrumbWrapper extends React.Component {
       '/panel/admin': 'Admin',
       '/panel/admin/book': 'Book Manager',
       '/panel/admin/permissions': 'Permissions Manager',
+      '/panel/admin/users': 'User Manager',
     };
 
     if(this.props.config && this.props.config.community_name) {

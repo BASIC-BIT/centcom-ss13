@@ -155,6 +155,38 @@ function fetchPermissions() {
   }
 }
 
+function setUsers(users) {
+  return {
+    type: 'SET_USERS',
+    data: users,
+  };
+}
+
+function setLoadingUsers(loading) {
+  return {
+    type: 'SET_LOADING_USERS',
+    data: loading,
+  };
+}
+
+function fetchUsers() {
+  return async (dispatch, getState) => {
+    const { app } = getState();
+    const { loadingUsers } = app;
+    if(!loadingUsers) {
+      dispatch(setLoadingUsers(true));
+      dispatch(setUsers(undefined));
+      try {
+        const users = await db.getUsers();
+        dispatch(setUsers(users));
+        dispatch(setLoadingUsers(false));
+      } catch(e) {
+        dispatch(setLoadingUsers(false));
+      }
+    }
+  }
+}
+
 export default {
   setLoading,
   setServers,
@@ -169,4 +201,7 @@ export default {
   setLoadingConfig,
   setLoadingBooks,
   setLoadingPermissions,
+  setUsers,
+  setLoadingUsers,
+  fetchUsers,
 }

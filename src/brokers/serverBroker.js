@@ -69,6 +69,22 @@ class ServerBroker {
     return this.query(`/permissions/${id}`, { method: 'DELETE' });
   }
 
+  getUsers() {
+    return this.query('/users');
+  }
+
+  createUser(user) {
+    return this.query(`/users`, { body: JSON.stringify(user), method: 'POST' });
+  }
+
+  updateUser(user) {
+    return this.query(`/users/${user.id}`, { body: JSON.stringify(user), method: 'PUT' });
+  }
+
+  deleteUser(id) {
+    return this.query(`/users/${id}`, { method: 'DELETE' });
+  }
+
   getBookCategories() {
     return this.query('/bookCategories');
   }

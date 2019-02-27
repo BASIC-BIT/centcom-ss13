@@ -109,6 +109,12 @@ class PageSidebar extends React.Component {
                   <span>Permissions</span>
                 </Link>
               </Menu.Item>
+              <Menu.Item key={`/panel/admin/users`}>
+                <Link to={`/panel/admin/users`}>
+                  <Icon type="usergroup-add" />
+                  <span>User Manager</span>
+                </Link>
+              </Menu.Item>
             </SubMenu>
           </Menu>
         </Spin>

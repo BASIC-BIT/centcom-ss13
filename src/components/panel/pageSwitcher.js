@@ -7,6 +7,7 @@ import { wrapWithBreadcrumbs } from "../../utils/breadcrumbs";
 import ErrorPage404 from "../../error/ErrorPage404";
 import BookEditor from "./bookEditor";
 import PermissionsEditor from "./permissionsEditor";
+import UserEditor from "./userEditor";
 
 class PageSwitcher extends React.Component {
   render() {
@@ -15,6 +16,7 @@ class PageSwitcher extends React.Component {
         <Switch>
           <Route path={`/panel/admin/book`} component={wrapWithBreadcrumbs(BookEditor)}/>
           <Route path={`/panel/admin/permissions`} component={wrapWithBreadcrumbs(PermissionsEditor)}/>
+          <Route path={`/panel/admin/users`} component={wrapWithBreadcrumbs(UserEditor)}/>
           <Route path={`/panel/admin`} component={wrapWithBreadcrumbs(Admin)}/>
           <Route path={`/panel`} component={wrapWithBreadcrumbs(Home)}/>
           <Route component={ErrorPage404}/>

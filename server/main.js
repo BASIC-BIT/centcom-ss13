@@ -8,6 +8,7 @@ import setConfig from './sql/setConfig.sql';
 import initServers from './sql/initServers.sql';
 import initBooks from './sql/initBooks.sql';
 import initPermissions from './sql/initPermissions.sql';
+import initUsers from './sql/initUsers.sql';
 import destroy from './sql/destroy.sql';
 
 const db = new DB();
@@ -105,9 +106,10 @@ const endpoints = [
         const queries = [
           [initTablesSql],
           [setConfig],
+          [initUsers],
+          [initPermissions],
           [initServers],
           [initBooks],
-          [initPermissions],
         ];
 
         const result = await db.multiQuery(queries);
@@ -293,6 +295,78 @@ const endpoints = [
       } catch (e) {
         console.log(e);
         return createResponse({ body: `Error running permission delete\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/users/,
+    method: 'GET',
+    handler: async (eventParser) => {
+      try {
+        const statements = [
+          'USE centcom;',
+          'SELECT * FROM users;',
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
+      } catch (e) {
+        return createResponse({ body: `Error running user get\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/users/,
+    method: 'PUT',
+    handler: async (eventParser) => {
+      try {
+        const userId = parseInt(eventParser.regexMatchPath(/^\/users\/([0-9]+)/)[1]);
+        const user = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `UPDATE users SET nickname = "${user.nickname}", email = "${user.email}", byond_key = "${user.byond_key}" WHERE id = ${userId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running user update\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/users/,
+    method: 'POST',
+    handler: async (eventParser) => {
+      try {
+        const user = JSON.parse(eventParser.getBody());
+        const statements = [
+          'USE centcom;',
+          `INSERT INTO users (nickname, email, byond_key) VALUES ("${user.nickname}", "${user.email}", "${user.byond_key}");`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running user create\n${e.message}\n${e.stack}`, statusCode: 500 });
+      }
+    },
+  },
+  {
+    path: /^\/users/,
+    method: 'DELETE',
+    handler: async (eventParser) => {
+      try {
+        const userId = parseInt(eventParser.regexMatchPath(/^\/users\/([0-9]+)/)[1]);
+
+        const statements = [
+          'USE centcom;',
+          `DELETE FROM users WHERE id = ${userId};`,
+        ];
+        const result = await db.multiQuery(statements);
+        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
+      } catch (e) {
+        console.log(e);
+        return createResponse({ body: `Error running user delete\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
   },
