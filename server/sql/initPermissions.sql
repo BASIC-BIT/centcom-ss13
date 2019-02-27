@@ -1,6 +1,6 @@
 DELETE FROM permissions WHERE 1=1;
 
-INSERT INTO permissions (key, name)
+INSERT INTO permissions (key, description)
 VALUES
     ('VIEW_USERS', 'View User List'),
     ('EDIT_USERS', 'Edit Users'),

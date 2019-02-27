@@ -7,6 +7,7 @@ import initTablesSql from './sql/initTables.sql';
 import setConfig from './sql/setConfig.sql';
 import initServers from './sql/initServers.sql';
 import initBooks from './sql/initBooks.sql';
+import initPermissions from './sql/initPermissions.sql';
 import destroy from './sql/destroy.sql';
 
 const db = new DB();
@@ -106,6 +107,7 @@ const endpoints = [
           [setConfig],
           [initServers],
           [initBooks],
+          [initPermissions],
         ];
 
         const result = await db.multiQuery(queries);
