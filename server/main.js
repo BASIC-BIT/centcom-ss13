@@ -78,7 +78,7 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
           const object = JSON.parse(eventParser.getBody());
 
           const setFields = fields
-          .filter(field => !field.omit && object[field.name])
+          .filter(field => !field.omit && object[field.name] !== undefined)
           .map(field => {
             return `${field.name} = ${mysql.escape(object[field.name])}`;
           })
