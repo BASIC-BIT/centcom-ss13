@@ -210,7 +210,7 @@ describe('CentCom Server', () => {
       });
     });
     describe('delete', () => {
-      it('should delete a book', (done) => {
+      it('should delete a book', async () => {
         mysqlQueryStub
         .withArgs('USE centcom;\nDELETE FROM books WHERE id = 1;')
         .yieldsRight(undefined, 'Deleted!', { foo: 'bar' });
@@ -218,11 +218,10 @@ describe('CentCom Server', () => {
           path: '/books/1',
           httpMethod: 'DELETE',
         });
-        handler.handler(event, {}, (error, output) => {
-          expect(output.body).to.include('Deleted!');
-          expect(output.statusCode).to.equal(202);
-          done();
-        });
+        const output = await promisify(handler.handler)(event, {});
+
+        expect(output.body).to.include('Deleted!');
+        expect(output.statusCode).to.equal(202);
       });
     });
   });

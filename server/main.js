@@ -8,11 +8,13 @@ import initTablesSql from './sql/initTables.sql';
 import setConfig from './sql/setConfig.sql';
 import initServers from './sql/initServers.sql';
 import initBooks from './sql/initBooks.sql';
-import initPermissions from './sql/initPermissions.sql';
 import initUsers from './sql/initUsers.sql';
+import fetchUserPermissions from './sql/fetch/userPermissions.sql';
 import destroy from './sql/destroy.sql';
 
 const db = new DB();
+
+const identityFunction = (a) => a;
 
 function createResponse({
                           body,
@@ -37,6 +39,118 @@ const parseSqlResultValue = (results) => {
   }
 
   return results;
+};
+
+const getCrudEndpointHandlers = (path, table, name, fields, {
+  overrideGetSql,
+  overrideUpdateSql,
+  overrideDeleteSql,
+  overrideCreateSql,
+  postFetch = identityFunction,
+} = {}) => {
+  const pathMatcher = new RegExp(`^\\/${path}`);
+  return [
+    {
+      path: pathMatcher,
+      method: 'GET',
+      handler: async (eventParser) => {
+        try {
+          const statements = [
+            'USE centcom;',
+            overrideGetSql ? overrideGetSql : `SELECT * FROM ${table};`,
+          ];
+          const result = await db.multiQuery(statements);
+
+          const finalResult = postFetch(result[1]);
+
+          return createResponse({ body: JSON.stringify(finalResult), statusCode: 200 });
+        } catch (e) {
+          return createResponse({ body: `Error running ${name} get\n${e.message}\n${e.stack}`, statusCode: 500 });
+        }
+      },
+    },
+    {
+      path: pathMatcher,
+      method: 'PUT',
+      handler: async (eventParser) => {
+        try {
+          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^\/${path}\/([0-9]+)`))[1]);
+          const object = JSON.parse(eventParser.getBody());
+
+          const setFields = fields
+          .filter(field => !field.omit && object[field.name])
+          .map(field => {
+            return `${field.name} = ${mysql.escape(object[field.name])}`;
+          })
+          .join(', ');
+          const statements = [
+            'USE centcom;',
+            `UPDATE ${table} SET ${setFields} WHERE id = ${objectId};`,
+          ];
+          const result = await db.multiQuery(statements);
+          return createResponse({ body: JSON.stringify(result), statusCode: 204 });
+        } catch (e) {
+          console.log(e);
+          return createResponse({ body: `Error running ${name} update\n${e.message}\n${e.stack}`, statusCode: 500 });
+        }
+      },
+    },
+    {
+      path: pathMatcher,
+      method: 'POST',
+      handler: async (eventParser) => {
+        try {
+          const object = JSON.parse(eventParser.getBody());
+
+          const sqlValues = fields
+          .filter(field => !field.omit && object[field.name])
+          .map(field => {
+            return mysql.escape(object[field.name]);
+          })
+          .join(', ');
+
+          const sqlFields = fields
+          .filter(field => !field.omit && object[field.name])
+          .map(field => field.name)
+          .join(', ');
+
+
+          const statements = [
+            'USE centcom;',
+            `INSERT INTO ${table} (${sqlFields}) VALUES (${sqlValues});`,
+          ];
+          const result = await db.multiQuery(statements);
+          return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+        } catch (e) {
+          console.log(e);
+          return createResponse({ body: `Error running ${name} create\n${e.message}\n${e.stack}`, statusCode: 500 });
+        }
+      },
+    },
+    {
+      path: pathMatcher,
+      method: 'DELETE',
+      handler: async (eventParser) => {
+        try {
+          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^\/${path}\/([0-9]+)`))[1]);
+
+          const statements = [
+            'USE centcom;',
+            `DELETE FROM ${table} WHERE id = ${objectId};`,
+          ];
+
+          const result = await db.multiQuery(statements);
+          return createResponse({ body: JSON.stringify(result), statusCode: 202 });
+        } catch (e) {
+          console.log(e);
+          return createResponse({
+            body: `Error running ${name} delete\n${e.message}\n${e.stack}`,
+            statusCode: 500
+          });
+        }
+      },
+    }
+  ];
 };
 
 const endpoints = [
@@ -73,42 +187,6 @@ const endpoints = [
     },
   },
   {
-    path: /^\/servers/,
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT * FROM servers;',
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running servers\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/config/,
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT * FROM config;',
-        ];
-        const result = await db.multiQuery(statements);
-
-        const formattedResults = result[1].reduce((output, { cfg_key, cfg_value }) => ({
-          ...output,
-          [cfg_key]: cfg_value
-        }), {});
-
-        return createResponse({ body: JSON.stringify(formattedResults), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
     path: /^\/init/,
     handler: async (eventParser) => {
       try {
@@ -116,7 +194,6 @@ const endpoints = [
           [initTablesSql],
           [setConfig],
           [initUsers],
-          [initPermissions],
           [initServers],
           [initBooks],
         ];
@@ -164,302 +241,6 @@ const endpoints = [
     },
   },
   {
-    path: /^\/books/,
-    method: 'GET',
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT ' +
-          'books.id, ' +
-          'books.title, ' +
-          'books.content, ' +
-          'books.category_id, ' +
-          'book_categories.name AS category_name ' +
-          'FROM books ' +
-          'LEFT JOIN book_categories ' +
-          'ON books.category_id = book_categories.id;',
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running book get\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/books/,
-    method: 'PUT',
-    handler: async (eventParser) => {
-      try {
-        const bookId = parseInt(eventParser.regexMatchPath(/^\/books\/([0-9]+)/)[1]);
-        const book = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `UPDATE books SET title = ${mysql.escape(book.title)}, content = ${mysql.escape(book.content)}, category_id = ${mysql.escape(book.category_id) || 'null'} WHERE id = ${bookId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book update\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/books/,
-    method: 'POST',
-    handler: async (eventParser) => {
-      try {
-        const book = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `INSERT INTO books (title, content, category_id) VALUES (${mysql.escape(book.title)}, ${mysql.escape(book.content)}, ${mysql.escape(book.category_id) || 'null'});`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book create\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/books/,
-    method: 'DELETE',
-    handler: async (eventParser) => {
-      try {
-        const bookId = parseInt(eventParser.regexMatchPath(/^\/books\/([0-9]+)/)[1]);
-
-        const statements = [
-          'USE centcom;',
-          `DELETE FROM books WHERE id = ${bookId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book delete\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/permissions/,
-    method: 'GET',
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT * FROM permissions;',
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running permission get\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/permissions/,
-    method: 'PUT',
-    handler: async (eventParser) => {
-      try {
-        const permissionId = parseInt(eventParser.regexMatchPath(/^\/permissions\/([0-9]+)/)[1]);
-        const permission = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `UPDATE permissions SET name = ${mysql.escape(permission.name)}, description = ${mysql.escape(permission.description)} WHERE id = ${permissionId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running permission update\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/permissions/,
-    method: 'POST',
-    handler: async (eventParser) => {
-      try {
-        const permission = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `INSERT INTO permissions (name, description) VALUES (${mysql.escape(permission.name)}, ${mysql.escape(permission.description)});`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running permission create\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/permissions/,
-    method: 'DELETE',
-    handler: async (eventParser) => {
-      try {
-        const permissionId = parseInt(eventParser.regexMatchPath(/^\/permissions\/([0-9]+)/)[1]);
-
-        const statements = [
-          'USE centcom;',
-          `DELETE FROM permissions WHERE id = ${permissionId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running permission delete\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/users/,
-    method: 'GET',
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT * FROM users;',
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running user get\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/users/,
-    method: 'PUT',
-    handler: async (eventParser) => {
-      try {
-        const userId = parseInt(eventParser.regexMatchPath(/^\/users\/([0-9]+)/)[1]);
-        const user = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `UPDATE users SET nickname = ${mysql.escape(user.nickname)}, email = ${mysql.escape(user.email)}, byond_key = ${mysql.escape(user.byond_key)} WHERE id = ${userId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running user update\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/users/,
-    method: 'POST',
-    handler: async (eventParser) => {
-      try {
-        const user = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `INSERT INTO users (nickname, email, byond_key) VALUES (${mysql.escape(user.nickname)}, ${mysql.escape(user.email)}, ${mysql.escape(user.byond_key)});`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running user create\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/users/,
-    method: 'DELETE',
-    handler: async (eventParser) => {
-      try {
-        const userId = parseInt(eventParser.regexMatchPath(/^\/users\/([0-9]+)/)[1]);
-
-        const statements = [
-          'USE centcom;',
-          `DELETE FROM users WHERE id = ${userId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running user delete\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/bookCategories/,
-    method: 'GET',
-    handler: async (eventParser) => {
-      try {
-        const statements = [
-          'USE centcom;',
-          'SELECT * FROM book_categories;',
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });
-      } catch (e) {
-        return createResponse({ body: `Error running book categories get\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/bookCategories/,
-    method: 'PUT',
-    handler: async (eventParser) => {
-      try {
-        const bookCategoryId = parseInt(eventParser.regexMatchPath(/^\/bookCategories\/([0-9]+)/)[1]);
-        const bookCategory = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `UPDATE book_categories SET name = ${mysql.escape(bookCategory.name)}, color = ${mysql.escape(bookCategory.color)} WHERE id = ${bookCategoryId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 204 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book categories update\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/bookCategories/,
-    method: 'POST',
-    handler: async (eventParser) => {
-      try {
-        const bookCategory = JSON.parse(eventParser.getBody());
-        const statements = [
-          'USE centcom;',
-          `INSERT INTO book_categories (name, color) VALUES (${mysql.escape(bookCategory.name)}, ${mysql.escape(bookCategory.color)});`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 201 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book categories create\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
-    path: /^\/bookCategories/,
-    method: 'DELETE',
-    handler: async (eventParser) => {
-      try {
-        const bookCategoryId = parseInt(eventParser.regexMatchPath(/^\/bookCategories\/([0-9]+)/)[1]);
-
-        const statements = [
-          'USE centcom;',
-          `DELETE FROM book_categories WHERE id = ${bookCategoryId};`,
-        ];
-        const result = await db.multiQuery(statements);
-        return createResponse({ body: JSON.stringify(result), statusCode: 202 });
-      } catch (e) {
-        console.log(e);
-        return createResponse({ body: `Error running book categories delete\n${e.message}\n${e.stack}`, statusCode: 500 });
-      }
-    },
-  },
-  {
     path: /^\/connect/,
     handler: async (eventParser) => {
       try {
@@ -482,7 +263,110 @@ const endpoints = [
         }
       });
     },
-  }
+  },
+  ...getCrudEndpointHandlers('books', 'books', 'books', [
+    {
+      name: 'title',
+    },
+    {
+      name: 'content',
+    },
+    {
+      name: 'category_id',
+    },
+  ], {
+    overrideGetSql: 'SELECT books.id, books.title, books.content, books.category_id, book_categories.name AS category_name FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;',
+  }),
+  ...getCrudEndpointHandlers('config', 'config', 'config', [
+    {
+      name: 'cfg_key',
+    },
+    {
+      name: 'cfg_value',
+    },
+  ], {
+    postFetch: (data) => {
+      return data.reduce((output, { cfg_key, cfg_value }) => ({
+        ...output,
+        [cfg_key]: cfg_value
+      }), {});
+    },
+  }),
+  ...getCrudEndpointHandlers('bookCategories', 'book_categories', 'book categories', [
+    {
+      name: 'name',
+    },
+    {
+      name: 'color',
+    },
+  ]),
+  ...getCrudEndpointHandlers('permissions', 'permissions', 'permissions', [
+    {
+      name: 'name',
+    },
+    {
+      name: 'description',
+    },
+  ]),
+  ...getCrudEndpointHandlers('users', 'users', 'users', [
+    {
+      name: 'nickname',
+    },
+    {
+      name: 'email',
+    },
+    {
+      name: 'byond_key',
+    },
+  ]),
+  ...getCrudEndpointHandlers('userPermissions', 'user_permissions', 'user permissions', [
+    {
+      name: 'permission_id',
+    },
+    {
+      name: 'user_id',
+    },
+  ], {
+    overrideGetSql: fetchUserPermissions,
+  }),
+  ...getCrudEndpointHandlers('userGroups', 'user_groups', 'user groups', [
+    {
+      name: 'name',
+    },
+    {
+      name: 'description',
+    },
+  ]),
+  ...getCrudEndpointHandlers('groupMembers', 'user_group_members', 'group members', [
+    {
+      name: 'user_id',
+    },
+    {
+      name: 'group_id',
+    },
+  ]),
+  ...getCrudEndpointHandlers('groupPermissions', 'user_group_permissions', 'group permissions', [
+    {
+      name: 'permission_id',
+    },
+    {
+      name: 'group_id',
+    },
+  ]),
+  ...getCrudEndpointHandlers('servers', 'servers', 'servers', [
+    {
+      name: 'name',
+    },
+    {
+      name: 'url',
+    },
+    {
+      name: 'port',
+    },
+    {
+      name: 'access_level',
+    },
+  ]),
 ];
 
 const handler = async function (event, context, callback) {
