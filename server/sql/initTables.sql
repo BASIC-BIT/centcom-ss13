@@ -14,7 +14,7 @@ CREATE TABLE book_categories (
 
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    title VARCHAR(200) CHARACTER SET utf8 NOT NULL,
+    title VARCHAR(2000) CHARACTER SET utf8 NOT NULL,
     content MEDIUMTEXT CHARACTER SET utf8,
     category_id INT,
     FOREIGN KEY (category_id) REFERENCES book_categories(id)
