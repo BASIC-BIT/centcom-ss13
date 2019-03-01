@@ -5,7 +5,7 @@ DELETE FROM user_groups WHERE 1=1;
 DELETE FROM user_group_members WHERE 1=1;
 DELETE FROM user_group_permissions WHERE 1=1;
 
-INSERT INTO permissions (name, description)
+INSERT INTO permissions (id, name, description)
 VALUES
     (1, 'VIEW_USERS', 'View User List'),
     (2, 'EDIT_USERS', 'Edit Users'),
@@ -15,7 +15,7 @@ VALUES
     (6, 'REMOVE_BAN', 'Remove Ban (from anybody)');
     (6, 'ALL', 'Override');
 
-INSERT INTO user_groups (name, description)
+INSERT INTO user_groups (id, name, description)
 VALUES
     (1, 'VIEW_USERS', 'View User List'),
     (2, 'EDIT_USERS', 'Edit Users'),
@@ -26,7 +26,7 @@ VALUES
     (6, 'ALL', 'Override');
 
 INSERT INTO
-    users (nickname, email, byond_key)
+    users (id, nickname, email, byond_key)
 VALUES
     (1, 'Steven', 'abc@def.com', NULL),
     (2, 'Keekenox', 'anemail@example.com', NULL),
