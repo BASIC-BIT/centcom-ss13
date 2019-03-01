@@ -169,13 +169,13 @@ const endpoints = [
       try {
         const statements = [
           'USE centcom;',
-          'SELECT (' +
+          'SELECT ' +
           'books.id, ' +
           'books.title, ' +
           'books.content, ' +
           'books.category_id, ' +
-          'book_categories.name AS category_name' +
-          ') FROM books ' +
+          'book_categories.name AS category_name ' +
+          'FROM books ' +
           'LEFT JOIN book_categories ' +
           'ON books.category_id = book_categories.id;',
         ];

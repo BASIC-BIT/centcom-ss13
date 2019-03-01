@@ -197,7 +197,7 @@ describe('CentCom Server', () => {
     describe('read', () => {
       it('should read existing books', async () => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nSELECT (books.id, books.title, books.content, books.category_id, book_categories.name AS category_name) FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;')
+        .withArgs('USE centcom;\nSELECT books.id, books.title, books.content, books.category_id, book_categories.name AS category_name FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;')
         .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
         const event = createRequest({
           path: '/books',
