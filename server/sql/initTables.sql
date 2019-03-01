@@ -28,36 +28,36 @@ CREATE TABLE permissions (
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    nickname VARCHAR(100),
+    nickname VARCHAR(100) NOT NULL,
     email VARCHAR(100),
     byond_key VARCHAR(100)
 );
 CREATE TABLE user_permissions (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    permission_id INT,
-    user_id INT,
+    permission_id INT NOT NULL,
+    user_id INT NOT NULL,
     FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_groups (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    name VARCHAR(100),
+    name VARCHAR(100) NOT NULL,
     description VARCHAR(300)
 );
 
 CREATE TABLE user_group_members (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    user_id INT,
-    group_id INT,
+    user_id INT NOT NULL,
+    group_id INT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_group_permissions (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    permission_id INT,
-    group_id INT,
+    permission_id INT NOT NULL,
+    group_id INT NOT NULL,
     FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE CASCADE
 );

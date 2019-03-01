@@ -31,7 +31,7 @@ class BookEditor extends React.Component {
 
   handleCategoryChange(e, setInputHandler) {
     if (e === 'none') {
-      setInputHandler('category_id', undefined);
+      setInputHandler('category_id', null);
     } else {
       setInputHandler('category_id', e);
     }

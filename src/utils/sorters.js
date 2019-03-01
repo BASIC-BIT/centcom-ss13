@@ -1,6 +1,6 @@
 const sortAlphabeticalByKey = (key) => (a, b) => {
-  const valueA = a[key].toLowerCase();
-  const valueB = b[key].toLowerCase();
+  const valueA = (a[key] || '').toLowerCase();
+  const valueB = (b[key] || '').toLowerCase();
   if (valueA < valueB)
     return -1;
   if (valueA > valueB)
