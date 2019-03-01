@@ -12,18 +12,8 @@ VALUES
     (3, 'DELETE_USERS', 'Delete Users'),
     (4, 'VIEW_BANS', 'View Ban List'),
     (5, 'EDIT_BANS', 'Edit Bans'),
-    (6, 'REMOVE_BAN', 'Remove Ban (from anybody)');
-    (6, 'ALL', 'Override');
-
-INSERT INTO user_groups (id, name, description)
-VALUES
-    (1, 'VIEW_USERS', 'View User List'),
-    (2, 'EDIT_USERS', 'Edit Users'),
-    (3, 'DELETE_USERS', 'Delete Users'),
-    (4, 'VIEW_BANS', 'View Ban List'),
-    (5, 'EDIT_BANS', 'Edit Bans'),
-    (6, 'REMOVE_BAN', 'Remove Ban (from anybody)');
-    (6, 'ALL', 'Override');
+    (6, 'REMOVE_BAN', 'Remove Ban (from anybody)'),
+    (7, 'ALL', 'Override for All Permissions');
 
 INSERT INTO
     users (id, nickname, email, byond_key)
