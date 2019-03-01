@@ -40,13 +40,13 @@ CREATE TABLE user_permissions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_groups {
+CREATE TABLE user_groups (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     name VARCHAR(100),
     description VARCHAR(300),
 );
 
-CREATE TABLE user_group_members {
+CREATE TABLE user_group_members (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     user_id INT,
     group_id INT,
@@ -54,7 +54,7 @@ CREATE TABLE user_group_members {
     FOREIGN KEY (group_id) REFERENCES user_groups(id) ON DELETE CASCADE
 );
 
-CREATE TABLE user_group_permissions {
+CREATE TABLE user_group_permissions (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     permission_id INT,
     group_id INT,
