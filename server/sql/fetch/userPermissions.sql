@@ -1,5 +1,3 @@
-USE centcom;
-
 SELECT
     user_permissions.id AS id,
     user_permissions.user_id AS user_id,
