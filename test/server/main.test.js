@@ -163,7 +163,7 @@ describe('CentCom Server', () => {
     describe('create', () => {
       it('should create new book', (done) => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nINSERT INTO books (title, content, category_id) VALUES ("foo", "bar", 15);')
+        .withArgs('USE centcom;\nINSERT INTO books (title, content, category_id) VALUES (\'foo\', \'bar\', 15);')
         .yieldsRight(undefined, 'Created!', { foo: 'bar' });
         const event = createRequest({
           path: '/books',
@@ -180,7 +180,7 @@ describe('CentCom Server', () => {
     describe('update', () => {
       it('should update existing book', (done) => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nUPDATE books SET title = "foo", content = "bar", category_id = 15 WHERE id = 1;')
+        .withArgs('USE centcom;\nUPDATE books SET title = \'foo\', content = \'bar\', category_id = 15 WHERE id = 1;')
         .yieldsRight(undefined, 'Updated!', { foo: 'bar' });
         const event = createRequest({
           path: '/books/1',

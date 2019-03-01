@@ -1,6 +1,7 @@
 'use strict';
 require("@babel/polyfill");
 
+import mysql from 'mysql';
 import ApiGatewayEventParser from "./api-gateway-event-parser";
 import {DB} from './db_broker';
 import initTablesSql from './sql/initTables.sql';
@@ -195,7 +196,7 @@ const endpoints = [
         const book = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `UPDATE books SET title = "${book.title}", content = "${book.content}", category_id = ${book.category_id || 'null'} WHERE id = ${bookId};`,
+          `UPDATE books SET title = ${mysql.escape(book.title)}, content = ${mysql.escape(book.content)}, category_id = ${mysql.escape(book.category_id) || 'null'} WHERE id = ${bookId};`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 204 });
@@ -213,7 +214,7 @@ const endpoints = [
         const book = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO books (title, content, category_id) VALUES ("${book.title}", "${book.content}", ${book.category_id || 'null'});`,
+          `INSERT INTO books (title, content, category_id) VALUES (${mysql.escape(book.title)}, ${mysql.escape(book.content)}, ${mysql.escape(book.category_id) || 'null'});`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });
@@ -267,7 +268,7 @@ const endpoints = [
         const permission = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `UPDATE permissions SET name = "${permission.name}", description = "${permission.description}" WHERE id = ${permissionId};`,
+          `UPDATE permissions SET name = ${mysql.escape(permission.name)}, description = ${mysql.escape(permission.description)} WHERE id = ${permissionId};`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 204 });
@@ -285,7 +286,7 @@ const endpoints = [
         const permission = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO permissions (name, description) VALUES ("${permission.name}", "${permission.description}");`,
+          `INSERT INTO permissions (name, description) VALUES (${mysql.escape(permission.name)}, ${mysql.escape(permission.description)});`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });
@@ -339,7 +340,7 @@ const endpoints = [
         const user = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `UPDATE users SET nickname = "${user.nickname}", email = "${user.email}", byond_key = "${user.byond_key}" WHERE id = ${userId};`,
+          `UPDATE users SET nickname = ${mysql.escape(user.nickname)}, email = ${mysql.escape(user.email)}, byond_key = ${mysql.escape(user.byond_key)} WHERE id = ${userId};`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 204 });
@@ -357,7 +358,7 @@ const endpoints = [
         const user = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO users (nickname, email, byond_key) VALUES ("${user.nickname}", "${user.email}", "${user.byond_key}");`,
+          `INSERT INTO users (nickname, email, byond_key) VALUES (${mysql.escape(user.nickname)}, ${mysql.escape(user.email)}, ${mysql.escape(user.byond_key)});`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });
@@ -411,7 +412,7 @@ const endpoints = [
         const bookCategory = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `UPDATE book_categories SET name = "${bookCategory.name}", color = "${bookCategory.color}" WHERE id = ${bookCategoryId};`,
+          `UPDATE book_categories SET name = ${mysql.escape(bookCategory.name)}, color = ${mysql.escape(bookCategory.color)} WHERE id = ${bookCategoryId};`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 204 });
@@ -429,7 +430,7 @@ const endpoints = [
         const bookCategory = JSON.parse(eventParser.getBody());
         const statements = [
           'USE centcom;',
-          `INSERT INTO book_categories (name, color) VALUES ("${bookCategory.name}", "${bookCategory.color}");`,
+          `INSERT INTO book_categories (name, color) VALUES (${mysql.escape(bookCategory.name)}, ${mysql.escape(bookCategory.color)});`,
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result), statusCode: 201 });
