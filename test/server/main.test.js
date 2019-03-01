@@ -195,19 +195,18 @@ describe('CentCom Server', () => {
       });
     });
     describe('read', () => {
-      it('should read existing books', (done) => {
+      it('should read existing books', async () => {
         mysqlQueryStub
-        .withArgs('USE centcom;\nSELECT * FROM books;')
+        .withArgs('USE centcom;\nSELECT (books.id, books.title, books.content, books.category_id, book_categories.name AS category_name) FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;')
         .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
         const event = createRequest({
           path: '/books',
           httpMethod: 'GET',
         });
-        handler.handler(event, {}, (error, output) => {
-          expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
-          expect(output.statusCode).to.equal(200);
-          done();
-        });
+        const output = await promisify(handler.handler)(event, {});
+
+        expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
+        expect(output.statusCode).to.equal(200);
       });
     });
     describe('delete', () => {

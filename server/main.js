@@ -169,7 +169,15 @@ const endpoints = [
       try {
         const statements = [
           'USE centcom;',
-          'SELECT * FROM books;',
+          'SELECT (' +
+          'books.id, ' +
+          'books.title, ' +
+          'books.content, ' +
+          'books.category_id, ' +
+          'book_categories.name AS category_name' +
+          ') FROM books ' +
+          'LEFT JOIN book_categories ' +
+          'ON books.category_id = book_categories.id;',
         ];
         const result = await db.multiQuery(statements);
         return createResponse({ body: JSON.stringify(result[1]), statusCode: 200 });

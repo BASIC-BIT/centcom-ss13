@@ -68,17 +68,17 @@ class BookEditor extends React.Component {
   }
 
   getMenuItems() {
-    const categories = this.props.bookCategories.map(category => ({
+    const categoriesWithBooks = this.props.bookCategories.map(category => ({
       ...category,
       books: this.props.books
       .filter(book => book.category_id === category.id)
       .sort(sortAlphabeticalByKey('title')),
     }));
 
-    const leftoverBooks = this.props.books.filter(book => categories.every(category => !category.books.some(testBook => testBook.id === book.id)));
+    const leftoverBooks = this.props.books.filter(book => categoriesWithBooks.every(category => !category.books.some(testBook => testBook.id === book.id)));
 
-    const finalCategories = [
-      ...categories,
+    const categories = [
+      ...categoriesWithBooks,
       {
         id: 'Unassigned',
         name: 'Unassigned',
@@ -86,7 +86,7 @@ class BookEditor extends React.Component {
       },
     ].sort(sortAlphabeticalByKey('name'));
 
-    const displayCategories = finalCategories
+    const displayCategories = categories
     .map(category => (
       <SubMenu key={category.id} title={category.name}>
         {category.books.map(book => (<Menu.Item key={book.id}>{book.title}</Menu.Item>))}
@@ -112,7 +112,7 @@ class BookEditor extends React.Component {
     return (
       <div className="section">
         <span className="bold">Category:</span>
-        {object.category_id ? this.props.bookCategories.find(category => category.id === object.category_id).name : 'Unassigned'}
+        {object.category_name || 'Unassigned'}
       </div>
     );
   }
@@ -134,6 +134,10 @@ class BookEditor extends React.Component {
         type: 'LONG_STRING',
         name: 'Content',
       },
+      category_name: {
+        type: 'NO_DISPLAY',
+        name: 'Category Name',
+      }
     };
   }
 

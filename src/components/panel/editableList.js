@@ -117,6 +117,12 @@ export default class EditableList extends React.Component {
       if(type === 'CUSTOM') {
         return renderEdit(this.state.input, this.setInput.bind(this));
       }
+
+      if(type === 'NO_DISPLAY') {
+        return null;
+      }
+
+      return `ERROR: Display type not found for key ${key}`;
     });
 
     return (
@@ -148,6 +154,12 @@ export default class EditableList extends React.Component {
       if(type === 'CUSTOM') {
         return renderDisplay(object);
       }
+
+      if(type === 'NO_DISPLAY') {
+        return null;
+      }
+
+      return `ERROR: Display type not found for key ${key}`;
     });
 
     return (
