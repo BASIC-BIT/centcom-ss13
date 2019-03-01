@@ -7,32 +7,8 @@ const merge = (...args) => {
 
 export default function defaultState(state = initialState, action) {
   switch (action.type) {
-    case 'SET_LOADING':
-      return merge(state, { loading: action.data });
-    case 'SET_SERVERS':
-      return merge(state, { servers: action.data });
-    case 'SET_LOADING_SERVERS':
-      return merge(state, { loadingServers: action.data });
-    case 'SET_CONFIG':
-      return merge(state, { config: action.data });
-    case 'SET_LOADING_CONFIG':
-      return merge(state, { loadingConfig: action.data });
-    case 'SET_BOOKS':
-      return merge(state, { books: action.data });
-    case 'SET_LOADING_BOOKS':
-      return merge(state, { loadingBooks: action.data });
-    case 'SET_BOOK_CATEGORIES':
-      return merge(state, { bookCategories: action.data });
-    case 'SET_LOADING_BOOK_CATEGORIES':
-      return merge(state, { loadingBookCategories: action.data });
-    case 'SET_PERMISSIONS':
-      return merge(state, { permissions: action.data });
-    case 'SET_LOADING_PERMISSIONS':
-      return merge(state, { loadingPermissions: action.data });
-    case 'SET_USERS':
-      return merge(state, { users: action.data });
-    case 'SET_LOADING_USERS':
-      return merge(state, { loadingUsers: action.data });
+    case 'MERGE':
+      return merge(state, action.data);
     default:
       return state
   }

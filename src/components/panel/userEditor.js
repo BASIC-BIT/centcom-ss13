@@ -19,60 +19,6 @@ class UsersEditor extends React.Component {
     return this.props.users;
   }
 
-  getObject(id) {
-    return this.props.users.find(user => user.id === id);
-  }
-
-  getContent(object) {
-    return (
-      <React.Fragment>
-        <div className="section">
-          <span className="bold">Nickname:</span>
-          <pre>{object.nickname}</pre>
-        </div>  
-        <div className="section">
-          <span className="bold">Email:</span>
-          <pre>{object.email}</pre>
-        </div>
-        <div className="section">
-          <span className="bold">Byond Key:</span>
-          <pre>{object.byond_key}</pre>
-        </div>
-      </React.Fragment>
-    );
-  }
-
-  changeNickname(e, setInputHandler) {
-    setInputHandler('nickname', e.target.value);
-  }
-
-  changeEmail(e, setInputHandler) {
-    setInputHandler('email', e.target.value);
-  }
-
-  changeByondKey(e, setInputHandler) {
-    setInputHandler('byond_key', e.target.value);
-  }
-
-  displayEditScreen(object, listState, setInputHandler) {
-    return (
-      <React.Fragment>
-        <div className="section"><span className="bold">Nickname: </span><Input className="inputField"
-                                                                             value={listState.input.nickname}
-                                                                             onChange={(e) => this.changeNickname(e, setInputHandler)}/>
-        </div>
-        <div className="section"><span className="bold">Email: </span><Input className="inputField"
-                                                                           value={listState.input.email}
-                                                                           onChange={(e) => this.changeEmail(e, setInputHandler)}/>
-        </div>
-        <div className="section"><span className="bold">Byond Key: </span><Input className="inputField"
-                                                                             value={listState.input.byond_key}
-                                                                             onChange={(e) => this.changeByondKey(e, setInputHandler)}/>
-        </div>
-      </React.Fragment>
-    )
-  }
-
   isLoading() {
     return !this.props.users || this.props.loadingUsers;
   }
@@ -99,16 +45,30 @@ class UsersEditor extends React.Component {
     return await db.deleteUser(id);
   }
 
+  getFields() {
+    return {
+      nickname: {
+        type: 'STRING',
+        name: 'Nickname',
+        menuKey: true, //must be the only field with menuKey
+      },
+      email: {
+        type: 'STRING',
+        name: 'Email',
+      },
+      byond_key: {
+        type: 'STRING',
+        name: 'Byond Key',
+      },
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
         <EditableList
           isLoading={this.isLoading.bind(this)}
-          getObject={this.getObject.bind(this)}
           getObjects={this.getObjects.bind(this)}
-          getContent={this.getContent.bind(this)}
-          displayEditScreen={this.displayEditScreen.bind(this)}
-          displayCreateScreen={this.displayEditScreen.bind(this)}
           getMenuItems={this.getMenuItems.bind(this)}
           performEdit={this.performEdit.bind(this)}
           performCreate={this.performCreate.bind(this)}
@@ -116,7 +76,7 @@ class UsersEditor extends React.Component {
           displayName="user"
           refresh={this.refresh.bind(this)}
           renderHeaderButtons={() => (null)}
-
+          getFields={this.getFields.bind(this)}
         />
       </React.Fragment>
     );

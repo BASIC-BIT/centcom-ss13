@@ -4,78 +4,92 @@ const db = new DB();
 
 function setLoading(loading) {
   return {
-    type: 'SET_LOADING',
-    data: loading,
+    type: 'MERGE',
+    data: { loading },
   };
 }
 
 function setServers(servers) {
   return {
-    type: 'SET_SERVERS',
-    data: servers,
+    type: 'MERGE',
+    data: { servers },
   };
 }
 
-function setLoadingServers(loading) {
+function setLoadingServers(loadingServers) {
   return {
-    type: 'SET_LOADING_SERVERS',
-    data: loading,
+    type: 'MERGE',
+    data: { loadingServers },
   };
 }
 
 function setConfig(config) {
   return {
-    type: 'SET_CONFIG',
-    data: config,
+    type: 'MERGE',
+    data: { config },
   };
 }
 
-function setLoadingConfig(loading) {
+function setLoadingConfig(loadingConfig) {
   return {
-    type: 'SET_LOADING_CONFIG',
-    data: loading,
+    type: 'MERGE',
+    data: { loadingConfig },
   };
 }
 
 function setBooks(books) {
   return {
-    type: 'SET_BOOKS',
-    data: books,
+    type: 'MERGE',
+    data: { books },
   };
 }
 
 function setPermissions(permissions) {
   return {
-    type: 'SET_PERMISSIONS',
-    data: permissions,
+    type: 'MERGE',
+    data: { permissions },
   };
 }
 
-function setLoadingBooks(loading) {
+function setLoadingBooks(loadingBooks) {
   return {
-    type: 'SET_LOADING_BOOKS',
-    data: loading,
+    type: 'MERGE',
+    data: { loadingBooks },
   };
 }
 
 function setBookCategories(bookCategories) {
   return {
-    type: 'SET_BOOK_CATEGORIES',
-    data: bookCategories,
+    type: 'MERGE',
+    data: { bookCategories },
   };
 }
 
-function setLoadingBookCategories(loading) {
+function setLoadingBookCategories(loadingBookCategories) {
   return {
-    type: 'SET_LOADING_BOOK_CATEGORIES',
-    data: loading,
+    type: 'MERGE',
+    data: { loadingBookCategories },
   };
 }
 
-function setLoadingPermissions(loading) {
+function setLoadingPermissions(loadingPermissions) {
   return {
-    type: 'SET_LOADING_PERMISSIONS',
-    data: loading,
+    type: 'MERGE',
+    data: { loadingPermissions },
+  };
+}
+
+function setUsers(users) {
+  return {
+    type: 'MERGE',
+    data: { users },
+  };
+}
+
+function setLoadingUsers(loadingUsers) {
+  return {
+    type: 'MERGE',
+    data: { loadingUsers },
   };
 }
 
@@ -155,20 +169,6 @@ function fetchPermissions() {
   }
 }
 
-function setUsers(users) {
-  return {
-    type: 'SET_USERS',
-    data: users,
-  };
-}
-
-function setLoadingUsers(loading) {
-  return {
-    type: 'SET_LOADING_USERS',
-    data: loading,
-  };
-}
-
 function fetchUsers() {
   return async (dispatch, getState) => {
     const { app } = getState();
@@ -188,20 +188,9 @@ function fetchUsers() {
 }
 
 export default {
-  setLoading,
-  setServers,
-  setConfig,
-  setBooks,
-  setPermissions,
   fetchBooks,
   fetchConfig,
   fetchServers,
   fetchPermissions,
-  setLoadingServers,
-  setLoadingConfig,
-  setLoadingBooks,
-  setLoadingPermissions,
-  setUsers,
-  setLoadingUsers,
   fetchUsers,
 }

@@ -23,44 +23,6 @@ class PermissionsEditor extends React.Component {
     return this.props.permissions.find(permission => permission.id === id);
   }
 
-  getContent(object) {
-    return (
-      <React.Fragment>
-        <div className="section">
-          <span className="bold">Name:</span>
-          <pre>{object.name}</pre>
-        </div>
-        <div className="section">
-          <span className="bold">Description:</span>
-          <pre>{object.description}</pre>
-        </div>
-      </React.Fragment>
-    );
-  }
-
-  changeName(e, setInputHandler) {
-    setInputHandler('name', e.target.value);
-  }
-
-  changeDescription(e, setInputHandler) {
-    setInputHandler('description', e.target.value);
-  }
-
-  displayEditScreen(object, listState, setInputHandler) {
-    return (
-      <React.Fragment>
-        <div className="section"><span className="bold">Name: </span><Input className="inputField"
-                                                                             value={listState.input.name}
-                                                                             onChange={(e) => this.changeName(e, setInputHandler)}/>
-        </div>
-        <div className="section"><span className="bold">Description: </span><Input className="inputField"
-                                                                           value={listState.input.description}
-                                                                           onChange={(e) => this.changeDescription(e, setInputHandler)}/>
-        </div>
-      </React.Fragment>
-    )
-  }
-
   isLoading() {
     return !this.props.permissions || this.props.loadingPermissions;
   }
@@ -87,16 +49,26 @@ class PermissionsEditor extends React.Component {
     return await db.deletePermission(id);
   }
 
+  getFields() {
+    return {
+      name: {
+        type: 'STRING',
+        name: 'Name',
+        menuKey: true, //must be the only field with menuKey
+      },
+      description: {
+        type: 'STRING',
+        name: 'Description',
+      },
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
         <EditableList
           isLoading={this.isLoading.bind(this)}
-          getObject={this.getObject.bind(this)}
           getObjects={this.getObjects.bind(this)}
-          getContent={this.getContent.bind(this)}
-          displayEditScreen={this.displayEditScreen.bind(this)}
-          displayCreateScreen={this.displayEditScreen.bind(this)}
           getMenuItems={this.getMenuItems.bind(this)}
           performEdit={this.performEdit.bind(this)}
           performCreate={this.performCreate.bind(this)}
@@ -104,7 +76,7 @@ class PermissionsEditor extends React.Component {
           displayName="permission"
           refresh={this.refresh.bind(this)}
           renderHeaderButtons={() => (null)}
-
+          getFields={this.getFields.bind(this)}
         />
       </React.Fragment>
     );

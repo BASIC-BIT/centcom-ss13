@@ -35,67 +35,20 @@ class BookEditor extends React.Component {
     }
   }
 
-  getContent(object) {
-    return (
-      <React.Fragment>
-        <div className="section">
-          <span className="bold">Title:</span>
-          <pre>{object.title}</pre>
-        </div>
-        <div className="section">
-          <span className="bold">Category:</span>
-          {object.category_id ? this.props.bookCategories.find(category => category.id === object.category_id).name : 'Unassigned'}
-        </div>
-        <div className="content section">
-          <span className="bold">Content:</span>
-          <pre>
-            {object.content}
-          </pre>
-        </div>
-      </React.Fragment>
-    );
-  }
-
-  changeTitle(e, setInputHandler) {
-    setInputHandler('title', e.target.value);
-  }
-
-  changeContent(e, setInputHandler) {
-    setInputHandler('content', e.target.value);
-  }
-
-  getCategorySelector(listState, setInputHandler) {
+  getCategorySelector(inputs, setInputHandler) {
     const Option = Select.Option;
 
-    const categoryOptions = (
-      <Select className="inputField" defaultValue={listState.input.category_id || 'none'}
-              onChange={(e) => this.handleCategoryChange(e, setInputHandler)}>
-        {this.props.bookCategories.map(category => (
-          <Option value={category.id} key={category.id}>{category.name}</Option>))}
-        <Option value="none">Unassigned</Option>
-      </Select>
-    );
-
-    return categoryOptions;
-  }
-
-  displayEditScreen(object, listState, setInputHandler) {
     return (
-      <React.Fragment>
-        <div className="section"><span className="bold">Title: </span><Input className="inputField"
-                                                                             value={listState.input.title}
-                                                                             onChange={(e) => this.changeTitle(e, setInputHandler)}/>
-        </div>
-        <div className="section">
-          <span className="bold">Category:</span>
-          {this.getCategorySelector(listState, setInputHandler)}
-        </div>
-        <div className="content section"><span className="bold">Content:</span><TextArea className="inputField" rows={7}
-                                                                                         value={listState.input.content}
-                                                                                         onChange={(e) => this.changeContent(e, setInputHandler)}/>
-        </div>
-      </React.Fragment>
-    )
+      <div className="section">
+        <span className="bold">Category:</span>
+        <Select className="inputField" defaultValue={inputs.category_id || 'none'}
+                onChange={(e) => this.handleCategoryChange(e, setInputHandler)}>
+          {this.props.bookCategories.map(category => (
+            <Option value={category.id} key={category.id}>{category.name}</Option>))}
+          <Option value="none">Unassigned</Option>
+        </Select>
+      </div>
+    );
   }
 
   isLoading() {
@@ -155,6 +108,35 @@ class BookEditor extends React.Component {
     return await db.deleteBook(id);
   }
 
+  getCategoryDisplay(object) {
+    return (
+      <div className="section">
+        <span className="bold">Category:</span>
+        {object.category_id ? this.props.bookCategories.find(category => category.id === object.category_id).name : 'Unassigned'}
+      </div>
+    );
+  }
+
+  getFields() {
+    return {
+      title: {
+        type: 'STRING',
+        name: 'Title',
+        menuKey: true, //must be the only field with menuKey
+      },
+      category_id: {
+        type: 'CUSTOM',
+        name: 'Category',
+        renderEdit: this.getCategorySelector.bind(this),
+        renderDisplay: this.getCategoryDisplay.bind(this),
+      },
+      content: {
+        type: 'LONG_STRING',
+        name: 'Content',
+      },
+    };
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -164,11 +146,7 @@ class BookEditor extends React.Component {
         />
         <EditableList
           isLoading={this.isLoading.bind(this)}
-          getObject={this.getObject.bind(this)}
           getObjects={this.getObjects.bind(this)}
-          getContent={this.getContent.bind(this)}
-          displayEditScreen={this.displayEditScreen.bind(this)}
-          displayCreateScreen={this.displayEditScreen.bind(this)}
           getMenuItems={this.getMenuItems.bind(this)}
           performEdit={this.performEdit.bind(this)}
           performCreate={this.performCreate.bind(this)}
@@ -179,7 +157,7 @@ class BookEditor extends React.Component {
             <Button key="editCategories" className="editCategoriesButton"
                     onClick={this.showBookCategoriesModal.bind(this)}>Categories</Button>
           )}
-
+          getFields={this.getFields.bind(this)}
         />
       </React.Fragment>
     );

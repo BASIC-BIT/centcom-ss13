@@ -30,6 +30,14 @@ function createResponse({
   }
 }
 
+const parseSqlResultValue = (results) => {
+  if(results === 'null' || results === 'NULL') {
+    return null;
+  }
+
+  return results;
+};
+
 const endpoints = [
   {
     path: /^\/login$/,

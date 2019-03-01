@@ -1,8 +1,9 @@
 import React from 'react';
-import {Button, Layout, Menu, Affix, Popconfirm, message, Icon} from "antd";
+import {Button, Layout, Menu, Affix, Popconfirm, message, Icon, Input } from "antd";
 
 import LoadingIndicator from "../loadingIndicator";
 
+const { TextArea } = Input;
 const { Sider, Content } = Layout;
 
 export default class EditableList extends React.Component {
@@ -16,6 +17,10 @@ export default class EditableList extends React.Component {
 
   contentContainer = React.createRef();
 
+  getObject(id) {
+    return this.props.getObjects().find(user => user.id === id);
+  }
+
   handleMenuSelect({ key }) {
     this.setState({ selectedKey: parseInt(key), editing: false, deleting: false, creating: false, });
   }
@@ -25,7 +30,7 @@ export default class EditableList extends React.Component {
       return (<LoadingIndicator center/>);
     }
 
-    if (!this.state.creating && (!this.state.selectedKey || !this.props.getObject(this.state.selectedKey))) {
+    if (!this.state.creating && (!this.state.selectedKey || !this.getObject(this.state.selectedKey))) {
       return (
         <div>Select an item from the side menu.</div>
       );
@@ -51,21 +56,10 @@ export default class EditableList extends React.Component {
             <Button className="button" type="danger" onClick={this.startDelete.bind(this)}>Delete</Button>
           </Popconfirm>}
         </Affix>
-        {this.state.editing && this.displayEditScreen()}
-        {this.state.creating && this.displayCreateScreen()}
-        {!this.state.editing && !this.state.creating && this.displayObjectContent()}
+        {(this.state.editing || this.state.creating) && this.displayEditScreen()}
+        {!this.state.editing && !this.state.creating && this.displayContent()}
       </div>
     );
-  }
-
-  displayObjectContent() {
-    if (this.isLoading()) {
-      return (<LoadingIndicator center/>);
-    }
-
-    const object = this.props.getObject(this.state.selectedKey);
-
-    return this.props.getContent(object);
   }
 
   setInput(key, value) {
@@ -86,19 +80,81 @@ export default class EditableList extends React.Component {
       return (<LoadingIndicator center/>);
     }
 
-    const object = this.props.getObject(this.state.selectedKey);
+    const fields = this.props.getFields();
 
-    return this.props.displayEditScreen(object, this.state, this.setInput.bind(this));
+    const displayFields = Object.entries(fields).map(([key, { type, name, renderEdit }]) => {
+      if(type === 'STRING') {
+        return (
+          <div className="section">
+          <span className="bold">
+            {name}:
+          </span>
+            <Input
+              className="inputField"
+              value={this.state.input[key]}
+              onChange={(e) => this.setInput(key, e.target.value)}
+            />
+          </div>
+        );
+      }
+
+      if(type === 'LONG_STRING') {
+        return (
+          <div className="content section">
+            <span className="bold">
+              {name}:
+            </span>
+            <TextArea
+              className="inputField"
+              rows={7}
+              value={this.state.input[key]}
+              onChange={(e) => this.setInput(key, e.target.value)}
+            />
+          </div>
+        );
+      }
+
+      if(type === 'CUSTOM') {
+        return renderEdit(this.state.input, this.setInput.bind(this));
+      }
+    });
+
+    return (
+      <React.Fragment>
+        {displayFields}
+      </React.Fragment>
+    );
   }
 
-  displayCreateScreen() {
+  displayContent() {
     if (this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
-    const object = this.props.getObject(this.state.selectedKey);
+    const object = this.getObject(this.state.selectedKey);
 
-    return this.props.displayCreateScreen(object, this.state, this.setInput.bind(this));
+    const fields = this.props.getFields();
+
+    const displayFields = Object.entries(fields).map(([key, { type, name, renderDisplay }]) => {
+      if(type === 'STRING' || type === 'LONG_STRING') {
+        return (
+          <div className="section">
+            <span className="bold">{name}:</span>
+            <pre>{object[key]}</pre>
+          </div>
+        );
+      }
+
+      if(type === 'CUSTOM') {
+        return renderDisplay(object);
+      }
+    });
+
+    return (
+      <React.Fragment>
+        {displayFields}
+      </React.Fragment>
+    );
   }
 
   getMenuItems() {
@@ -111,7 +167,7 @@ export default class EditableList extends React.Component {
   }
 
   startEdit() {
-    const object = this.props.getObject(this.state.selectedKey);
+    const object = this.getObject(this.state.selectedKey);
 
     this.setState({
       editing: true,
