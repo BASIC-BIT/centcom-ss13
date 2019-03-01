@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, Layout, Menu, Affix, Popconfirm, message, Icon, Input } from "antd";
-
+import { textSearch } from '../../utils/fuzzyMatcher';
 import LoadingIndicator from "../loadingIndicator";
 
 const { TextArea } = Input;
@@ -182,14 +182,16 @@ export default class EditableList extends React.Component {
       return (<LoadingIndicator center/>);
     }
 
-    const fields = this.props.getFields();
-    const filteredObjects = this.isFiltered() ? this.props.getObjects().filter((object) => {
-      return Object.entries(fields)
-      .filter(([key, field]) => field.type === 'STRING' || field.type === 'LONG_STRING')
-      .some(([key, field]) => object[key] && object[key].toLowerCase().includes(this.state.searchText.toLowerCase()));
-    }) : this.props.getObjects();
+    const stringFieldKeys = Object.entries(this.props.getFields())
+    .filter(([key, field]) => field.type === 'STRING' || field.type === 'LONG_STRING')
+    .map(([key]) => key);
 
-    return this.props.getMenuItems(filteredObjects, { filtered: this.isFiltered() });
+
+    const searchResults = this.isFiltered() ?
+      textSearch(stringFieldKeys, this.props.getObjects(), this.state.searchText) :
+      this.props.getObjects();
+
+    return this.props.getMenuItems(searchResults, { filtered: this.isFiltered() });
 
   }
 

@@ -34,11 +34,7 @@ class BookCategoriesModal extends React.Component {
 
     const updateResults = await updatePromise;
     const createResults = await createPromise;
-
-    console.log(updateResults);
-    console.log(createResults);
-
-    this.props.fetchBooks();
+    this.props.fetchBookCategories();
     this.setState({ loading: false });
 
     this.props.closeHandler();
@@ -51,7 +47,7 @@ class BookCategoriesModal extends React.Component {
 
     if(prevProps.visible !== this.props.visible) { //becoming visible or hiding
       if(this.props.visible) {
-        this.props.fetchBooks();
+        this.props.fetchBookCategories();
       }
       this.setState({
         selectedKey: undefined,
@@ -67,7 +63,7 @@ class BookCategoriesModal extends React.Component {
   }
 
   isLoading() {
-    return !this.state.bookCategories || this.state.loading;
+    return !this.state.bookCategories || this.props.loadingBookCategories || !this.props.bookCategories || this.state.loading;
   }
 
   getMenuItems() {
@@ -125,7 +121,7 @@ class BookCategoriesModal extends React.Component {
     try {
       const response = await db.deleteBookCategory(this.state.selectedKey);
 
-      await this.props.fetchBooks();
+      await this.props.fetchBookCategories();
 
       this.setState({ loading: false, selectedKey: undefined });
     } catch (e) {
@@ -135,7 +131,7 @@ class BookCategoriesModal extends React.Component {
   }
 
   refresh() {
-    this.props.fetchBooks();
+    this.props.fetchBookCategories();
   }
 
   getHighestCategoryId() {
@@ -155,14 +151,6 @@ class BookCategoriesModal extends React.Component {
       ],
       selectedKey: id,
     });
-    console.log([
-      ...this.state.bookCategories,
-      {
-        id: id,
-        name: '',
-        color: '',
-      },
-    ]);
   }
 
   getContent() {
@@ -193,7 +181,7 @@ class BookCategoriesModal extends React.Component {
       <Modal
         title="Book Categories"
         visible={this.props.visible}
-        confirmLoading={this.props.loadingBooks || this.props.loadingBookCategories}
+        confirmLoading={this.isLoading()}
         onOk={this.handleSave.bind(this)}
         onCancel={this.props.closeHandler}
         okText="Save"
@@ -227,9 +215,7 @@ class BookCategoriesModal extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    books: state.app.books,
     bookCategories: state.app.bookCategories,
-    loadingBooks: state.app.loadingBooks,
     loadingBookCategories: state.app.loadingBookCategories,
   }
 };

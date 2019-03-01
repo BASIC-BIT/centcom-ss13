@@ -52,7 +52,7 @@ class BookEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.books || !this.props.bookCategories;
+    return this.props.loadingBooks || this.props.loadingBookCategories || !this.props.books || !this.props.bookCategories;
   }
 
   refresh() {
@@ -175,7 +175,9 @@ class BookEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     books: state.app.books,
+    loadingBooks: state.app.loadingBooks,
     bookCategories: state.app.bookCategories,
+    loadingBookCategories: state.app.loadingBookCategories,
   }
 };
 

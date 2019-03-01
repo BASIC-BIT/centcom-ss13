@@ -116,6 +116,24 @@ function fetchBooks() {
   }
 }
 
+function fetchBookCategories() {
+  return async (dispatch, getState) => {
+    const { app } = getState();
+    const { loadingBooks } = app;
+    if(!loadingBooks) {
+      dispatch(setLoadingBookCategories(true));
+      dispatch(setBookCategories(undefined));
+      try {
+        const bookCategories = await db.getBookCategories();
+        dispatch(setBookCategories(bookCategories));
+        dispatch(setLoadingBookCategories(false));
+      } catch(e) {
+        dispatch(setLoadingBookCategories(false));
+      }
+    }
+  }
+}
+
 function fetchConfig() {
   return async (dispatch, getState) => {
     const { app } = getState();
@@ -193,4 +211,5 @@ export default {
   fetchServers,
   fetchPermissions,
   fetchUsers,
+  fetchBookCategories,
 }
