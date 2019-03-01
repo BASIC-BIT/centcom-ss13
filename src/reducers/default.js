@@ -5,10 +5,13 @@ const merge = (...args) => {
   return output;
 };
 
+
 export default function defaultState(state = initialState, action) {
   switch (action.type) {
     case 'MERGE':
       return merge(state, action.data);
+    case 'PARSE_AND_MERGE_BOOKS':
+      return parseAndMergeBooks(state, action.data);
     default:
       return state
   }

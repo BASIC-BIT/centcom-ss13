@@ -82,7 +82,11 @@ export default class EditableList extends React.Component {
 
     const fields = this.props.getFields();
 
-    const displayFields = Object.entries(fields).map(([key, { type, name, renderEdit }]) => {
+    const displayFields = Object.entries(fields).map(([key, { type, custom, name, renderEdit }]) => {
+      if(custom && renderEdit) {
+        return renderEdit(this.state.input, this.setInput.bind(this));
+      }
+
       if(type === 'STRING') {
         return (
           <div key={key} className="section">
@@ -114,10 +118,6 @@ export default class EditableList extends React.Component {
         );
       }
 
-      if(type === 'CUSTOM') {
-        return renderEdit(this.state.input, this.setInput.bind(this));
-      }
-
       if(type === 'NO_DISPLAY') {
         return null;
       }
@@ -141,7 +141,11 @@ export default class EditableList extends React.Component {
 
     const fields = this.props.getFields();
 
-    const displayFields = Object.entries(fields).map(([key, { type, name, renderDisplay }]) => {
+    const displayFields = Object.entries(fields).map(([key, { type, custom, name, renderDisplay }]) => {
+      if(custom && renderDisplay) {
+        return renderDisplay(object);
+      }
+
       if(type === 'STRING' || type === 'LONG_STRING') {
         return (
           <div key={key} className="section">
@@ -149,10 +153,6 @@ export default class EditableList extends React.Component {
             <pre>{object[key]}</pre>
           </div>
         );
-      }
-
-      if(type === 'CUSTOM') {
-        return renderDisplay(object);
       }
 
       if(type === 'NO_DISPLAY') {
