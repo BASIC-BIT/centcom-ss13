@@ -85,10 +85,10 @@ export default class EditableList extends React.Component {
     const displayFields = Object.entries(fields).map(([key, { type, name, renderEdit }]) => {
       if(type === 'STRING') {
         return (
-          <div className="section">
-          <span className="bold">
-            {name}:
-          </span>
+          <div key={key} className="section">
+            <span className="bold">
+              {name}:
+            </span>
             <Input
               className="inputField"
               value={this.state.input[key]}
@@ -100,7 +100,7 @@ export default class EditableList extends React.Component {
 
       if(type === 'LONG_STRING') {
         return (
-          <div className="content section">
+          <div key={key} className="content section">
             <span className="bold">
               {name}:
             </span>
@@ -122,7 +122,7 @@ export default class EditableList extends React.Component {
         return null;
       }
 
-      return `ERROR: Display type not found for key ${key}`;
+      return <span key={key}>{`ERROR: Display type not found for key ${key}`}</span>;
     });
 
     return (
@@ -144,7 +144,7 @@ export default class EditableList extends React.Component {
     const displayFields = Object.entries(fields).map(([key, { type, name, renderDisplay }]) => {
       if(type === 'STRING' || type === 'LONG_STRING') {
         return (
-          <div className="section">
+          <div key={key} className="section">
             <span className="bold">{name}:</span>
             <pre>{object[key]}</pre>
           </div>
@@ -169,12 +169,27 @@ export default class EditableList extends React.Component {
     );
   }
 
+  isFiltered() {
+    return !!this.state.searchText;
+  }
+
+  searchInputChangeHandler(e) {
+    this.setState({ searchText: e.target.value });
+  }
+
   getMenuItems() {
     if (this.isLoading()) {
       return (<LoadingIndicator center/>);
     }
 
-    return this.props.getMenuItems();
+    const fields = this.props.getFields();
+    const filteredObjects = this.isFiltered() ? this.props.getObjects().filter((object) => {
+      return Object.entries(fields)
+      .filter(([key, field]) => field.type === 'STRING' || field.type === 'LONG_STRING')
+      .some(([key, field]) => object[key] && object[key].toLowerCase().includes(this.state.searchText.toLowerCase()));
+    }) : this.props.getObjects();
+
+    return this.props.getMenuItems(filteredObjects, { filtered: this.isFiltered() });
 
   }
 
@@ -276,6 +291,15 @@ export default class EditableList extends React.Component {
                     onClick={this.startCreate.bind(this)}>Create</Button>
             {this.props.renderHeaderButtons()}
             <Button key="refresh" className="refreshButton" onClick={this.props.refresh.bind(this)}><Icon type="redo"/></Button>
+          </div>
+          <div className="searchBarContainer">
+            <Input
+              key="searchBar"
+              value={this.state.searchText}
+              onChange={this.searchInputChangeHandler.bind(this)}
+              placeholder="Search..."
+              className="searchBar"
+            />
           </div>
           <Menu
             mode="inline"

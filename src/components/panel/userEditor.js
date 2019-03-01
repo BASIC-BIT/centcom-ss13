@@ -27,8 +27,8 @@ class UsersEditor extends React.Component {
     this.props.fetchUsers();
   }
 
-  getMenuItems() {
-    return this.props.users
+  getMenuItems(users) {
+    return users
     .sort(sortAlphabeticalByKey('nickname'))
     .map(user => (<Menu.Item key={user.id}>{user.nickname}</Menu.Item>));
   }

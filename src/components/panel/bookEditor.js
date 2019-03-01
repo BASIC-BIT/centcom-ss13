@@ -39,7 +39,7 @@ class BookEditor extends React.Component {
     const Option = Select.Option;
 
     return (
-      <div className="section">
+      <div key="category" className="section">
         <span className="bold">Category:</span>
         <Select className="inputField" defaultValue={inputs.category_id || 'none'}
                 onChange={(e) => this.handleCategoryChange(e, setInputHandler)}>
@@ -67,23 +67,27 @@ class BookEditor extends React.Component {
     this.setState({ bookCategoriesModalVisible: false });
   }
 
-  getMenuItems() {
+  getMenuItems(books, { filtered = false } = {}) {
     const categoriesWithBooks = this.props.bookCategories.map(category => ({
       ...category,
-      books: this.props.books
+      books: books
       .filter(book => book.category_id === category.id)
       .sort(sortAlphabeticalByKey('title')),
     }));
 
-    const leftoverBooks = this.props.books.filter(book => categoriesWithBooks.every(category => !category.books.some(testBook => testBook.id === book.id)));
+    const filteredCategories = filtered ?
+      categoriesWithBooks.filter(category => category.books.length) :
+      categoriesWithBooks;
+
+    const leftoverBooks = books.filter(book => filteredCategories.every(category => !category.books.some(testBook => testBook.id === book.id)));
 
     const categories = [
-      ...categoriesWithBooks,
-      {
+      ...filteredCategories,
+      ...(leftoverBooks.length ? [{
         id: 'Unassigned',
         name: 'Unassigned',
         books: leftoverBooks,
-      },
+      }] : []),
     ].sort(sortAlphabeticalByKey('name'));
 
     const displayCategories = categories
@@ -110,7 +114,7 @@ class BookEditor extends React.Component {
 
   getCategoryDisplay(object) {
     return (
-      <div className="section">
+      <div key="category" className="section">
         <span className="bold">Category:</span>
         {object.category_name || 'Unassigned'}
       </div>
