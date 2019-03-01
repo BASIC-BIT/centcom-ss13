@@ -43,7 +43,7 @@ CREATE TABLE user_permissions (
 CREATE TABLE user_groups (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     name VARCHAR(100),
-    description VARCHAR(300),
+    description VARCHAR(300)
 );
 
 CREATE TABLE user_group_members (
