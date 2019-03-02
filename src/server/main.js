@@ -16,6 +16,12 @@ const db = new DB();
 
 const identityFunction = (a) => a;
 
+const flatMap = (arr, func) => {
+  return arr
+  .map(func)
+  .reduce((acc, cur) => [...acc, ...cur], []);
+};
+
 function createResponse({
                           body,
                           statusCode = 200,
@@ -48,7 +54,7 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
   overrideCreateSql,
   postFetch = identityFunction,
 } = {}) => {
-  const pathMatcher = new RegExp(`^\\/${path}`);
+  const pathMatcher = new RegExp(`^${path}`);
   return [
     {
       path: pathMatcher,
@@ -74,7 +80,7 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
       method: 'PUT',
       handler: async (eventParser) => {
         try {
-          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^\/${path}\/([0-9]+)`))[1]);
+          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)`))[1]);
           const object = JSON.parse(eventParser.getBody());
 
           const setFields = fields
@@ -132,7 +138,7 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
       method: 'DELETE',
       handler: async (eventParser) => {
         try {
-          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^\/${path}\/([0-9]+)`))[1]);
+          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)`))[1]);
 
           const statements = [
             'USE centcom;',
@@ -264,18 +270,20 @@ const endpoints = [
       });
     },
   },
-  ...(Object.values(endpointDefinitions)
-  .flatMap(endpointDefinition => {
-    const {
-      path,
-      table,
-      name,
-      fields,
-      ...rest,
-    } = endpointDefinition;
+  ...flatMap(
+    Object.values(endpointDefinitions),
+    endpointDefinition => {
+      const {
+        path,
+        table,
+        name,
+        fields,
+        ...rest
+      } = endpointDefinition;
 
-    return getCrudEndpointHandlers(path, table, name, fields, rest);
-  })),
+      return getCrudEndpointHandlers(path, table, name, fields, rest);
+    }
+  ),
 ];
 
 const handler = async function (event, context, callback) {
