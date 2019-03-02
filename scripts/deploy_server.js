@@ -25,10 +25,10 @@ const walk = function(basePath, dirPath = '', origin = true) {
   return results;
 };
 
-const filePaths = walk('./server_dist');
+const filePaths = walk('./dist/server');
 const zip = new JSZip();
 filePaths.map(async item => {
-  const data = fs.readFileSync(`./server_dist/${item}`);
+  const data = fs.readFileSync(`./dist/server/${item}`);
   zip.file(item, data);
   console.log(`Packaged ${item} into server.zip`)
 });

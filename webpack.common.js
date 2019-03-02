@@ -12,7 +12,7 @@ const scssLoader = [
 ];
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/client/index.js',
   module: {
     rules: [
       {
@@ -76,12 +76,13 @@ module.exports = {
     extensions: ['.js', '.jsx', '.css', '.scss', '.sass', '.json'],
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, './src'),
+      path.resolve(__dirname, './src/client'),
+      path.resolve(__dirname, './src/shared'),
       path.resolve(__dirname, './generated')
     ]
   },
   output: {
-    path: __dirname + '/dist',
+    path: __dirname + '/dist/client',
     publicPath: '/',
     filename: 'bundle.js'
   },

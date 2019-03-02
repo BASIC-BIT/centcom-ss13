@@ -1,5 +1,5 @@
 const express = require('express');
-const { handler } = require('../server_dist/bundle');
+const { handler } = require('../dist/server/bundle');
 const app = express();
 const port = 3000;
 

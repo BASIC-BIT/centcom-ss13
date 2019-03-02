@@ -80,7 +80,7 @@ describe('CentCom Server', () => {
       createConnection: mysqlCreateConnectionStub,
     };
 
-    handler = proxyquire('../../server/main', {
+    handler = proxyquire('../../src/server/main', {
       mysql: mysqlStub,
     });
   });

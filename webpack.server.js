@@ -4,7 +4,7 @@ const EncodingPlugin = require('webpack-encoding-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: './server/main.js',
+  entry: './src/server/main.js',
   mode: 'production',
   module: {
     rules: [
@@ -30,12 +30,13 @@ module.exports = {
     extensions: ['.js', '.jsx', '.json', '.sql'],
     modules: [
       path.resolve(__dirname, 'node_modules'),
-      path.resolve(__dirname, './server'),
+      path.resolve(__dirname, './src/server'),
+      path.resolve(__dirname, './src/shared'),
       path.resolve(__dirname, './generated')
     ]
   },
   output: {
-    path: __dirname + '/server_dist',
+    path: __dirname + '/dist/server',
     publicPath: '/',
     filename: 'bundle.js',
     libraryTarget: 'umd'
