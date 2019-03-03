@@ -5,6 +5,7 @@ import LoadingIndicator from "../loadingIndicator";
 import DB from '../../brokers/serverBroker';
 
 import endpointDefinitions from '../../../shared/defs/endpointDefinitions';
+import { sortNumericallyByKey } from '../../utils/sorters';
 
 const db = new DB();
 
@@ -89,9 +90,12 @@ export default class EditableList extends React.Component {
       return (<LoadingIndicator center/>);
     }
 
-    const fields = this.props.getFields();
+    const fields = this.getFields();
 
-    const displayFields = Object.entries(fields).map(([key, { type, custom, name, renderEdit }]) => {
+    const displayFields = Object.entries(fields)
+    .map(([key, value]) => ({ ...value, key }))
+    .sort(sortNumericallyByKey('displayOrder', 9999))
+    .map(({ key, type, custom, name, renderEdit }) => {
       if(custom && renderEdit) {
         return renderEdit(this.state.input, this.setInput.bind(this));
       }
@@ -141,6 +145,19 @@ export default class EditableList extends React.Component {
     );
   }
 
+  getFields() {
+    const fields = this.getEndpointDef().fields || {};
+    const customFields = this.props.getFields();
+    return Object.entries(fields)
+    .map(([key, value]) => ({
+      [key]: {
+        ...value,
+        ...(customFields && customFields[key]),
+      }
+    }))
+    .reduce((acc, cur) => ({ ...acc, ...cur }), {});
+  }
+
   displayContent() {
     if (this.isLoading()) {
       return (<LoadingIndicator center/>);
@@ -148,9 +165,12 @@ export default class EditableList extends React.Component {
 
     const object = this.getObject(this.state.selectedKey);
 
-    const fields = this.props.getFields();
+    const fields = this.getFields();
 
-    const displayFields = Object.entries(fields).map(([key, { type, custom, name, renderDisplay }]) => {
+    const displayFields = Object.entries(fields)
+    .map(([key, value]) => ({ ...value, key }))
+    .sort(sortNumericallyByKey('displayOrder', 9999))
+    .map(({ key, type, custom, name, renderDisplay }) => {
       if(custom && renderDisplay) {
         return renderDisplay(object);
       }
@@ -191,7 +211,7 @@ export default class EditableList extends React.Component {
       return (<LoadingIndicator center/>);
     }
 
-    const stringFieldKeys = Object.entries(this.props.getFields())
+    const stringFieldKeys = Object.entries(this.getFields())
     .filter(([key, field]) => field.type === 'STRING' || field.type === 'LONG_STRING')
     .map(([key]) => key);
 

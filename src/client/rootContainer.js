@@ -10,12 +10,16 @@ import {connect} from "react-redux";
 const db = new DB();
 
 class RootContainer extends React.Component {
-  componentDidMount() {
-    this.props.fetchServers();
-    this.props.fetchConfig();
-    this.props.fetchBooks();
-    this.props.fetchPermissions();
-    this.props.fetchUsers();
+  constructor(props) {
+    super(props);
+
+    this.props.fetch('servers');
+    this.props.fetch('config');
+    this.props.fetch('books');
+    this.props.fetch('bookCategories');
+    this.props.fetch('permissions');
+    this.props.fetch('users');
+    this.props.fetch('userPermissions');
   }
   render() {
     return (

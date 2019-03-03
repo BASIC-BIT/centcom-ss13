@@ -34,7 +34,7 @@ class BookCategoriesModal extends React.Component {
 
     const updateResults = await updatePromise;
     const createResults = await createPromise;
-    this.props.fetchBookCategories();
+    this.props.fetch('bookCategories');
     this.setState({ loading: false });
 
     this.props.closeHandler();
@@ -47,7 +47,7 @@ class BookCategoriesModal extends React.Component {
 
     if(prevProps.visible !== this.props.visible) { //becoming visible or hiding
       if(this.props.visible) {
-        this.props.fetchBookCategories();
+        this.props.fetch('bookCategories');
       }
       this.setState({
         selectedKey: undefined,
@@ -121,7 +121,7 @@ class BookCategoriesModal extends React.Component {
     try {
       const response = await db.delete('bookCategories', this.state.selectedKey);
 
-      await this.props.fetchBookCategories();
+      await this.props.fetch('bookCategories');
 
       this.setState({ loading: false, selectedKey: undefined });
     } catch (e) {
@@ -131,7 +131,7 @@ class BookCategoriesModal extends React.Component {
   }
 
   refresh() {
-    this.props.fetchBookCategories();
+    this.props.fetch('bookCategories');
   }
 
   getHighestCategoryId() {
@@ -216,7 +216,7 @@ class BookCategoriesModal extends React.Component {
 const mapStateToProps = (state) => {
   return {
     bookCategories: state.app.bookCategories,
-    loadingBookCategories: state.app.loadingBookCategories,
+    loadingBookCategories: state.app.loading.bookCategories,
   }
 };
 

@@ -1,10 +1,11 @@
 import React from 'react';
-import {Menu, Input} from "antd";
+import {Menu, Input, Select} from "antd";
 import {connect} from 'react-redux'
 import actions from '../../actions/index';
 import DB from '../../brokers/serverBroker';
 import EditableList from './editableList';
 import {sortAlphabeticalByKey} from "../../utils/sorters";
+import LoadingIndicator from "../loadingIndicator";
 
 const db = new DB();
 
@@ -20,11 +21,11 @@ class UsersEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.users || this.props.loadingUsers;
+    return !this.props.users || this.props.loadingUsers || !this.props.userPermissions || this.props.loadingUserPermissions;
   }
 
   refresh() {
-    this.props.fetchUsers();
+    this.props.fetch('users');
   }
 
   getMenuItems(users) {
@@ -33,21 +34,32 @@ class UsersEditor extends React.Component {
     .map(user => (<Menu.Item key={user.id}>{user.nickname}</Menu.Item>));
   }
 
+  renderEditPermissions(inputs, setInputHandler) {
+    return null;
+  }
+
+  renderDisplayPermissions(object) {
+    if(this.isLoading()) {
+      return (<LoadingIndicator center/>);
+    }
+
+    const userPermissionItems = this.props.userPermissions
+    .filter(userPermission => userPermission.user_id === object.id)
+    .map(({ permission_id, description }) => (<Option key={permission_id} value={permission_id}>{description}</Option>));
+
+    return (
+      <Select>
+        {userPermissionItems}
+      </Select>
+    );
+  }
+
   getFields() {
     return {
-      nickname: {
-        type: 'STRING',
-        name: 'Nickname',
-        menuKey: true, //must be the only field with menuKey
-      },
-      email: {
-        type: 'STRING',
-        name: 'Email',
-      },
-      byond_key: {
-        type: 'STRING',
-        name: 'Byond Key',
-      },
+      permissions: {
+        renderEdit: this.renderEditPermissions.bind(this),
+        renderDisplay: this.renderDisplayPermissions.bind(this),
+      }
     }
   }
 
@@ -71,7 +83,11 @@ class UsersEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     users: state.app.users,
-    loadingUsers: state.app.loadingUsers,
+    loadingUsers: state.app.loading.users,
+    userPermissions: state.app.userPermissions,
+    loadingUserPermissions: state.app.loading.userPermissions,
+    permissions: state.app.permissions,
+    loadingPermissions: state.app.loading.permissions,
   }
 };
 

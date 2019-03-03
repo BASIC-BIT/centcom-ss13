@@ -6,17 +6,31 @@ export default {
     name: 'books',
     singularDisplayName: 'book',
     table: 'books',
-    fields: [
-      {
-        name: 'title',
+    fields: {
+      title: {
+        type: 'STRING',
+        name: 'Title',
+        menuKey: true, //must be the only field with menuKey
+        displayOrder: 1,
       },
-      {
-        name: 'content',
+      category_id: {
+        type: 'CUSTOM',
+        name: 'Category',
+        custom: true,
+        displayOrder: 2,
       },
-      {
-        name: 'category_id',
+      content: {
+        type: 'LONG_STRING',
+        name: 'Content',
+        custom: true,
+        displayOrder: 3,
       },
-    ],
+      category_name: {
+        type: 'NO_DISPLAY',
+        name: 'Category Name',
+        omit: true,
+      }
+    },
     overrideGetSql: 'SELECT books.id, books.title, books.content, books.category_id, book_categories.name AS category_name FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;',
   },
   bookCategories: {
@@ -24,48 +38,32 @@ export default {
     name: 'book categories',
     singularDisplayName: 'book category',
     table: 'book_categories',
-    fields: [
-      {
-        name: 'name',
-      },
-      {
-        name: 'color',
-      },
-    ],
+    fields: {
+      name: {},
+      color: {},
+    },
   },
   servers: {
     path: '/servers',
     name: 'servers',
     singularDisplayName: 'server',
     table: 'servers',
-    fields: [
-      {
-        name: 'name',
-      },
-      {
-        name: 'url',
-      },
-      {
-        name: 'port',
-      },
-      {
-        name: 'access_level',
-      },
-    ],
+    fields: {
+      name: {},
+      url: {},
+      port: {},
+      access_level: {},
+    },
   },
   config: {
     path: '/config',
     name: 'config',
     singularDisplayName: 'config',
     table: 'config',
-    fields: [
-      {
-        name: 'cfg_key',
-      },
-      {
-        name: 'cfg_value',
-      },
-    ],
+    fields: {
+      cfg_key: {},
+      cfg_value: {},
+    },
     postFetch: (data) => {
       return data.reduce((output, { cfg_key, cfg_value }) => ({
         ...output,
@@ -78,31 +76,50 @@ export default {
     name: 'permissions',
     singularDisplayName: 'permission',
     table: 'permissions',
-    fields: [
-      {
-        name: 'name',
+    fields: {
+      name: {
+        type: 'STRING',
+        name: 'Name',
+        menuKey: true, //must be the only field with menuKey
+        displayOrder: 1,
       },
-      {
-        name: 'description',
+      description: {
+        type: 'STRING',
+        name: 'Description',
+        displayOrder: 2,
       },
-    ],
+    },
   },
   users: {
     path: '/users',
     name: 'users',
     singularDisplayName: 'user',
     table: 'users',
-    fields: [
-      {
-        name: 'nickname',
+    fields: {
+      nickname: {
+        name: 'Nickname',
+        type: 'STRING',
+        menuKey: true, //must be the only field with menuKey
+        displayOrder: 1,
       },
-      {
-        name: 'email',
+      email: {
+        name: 'Email',
+        type: 'STRING',
+        displayOrder: 2,
       },
-      {
-        name: 'byond_key',
+      byond_key: {
+        name: 'Byond Key',
+        type: 'STRING',
+        displayOrder: 3,
       },
-    ],
+      permissions: {
+        type: 'CUSTOM',
+        name: 'Permissions:',
+        custom: true,
+        omit: true,
+        displayOrder: 4,
+      }
+    },
   },
   userPermissions: {
     path: '/userPermissions',

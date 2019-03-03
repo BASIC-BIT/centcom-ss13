@@ -8,12 +8,16 @@ const sortAlphabeticalByKey = (key) => (a, b) => {
   return 0;
 };
 
-const sortNumericallyByKey = (key) => (a, b) => {
+const sortNumericallyByKey = (key, defaultValue) => (a, b) => {
   const valueA = a[key];
   const valueB = b[key];
-  if (valueA < valueB)
+
+  const filledValueA = valueA === undefined ? defaultValue : valueA;
+  const filledValueB = valueB === undefined ? defaultValue : valueB;
+
+  if (filledValueA < filledValueB)
     return -1;
-  if (valueA > valueB)
+  if (filledValueA > filledValueB)
     return 1;
   return 0;
 };

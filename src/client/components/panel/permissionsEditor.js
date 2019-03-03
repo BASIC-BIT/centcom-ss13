@@ -28,7 +28,7 @@ class PermissionsEditor extends React.Component {
   }
 
   refresh() {
-    this.props.fetchPermissions();
+    this.props.fetch('permissions');
   }
 
   getMenuItems(permissions) {
@@ -39,15 +39,6 @@ class PermissionsEditor extends React.Component {
 
   getFields() {
     return {
-      name: {
-        type: 'STRING',
-        name: 'Name',
-        menuKey: true, //must be the only field with menuKey
-      },
-      description: {
-        type: 'STRING',
-        name: 'Description',
-      },
     }
   }
 
@@ -71,7 +62,7 @@ class PermissionsEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     permissions: state.app.permissions,
-    loadingPermissions: state.app.loadingPermissions,
+    loadingPermissions: state.app.loading.permissions,
   }
 };
 

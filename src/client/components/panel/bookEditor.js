@@ -58,7 +58,7 @@ class BookEditor extends React.Component {
   }
 
   refresh() {
-    this.props.fetchBooks();
+    this.props.fetch('books');
   }
 
   showBookCategoriesModal() {
@@ -205,28 +205,13 @@ class BookEditor extends React.Component {
 
   getFields() {
     return {
-      title: {
-        type: 'STRING',
-        name: 'Title',
-        menuKey: true, //must be the only field with menuKey
-      },
       category_id: {
-        type: 'CUSTOM',
-        name: 'Category',
         renderEdit: this.getCategorySelector.bind(this),
         renderDisplay: this.getCategoryDisplay.bind(this),
-        custom: true,
       },
       content: {
-        type: 'LONG_STRING',
-        name: 'Content',
-        custom: true,
         renderDisplay: this.getContentDisplay.bind(this),
       },
-      category_name: {
-        type: 'NO_DISPLAY',
-        name: 'Category Name',
-      }
     };
   }
 
@@ -257,9 +242,9 @@ class BookEditor extends React.Component {
 const mapStateToProps = (state) => {
   return {
     books: state.app.books,
-    loadingBooks: state.app.loadingBooks,
+    loadingBooks: state.app.loading.books,
     bookCategories: state.app.bookCategories,
-    loadingBookCategories: state.app.loadingBookCategories,
+    loadingBookCategories: state.app.loading.bookCategories,
   }
 };
 

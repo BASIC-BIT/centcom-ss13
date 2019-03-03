@@ -47,7 +47,11 @@ const parseSqlResultValue = (results) => {
   return results;
 };
 
-const getCrudEndpointHandlers = (path, table, name, fields, {
+const getCrudEndpointHandlers = ({
+  path,
+  table,
+  name,
+  fields,
   overrideGetSql,
   overrideUpdateSql,
   overrideDeleteSql,
@@ -71,6 +75,7 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
 
           return createResponse({ body: JSON.stringify(finalResult), statusCode: 200 });
         } catch (e) {
+          console.log(e);
           return createResponse({ body: `Error running ${name} get\n${e.message}\n${e.stack}`, statusCode: 500 });
         }
       },
@@ -83,10 +88,10 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
           const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)`))[1]);
           const object = JSON.parse(eventParser.getBody());
 
-          const setFields = fields
-          .filter(field => !field.omit && object[field.name] !== undefined)
-          .map(field => {
-            return `${field.name} = ${mysql.escape(object[field.name])}`;
+          const setFields = Object.entries(fields)
+          .filter(([key, field]) => !field.omit && object[key] !== undefined)
+          .map(([key, field]) => {
+            return `${key} = ${mysql.escape(object[key])}`;
           })
           .join(', ');
           const statements = [
@@ -108,22 +113,30 @@ const getCrudEndpointHandlers = (path, table, name, fields, {
         try {
           const object = JSON.parse(eventParser.getBody());
 
-          const sqlValues = fields
-          .filter(field => !field.omit && object[field.name])
-          .map(field => {
-            return mysql.escape(object[field.name]);
+          const [
+            sqlFields,
+            sqlValues,
+          ] = Object.entries(fields)
+          .filter(([key, field]) => !field.omit && object[key])
+          .map(([key, field]) => {
+            return [key, mysql.escape(object[key])];
           })
-          .join(', ');
-
-          const sqlFields = fields
-          .filter(field => !field.omit && object[field.name])
-          .map(field => field.name)
-          .join(', ');
-
+          .reduce(([fieldAcc, valueAcc], [field, value]) => {
+            return [
+              [
+                ...fieldAcc,
+                field,
+              ],
+              [
+                ...valueAcc,
+                value,
+              ]
+            ];
+          }, [[], []]);
 
           const statements = [
             'USE centcom;',
-            `INSERT INTO ${table} (${sqlFields}) VALUES (${sqlValues});`,
+            `INSERT INTO ${table} (${sqlFields.join(', ')}) VALUES (${sqlValues.join(', ')});`,
           ];
           const result = await db.multiQuery(statements);
           return createResponse({ body: JSON.stringify(result), statusCode: 201 });
@@ -207,6 +220,7 @@ const endpoints = [
         const result = await db.multiQuery(queries);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
+        console.log(e);
         return createResponse({ body: `Error running init\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
@@ -222,6 +236,7 @@ const endpoints = [
         const result = await db.multiQuery(queries);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
+        console.log(e);
         return createResponse({ body: `Error running destroy\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
@@ -242,6 +257,7 @@ const endpoints = [
         }
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
+        console.log(e);
         return createResponse({ body: `Error running health\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
@@ -254,6 +270,7 @@ const endpoints = [
         const result = await db.query(query);
         return createResponse({ body: JSON.stringify(result), statusCode: 200 });
       } catch (e) {
+        console.log(e);
         return createResponse({ body: `Error running connect\n${e.message}\n${e.stack}`, statusCode: 500 });
       }
     },
@@ -272,17 +289,7 @@ const endpoints = [
   },
   ...flatMap(
     Object.values(endpointDefinitions),
-    endpointDefinition => {
-      const {
-        path,
-        table,
-        name,
-        fields,
-        ...rest
-      } = endpointDefinition;
-
-      return getCrudEndpointHandlers(path, table, name, fields, rest);
-    }
+    endpointDefinition => getCrudEndpointHandlers(endpointDefinition)
   ),
 ];
 
@@ -302,6 +309,7 @@ const handler = async function (event, context, callback) {
       callback(null, createResponse({ statusCode: 404 }));
     }
   } catch (e) {
+    console.log(e);
     callback(null, createResponse({ statusCode: 500, body: e.stack }));
   }
 
