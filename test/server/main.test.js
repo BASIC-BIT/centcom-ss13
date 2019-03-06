@@ -255,7 +255,7 @@ describe('CentCom Server', () => {
   it('should post bulk user permissions', async () => {
     mysqlQueryStub
     .withArgs('USE centcom;\n' +
-      'DELETE FROM user_permissions WHERE user_permissions.undefined = 5;\n' +
+      'DELETE FROM user_permissions WHERE user_permissions.user_id = 5;\n' +
       'INSERT INTO user_permissions (permission_id, user_id) VALUES (3,5), (5,5), (13,5), (15,5);')
     .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
     const event = createRequest({

@@ -137,7 +137,8 @@ const getCrudEndpointHandlers = ({
         if(bulkUpdate) {
           try {
             const filterId = eventParser.regexMatchPath(realPath)[1];
-            const filterField = Object.entries(fields).find(([key, field]) => field.filter).name;
+            console.log(`filterId: ${filterId}`);
+            const filterField = Object.entries(fields).find(([key, field]) => field.filter)[0];
             const objects = JSON.parse(eventParser.getBody());
 
             const transformedObjects = postTransform ? postTransform(objects, eventParser, db) : objects;

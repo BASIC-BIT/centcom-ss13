@@ -27,6 +27,7 @@ class UsersEditor extends React.Component {
 
   refresh() {
     this.props.fetch('users');
+    this.props.fetch('userPermissions');
   }
 
   getMenuItems(users) {
@@ -57,7 +58,8 @@ class UsersEditor extends React.Component {
         key="userPermissions"
         bordered
         dataSource={userPermissionItems}
-        renderItem={({ permission_id, description }) => (<Option key={permission_id} value={permission_id}>{description}</Option>)}
+        locale={{	emptyText: 'No Permissions' }}
+        renderItem={({ permission_id, description }) => (<List.Item key={permission_id} value={permission_id}>{description}</List.Item>)}
       />
     );
   }

@@ -29,9 +29,10 @@ class ServerBroker {
 
     outputPromises.push(endpoint.update(body, params));
 
+    console.log(body);
     endpointDefinition.fields &&
       Object.entries(endpointDefinition.fields)
-      .filter(([key, field]) => field.saveHandler)
+      .filter(([key, field]) => field.saveHandler && body[key])
       .forEach(([key, field]) => outputPromises.push(field.saveHandler(this, body[key], params)));
 
     return outputPromises;

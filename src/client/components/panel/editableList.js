@@ -261,6 +261,7 @@ export default class EditableList extends React.Component {
 
       this.setState({ loading: false, editing: false, deleting: false });
     } catch (e) {
+      console.log(e);
       message.error(`Error editing ${this.getEndpointDef().singularDisplayName}`);
       this.setState({ loading: false });
     }
@@ -283,6 +284,7 @@ export default class EditableList extends React.Component {
 
       this.setState({ loading: false, creating: false });
     } catch (e) {
+      console.log(e);
       message.error(`Error creating ${this.getEndpointDef().singularDisplayName}`);
       this.setState({ loading: false });
     }
@@ -320,6 +322,7 @@ export default class EditableList extends React.Component {
 
       this.setState({ loading: false, deleting: false, editing: false, selectedKey: undefined });
     } catch (e) {
+      console.log(e);
       message.error(`Error deleting ${this.getEndpointDef().singularDisplayName}.`);
       this.setState({ loading: false, deleting: false, error: true });
     }
