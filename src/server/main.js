@@ -71,7 +71,7 @@ const getCrudEndpointHandlers = ({
         try {
           const filterKeyValuePair = Object.entries(fields).find(([key, field]) => field.filter);
           const filterId = filterKeyValuePair ? eventParser.regexMatchPath(path)[1] : undefined;
-          const filterText = filterKeyValuePair ? ` WHERE ${filterKeyValuePair[1].name} = ${filterId}` : 'filterId';
+          const filterText = filterKeyValuePair ? ` WHERE ${filterKeyValuePair[1].name} = ${filterId}` : '';
 
           let getStatement = overrideGetSql ? overrideGetSql : `SELECT * FROM ${table}${filterText};`;
 
