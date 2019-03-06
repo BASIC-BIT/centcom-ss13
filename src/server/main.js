@@ -61,6 +61,7 @@ const getCrudEndpointHandlers = ({
   postPath,
   postTransform,
   filter,
+  filterGet,
   postFetch = identityFunction,
 } = {}) => {
   return [
@@ -69,7 +70,7 @@ const getCrudEndpointHandlers = ({
       method: 'GET',
       handler: async (eventParser) => {
         try {
-          const filterKeyValuePair = Object.entries(fields).find(([key, field]) => field.filter);
+          const filterKeyValuePair = filterGet && Object.entries(fields).find(([key, field]) => field.filter);
           const filterId = filterKeyValuePair ? eventParser.regexMatchPath(path)[1] : undefined;
           const filterText = filterKeyValuePair ? ` WHERE ${filterKeyValuePair[1].name} = ${filterId}` : '';
 
