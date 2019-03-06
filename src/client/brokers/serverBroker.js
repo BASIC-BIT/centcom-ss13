@@ -9,28 +9,40 @@ class ServerBroker {
     this.serverUrl = terraformOutput.server_url.value;
 
     this.endpoints = Object.entries(endpointDefinitions)
-    .map(([key, { path }]) => ({ [key]: new CrudEndpointSet(this, path) }))
+    .map(([key, endpointDefinition]) => ({ [key]: new CrudEndpointSet(this, endpointDefinition) }))
     .reduce((acc, cur) => ({ ...acc, ...cur }), {});
   }
 
-  get(key, id = null) {
-    return this.endpoints[key].get(id);
+  get(key, id = null, params = []) {
+    return this.endpoints[key].get(id, params);
   }
 
-  create(key, body) {
-    return this.endpoints[key].create(body);
+  create(key, body, params = []) {
+    return this.endpoints[key].create(body, params);
   }
 
-  update(key, body) {
-    return this.endpoints[key].update(body);
+  update(key, body, params = []) {
+    let outputPromises = [];
+
+    const endpoint = this.endpoints[key];
+    const endpointDefinition = endpoint.endpointDefinition;
+
+    outputPromises.push(endpoint.update(body, params));
+
+    endpointDefinition.fields &&
+      Object.entries(endpointDefinition.fields)
+      .filter(([key, field]) => field.saveHandler)
+      .forEach(([key, field]) => outputPromises.push(field.saveHandler(this, body[key], params)));
+
+    return outputPromises;
   }
 
-  delete(key, id) {
-    return this.endpoints[key].delete(id);
+  delete(key, id, params = []) {
+    return this.endpoints[key].delete(id, params);
   }
 
-  upsert(key, body) {
-    return this.endpoints[key].upsert(body);
+  upsert(key, body, params = []) {
+    return this.endpoints[key].upsert(body, params);
   }
 
   query(queryString, {

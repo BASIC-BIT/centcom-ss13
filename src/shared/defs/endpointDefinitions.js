@@ -1,4 +1,5 @@
-import fetchUserPermissions from '../sql/fetch/userPermissions.sql';
+import getUserPermissions from '../sql/get/userPermissions.sql';
+import editUserPermissions from '../sql/update/userPermissions.sql';
 
 export default {
   books: {
@@ -118,23 +119,40 @@ export default {
         custom: true,
         omit: true,
         displayOrder: 4,
+        saveHandler: (db, values, params = []) => {
+          console.log('saving', values);
+          db.upsert('userPermissions', values, params);
+        },
       }
     },
   },
   userPermissions: {
     path: '/userPermissions',
+    postPath: '/users/([0-9]+)/permissions',
+    uiPath: '/userPermissions',
+    uiPostPath: '/users/:userId/permissions',
     name: 'user permissions',
     singularDisplayName: 'user permission',
     table: 'user_permissions',
-    fields: [
-      {
-        name: 'permission_id',
+    fields: {
+      permission_id: {},
+      user_id: {
+        filter: true,
       },
-      {
-        name: 'user_id',
-      },
-    ],
-    overrideGetSql: fetchUserPermissions,
+    },
+    params: {
+      userId: {
+        type: 'numeric',
+        // tableRef: 'user_permissions',
+        keyRef: 'user_id',
+        // foreignTable: 'users',
+        // foreignKey: 'id',
+        matchIndex: 1,
+      }
+    },
+    overrideGetSql: getUserPermissions,
+    postTransform: (objects) => objects.map(permission_id => ({ permission_id })),
+    bulkUpdate: true, //must have a SINGLE filter field to work (and a SINGLE matcher in the path)
   },
   userGroups: {
     path: '/userGroups',

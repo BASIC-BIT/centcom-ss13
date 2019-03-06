@@ -8,4 +8,5 @@ FROM user_permissions
 LEFT JOIN permissions
     ON user_permissions.permission_id = permissions.id
 LEFT JOIN users
-    ON user_permissions.user_id = users.id;
+    ON user_permissions.user_id = users.id
+WHERE user_permissions.user_id = $1;

@@ -228,15 +228,44 @@ describe('CentCom Server', () => {
 
   it.skip('should get user permissions', async () => {
     mysqlQueryStub
-    .withArgs('USE centcom;\nSELECT books.id, books.title, books.content, books.category_id, book_categories.name AS category_name FROM books LEFT JOIN book_categories ON books.category_id = book_categories.id;')
+    .withArgs('USE centcom;\n' +
+      'SELECT\n' +
+      '    user_permissions.id AS id,\n' +
+      '    user_permissions.user_id AS user_id,\n' +
+      '    user_permissions.permission_id AS permission_id,\n' +
+      '    permissions.name AS name,\n' +
+      '    permissions.description AS description\n' +
+      'FROM user_permissions\n' +
+      'LEFT JOIN permissions\n' +
+      '    ON user_permissions.permission_id = permissions.id\n' +
+      'LEFT JOIN users\n' +
+      '    ON user_permissions.user_id = users.id\n' +
+      'WHERE user_permissions.user_id = 5;')
     .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
     const event = createRequest({
-      path: '/userPermissions',
+      path: '/users/5/permissions',
       httpMethod: 'GET',
     });
     const output = await promisify(handler.handler)(event, {});
 
     expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
     expect(output.statusCode).to.equal(200);
+  });
+
+  it('should post bulk user permissions', async () => {
+    mysqlQueryStub
+    .withArgs('USE centcom;\n' +
+      'DELETE FROM user_permissions WHERE user_permissions.undefined = 5;\n' +
+      'INSERT INTO user_permissions (permission_id, user_id) VALUES (3,5), (5,5), (13,5), (15,5);')
+    .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+    const event = createRequest({
+      path: '/users/5/permissions',
+      httpMethod: 'POST',
+      body: '[3, 5, 13, 15]',
+    });
+    const output = await promisify(handler.handler)(event, {});
+
+    expect(output.body).to.equal(JSON.stringify(['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]]));
+    expect(output.statusCode).to.equal(201);
   });
 });

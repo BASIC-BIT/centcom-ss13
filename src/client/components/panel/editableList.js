@@ -225,11 +225,11 @@ export default class EditableList extends React.Component {
   }
 
   async performEdit(object) {
-    return await db.update(this.props.defKey, object);
+    return await db.update(this.props.defKey, object, [this.state.selectedKey]);
   }
 
   async performCreate(object) {
-    return await db.create(this.props.defKey, object);
+    return await db.create(this.props.defKey, object, [this.state.selectedKey]);
   }
 
   async performDelete(id) {

@@ -1,11 +1,12 @@
 import React from 'react';
-import {Menu, Input, Select} from "antd";
+import {Menu, Input, Select, List} from "antd";
 import {connect} from 'react-redux'
 import actions from '../../actions/index';
 import DB from '../../brokers/serverBroker';
 import EditableList from './editableList';
 import {sortAlphabeticalByKey} from "../../utils/sorters";
 import LoadingIndicator from "../loadingIndicator";
+import UserPermissionsEditor from './userPermissions/editor';
 
 const db = new DB();
 
@@ -34,8 +35,12 @@ class UsersEditor extends React.Component {
     .map(user => (<Menu.Item key={user.id}>{user.nickname}</Menu.Item>));
   }
 
-  renderEditPermissions(inputs, setInputHandler) {
-    return null;
+  renderEditPermissions(input, setInputHandler) {
+    if(this.isLoading()) {
+      return (<LoadingIndicator center/>);
+    }
+
+    return (<UserPermissionsEditor user_id={input.id} setInputHandler={setInputHandler} />);
   }
 
   renderDisplayPermissions(object) {
@@ -44,13 +49,16 @@ class UsersEditor extends React.Component {
     }
 
     const userPermissionItems = this.props.userPermissions
-    .filter(userPermission => userPermission.user_id === object.id)
-    .map(({ permission_id, description }) => (<Option key={permission_id} value={permission_id}>{description}</Option>));
+    .filter(userPermission => userPermission.user_id === object.id);
 
     return (
-      <Select>
-        {userPermissionItems}
-      </Select>
+      <List
+        header={<div>Permissions:</div>}
+        key="userPermissions"
+        bordered
+        dataSource={userPermissionItems}
+        renderItem={({ permission_id, description }) => (<Option key={permission_id} value={permission_id}>{description}</Option>)}
+      />
     );
   }
 
@@ -86,8 +94,6 @@ const mapStateToProps = (state) => {
     loadingUsers: state.app.loading.users,
     userPermissions: state.app.userPermissions,
     loadingUserPermissions: state.app.loading.userPermissions,
-    permissions: state.app.permissions,
-    loadingPermissions: state.app.loading.permissions,
   }
 };
 

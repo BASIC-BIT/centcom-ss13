@@ -56,18 +56,31 @@ const getCrudEndpointHandlers = ({
   overrideUpdateSql,
   overrideDeleteSql,
   overrideCreateSql,
+  bulkUpdate,
+  params,
+  postPath,
+  postTransform,
+  filter,
   postFetch = identityFunction,
 } = {}) => {
-  const pathMatcher = new RegExp(`^${path}`);
   return [
     {
-      path: pathMatcher,
+      path: new RegExp(`^${path}$`),
       method: 'GET',
       handler: async (eventParser) => {
         try {
+          const filterKeyValuePair = Object.entries(fields).find(([key, field]) => field.filter);
+          const filterId = filterKeyValuePair ? eventParser.regexMatchPath(path)[1] : undefined;
+          const filterText = filterKeyValuePair ? ` WHERE ${filterKeyValuePair[1].name} = ${filterId}` : 'filterId';
+
+          let getStatement = overrideGetSql ? overrideGetSql : `SELECT * FROM ${table}${filterText};`;
+
+          if(overrideGetSql && filterKeyValuePair) {
+            getStatement = getStatement.replace('$1', filterId);
+          }
           const statements = [
             'USE centcom;',
-            overrideGetSql ? overrideGetSql : `SELECT * FROM ${table};`,
+            getStatement,
           ];
           const result = await db.multiQuery(statements);
 
@@ -81,11 +94,20 @@ const getCrudEndpointHandlers = ({
       },
     },
     {
-      path: pathMatcher,
+      path: new RegExp(`^${path}/([0-9]+)$`),
       method: 'PUT',
       handler: async (eventParser) => {
+        if(bulkUpdate) {
+          return createResponse({
+            body: 'Cannot PUT on bulk endpoint (use POST or GET)',
+            statusCode: 405,
+            headers: {
+              Accept: 'GET, POST',
+            },
+          })
+        }
         try {
-          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)`))[1]);
+          const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)$`))[1]);
           const object = JSON.parse(eventParser.getBody());
 
           const setFields = Object.entries(fields)
@@ -107,49 +129,125 @@ const getCrudEndpointHandlers = ({
       },
     },
     {
-      path: pathMatcher,
+      path: new RegExp(`^${postPath || path}$`),
       method: 'POST',
       handler: async (eventParser) => {
-        try {
-          const object = JSON.parse(eventParser.getBody());
+        const realPath = postPath || path;
+        if(bulkUpdate) {
+          try {
+            const filterId = eventParser.regexMatchPath(realPath)[1];
+            const filterField = Object.entries(fields).find(([key, field]) => field.filter).name;
+            const objects = JSON.parse(eventParser.getBody());
 
-          const [
-            sqlFields,
-            sqlValues,
-          ] = Object.entries(fields)
-          .filter(([key, field]) => !field.omit && object[key])
-          .map(([key, field]) => {
-            return [key, mysql.escape(object[key])];
-          })
-          .reduce(([fieldAcc, valueAcc], [field, value]) => {
-            return [
-              [
-                ...fieldAcc,
-                field,
-              ],
-              [
-                ...valueAcc,
-                value,
-              ]
+            const transformedObjects = postTransform ? postTransform(objects, eventParser, db) : objects;
+
+            const filledObjects = Object.values(params).reduce((objectsAcc, param) => {
+              const paramFilterId = eventParser.regexMatchPath(realPath)[param.matchIndex];
+
+              let formattedParamFilterId;
+              if(param.type === 'numeric') {
+                formattedParamFilterId = parseInt(paramFilterId);
+              } else {
+                formattedParamFilterId = paramFilterId;
+              }
+              return objectsAcc.map(object => ({
+                ...object,
+                [param.keyRef]: formattedParamFilterId,
+              }));
+            }, transformedObjects);
+
+            const sqlFields = Object.entries(fields)
+            .filter(([key, field]) => !field.omit)
+            .map(([key, field]) => key)
+            .join(', ');
+
+            const getFieldValuePairForObject = (object) => {
+              console.log('object inside', object, fields);
+              return Object.entries(fields)
+              .filter(([key, field]) => !field.omit)
+              .map(([key, field]) => {
+                console.log([key, mysql.escape(object[key])]);
+                return [key, mysql.escape(object[key])];
+              })
+              .reduce(([fieldAcc, valueAcc], [field, value]) => {
+                return [
+                  [
+                    ...fieldAcc,
+                    field,
+                  ],
+                  [
+                    ...valueAcc,
+                    value,
+                  ]
+                ];
+              }, [[], []]);
+            };
+
+            console.log('objects', filledObjects);
+            const valuesList = filledObjects.map(getFieldValuePairForObject).map(([, fieldString]) => `(${fieldString})`).join(', ');
+
+            const statements = [
+              'USE centcom;',
+              `DELETE FROM ${table} WHERE ${table}.${filterField} = ${filterId};`,
+              `INSERT INTO ${table} (${sqlFields}) VALUES ${valuesList};`,
             ];
-          }, [[], []]);
+            const result = await db.multiQuery(statements);
+            return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+          } catch (e) {
+            console.log(e);
+            return createResponse({ body: `Error running ${name} create\n${e.message}\n${e.stack}`, statusCode: 500 });
+          }
+        } else {
+          try {
+            const object = JSON.parse(eventParser.getBody());
 
-          const statements = [
-            'USE centcom;',
-            `INSERT INTO ${table} (${sqlFields.join(', ')}) VALUES (${sqlValues.join(', ')});`,
-          ];
-          const result = await db.multiQuery(statements);
-          return createResponse({ body: JSON.stringify(result), statusCode: 201 });
-        } catch (e) {
-          console.log(e);
-          return createResponse({ body: `Error running ${name} create\n${e.message}\n${e.stack}`, statusCode: 500 });
+            const [
+              sqlFields,
+              sqlValues,
+            ] = Object.entries(fields)
+            .filter(([key, field]) => !field.omit && object[key])
+            .map(([key, field]) => {
+              return [key, mysql.escape(object[key])];
+            })
+            .reduce(([fieldAcc, valueAcc], [field, value]) => {
+              return [
+                [
+                  ...fieldAcc,
+                  field,
+                ],
+                [
+                  ...valueAcc,
+                  value,
+                ]
+              ];
+            }, [[], []]);
+
+            const statements = [
+              'USE centcom;',
+              `INSERT INTO ${table} (${sqlFields.join(', ')}) VALUES (${sqlValues.join(', ')});`,
+            ];
+            const result = await db.multiQuery(statements);
+            return createResponse({ body: JSON.stringify(result), statusCode: 201 });
+          } catch (e) {
+            console.log(e);
+            return createResponse({ body: `Error running ${name} create\n${e.message}\n${e.stack}`, statusCode: 500 });
+          }
         }
       },
     },
     {
-      path: pathMatcher,
+      path: new RegExp(`^${path}/([0-9]+)$`),
       method: 'DELETE',
       handler: async (eventParser) => {
+        if(bulkUpdate) {
+          return createResponse({
+            body: 'Cannot DELETE on bulk endpoint (use POST or GET)',
+            statusCode: 405,
+            headers: {
+              Accept: 'GET, POST',
+            },
+          })
+        }
         try {
           const objectId = parseInt(eventParser.regexMatchPath(new RegExp(`^${path}\/([0-9]+)`))[1]);
 
@@ -301,7 +399,7 @@ const handler = async function (event, context, callback) {
 
     const endpointMatch = endpoints.find(endpoint =>
       (endpoint.method || 'GET') === eventParser.getMethod() &&
-      eventParser.regexTestPath(endpoint.path));
+      eventParser.regexTestPath(new RegExp(endpoint.path)));
 
     if (endpointMatch) {
       callback(null, await endpointMatch.handler(eventParser));
