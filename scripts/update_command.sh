@@ -1,1 +1,1 @@
-terraform apply -var 'prod_lambda_deploy_version=0.3.8' -var 'dev_lambda_deploy_version=0.3.8'
+terraform apply -var 'prod_lambda_deploy_version=0.3.9' -var 'dev_lambda_deploy_version=0.3.9'

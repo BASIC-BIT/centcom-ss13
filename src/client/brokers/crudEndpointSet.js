@@ -43,7 +43,7 @@ export default class CrudEndpointSet {
   }
 
   create(body, params = []) {
-    this.db.query(`${this.getBasePath('POST', params)}`, { body: JSON.stringify(body), method: 'POST' });
+    return this.db.query(`${this.getBasePath('POST', params)}`, { body: JSON.stringify(body), method: 'POST' });
   }
 
   upsert(body, params = []) {
