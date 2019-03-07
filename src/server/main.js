@@ -188,10 +188,11 @@ const getCrudEndpointHandlers = ({
             console.log('objects', filledObjects);
             const valuesList = filledObjects.map(getFieldValuePairForObject).map(([, fieldString]) => `(${fieldString})`).join(', ');
 
+            const insertStatement = valuesList ? `INSERT INTO ${table} (${sqlFields}) VALUES ${valuesList};` : '';
             const statements = [
               'USE centcom;',
               `DELETE FROM ${table} WHERE ${table}.${filterField} = ${filterId};`,
-              `INSERT INTO ${table} (${sqlFields}) VALUES ${valuesList};`,
+              insertStatement
             ];
             const result = await db.multiQuery(statements);
             return createResponse({ body: JSON.stringify(result), statusCode: 201 });

@@ -13,15 +13,24 @@ class UserPermissionsEditor extends React.Component {
   }
 
   componentDidMount() {
+    const chosenKeys = this.props.userPermissions
+    .filter(({ user_id }) => this.props.user_id === user_id)
+    .map(({ permission_id }) => permission_id);
     this.setState({
-      chosenKeys: this.props.userPermissions.map(({ permission_id }) => permission_id),
-    })
+      chosenKeys,
+      availableKeys: this.getAvailableKeys(chosenKeys),
+    });
   }
 
-  onChange(chosenKeys) {
-    console.log(chosenKeys);
-    this.setState({ chosenKeys });
-    this.props.setInputHandler('permissions', chosenKeys.map(key => parseInt(key)));
+  onChange(availableKeys) {
+    const chosenKeys = this.getChosenKeysFromAvailableKeys(availableKeys);
+    console.log('chosenKeys', chosenKeys);
+    console.log('availableKeys', availableKeys);
+    this.setState({
+      chosenKeys: chosenKeys,
+      availableKeys: availableKeys,
+    });
+    this.props.setInputHandler('permissions', chosenKeys);
   }
 
   handleSelectChange(sourceKeys, targetKeys) {
@@ -34,9 +43,16 @@ class UserPermissionsEditor extends React.Component {
     });
   }
 
-  getAvailableKeys() {
-    return Object.keys(this.props.permissions)
-    .filter(key => this.state.chosenKeys.includes(key.toString()));
+  getAvailableKeys(chosenKeys = this.state.chosenKeys) {
+    return this.props.permissions
+    .map(({ id }) => id)
+    .filter((id) => !chosenKeys.includes(id));
+  }
+
+  getChosenKeysFromAvailableKeys(availableKeys) {
+    return this.props.permissions
+    .map(({ id }) => id)
+    .filter((id) => !availableKeys.includes(id));
   }
 
   isLoading() {
@@ -44,25 +60,29 @@ class UserPermissionsEditor extends React.Component {
   }
 
   render() {
-    const userPermissions = this.props.userPermissions
-    .filter(userPermission => userPermission.user_id === this.props.user_id);
-
-    const allPermissions = Object.entries(this.props.permissions)
-    .map(([key, value]) => ({ ...value, key }));
-
+    const allPermissions = this.props.permissions
+    .map((permission) => ({ ...permission, key: permission.id }));
 
     return (
       <div className="userPermissionsEditorContainer">
         <Transfer
           dataSource={allPermissions}
           key="userPermissions"
-          titles={['User', 'Available']}
-          targetKeys={this.getAvailableKeys()}
+          titles={['User Permissions', 'Available']}
+          targetKeys={this.state.availableKeys}
           selectedKeys={this.state.selectedKeys}
           onChange={this.onChange.bind(this)}
           onSelectChange={this.handleSelectChange.bind(this)}
           render={item => item.description}
           disabled={this.isLoading()}
+          loading={this.isLoading()}
+          listStyle={{ width: '200px' }}
+          locale={{
+            notFoundContent: 'none',
+            searchPlaceholder: 'Search...',
+            itemUnit: '',
+            itemsUnit: '',
+          }}
         />
       </div>
     );

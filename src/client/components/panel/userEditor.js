@@ -58,6 +58,7 @@ class UsersEditor extends React.Component {
         key="userPermissions"
         bordered
         dataSource={userPermissionItems}
+        className="userPermissionsContentContainer"
         locale={{	emptyText: 'No Permissions' }}
         renderItem={({ permission_id, description }) => (<List.Item key={permission_id} value={permission_id}>{description}</List.Item>)}
       />

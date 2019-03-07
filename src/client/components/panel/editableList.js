@@ -101,12 +101,15 @@ export default class EditableList extends React.Component {
       }
 
       if(type === 'STRING') {
+        const value = this.state.input[key];
         return (
           <div key={key} className="section">
             <span className="bold">
               {name}:
             </span>
             <Input
+              placeholder={'none'}
+              style={{ fontStyle: value ? 'normal' : 'italic' }}
               className="inputField"
               value={this.state.input[key]}
               onChange={(e) => this.setInput(key, e.target.value)}
@@ -176,10 +179,11 @@ export default class EditableList extends React.Component {
       }
 
       if(type === 'STRING' || type === 'LONG_STRING') {
+        const value = object[key];
         return (
-          <div key={key} className="section">
+          <div key={key} className="section" style={{ fontStyle: value ? 'normal' : 'italic' }}>
             <span className="bold">{name}:</span>
-            <pre>{object[key]}</pre>
+            <pre>{value || 'none'}</pre>
           </div>
         );
       }
@@ -225,7 +229,7 @@ export default class EditableList extends React.Component {
   }
 
   async performEdit(object) {
-    return await db.update(this.props.defKey, object, [this.state.selectedKey]);
+    return await Promise.all(db.update(this.props.defKey, object, [this.state.selectedKey]));
   }
 
   async performCreate(object) {
