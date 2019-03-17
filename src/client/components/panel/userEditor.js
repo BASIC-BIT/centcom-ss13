@@ -7,6 +7,7 @@ import EditableList from './editableList';
 import {sortAlphabeticalByKey} from "../../utils/sorters";
 import LoadingIndicator from "../loadingIndicator";
 import UserPermissionsEditor from './userPermissions/editor';
+import UserGroupsEditor from './userGroups/editor';
 
 const db = new DB();
 
@@ -22,12 +23,24 @@ class UsersEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.users || this.props.loadingUsers || !this.props.userPermissions || this.props.loadingUserPermissions;
+    return !this.props.users ||
+      this.props.loadingUsers ||
+      !this.props.userPermissions ||
+      this.props.loadingUserPermissions ||
+      !this.props.userGroups ||
+      this.props.loadingUserGroups ||
+      !this.props.permissions ||
+      this.props.loadingPermissions ||
+      !this.props.groups ||
+      !this.props.loadingGroups;
   }
 
   refresh() {
     this.props.fetch('users');
     this.props.fetch('userPermissions');
+    this.props.fetch('permissions');
+    this.props.fetch('userGroups');
+    this.props.fetch('groups');
   }
 
   getMenuItems(users) {
@@ -42,6 +55,14 @@ class UsersEditor extends React.Component {
     }
 
     return (<UserPermissionsEditor user_id={input.id} setInputHandler={setInputHandler} />);
+  }
+
+  renderEditGroups(input, setInputHandler) {
+    if(this.isLoading()) {
+      return (<LoadingIndicator center/>);
+    }
+
+    return (<UserGroupsEditor user_id={input.id} setInputHandler={setInputHandler} />);
   }
 
   renderDisplayPermissions(object) {
@@ -65,11 +86,36 @@ class UsersEditor extends React.Component {
     );
   }
 
+  renderDisplayGroups(object) {
+    if(this.isLoading()) {
+      return (<LoadingIndicator center/>);
+    }
+
+    const userPermissionItems = this.props.userGroups
+    .filter(userPermission => userPermission.user_id === object.id);
+
+    return (
+      <List
+        header={<div>Groups:</div>}
+        key="userGroups"
+        bordered
+        dataSource={userPermissionItems}
+        className="userGroupsContentContainer"
+        locale={{	emptyText: 'No Groups' }}
+        renderItem={({ permission_id, description }) => (<List.Item key={permission_id} value={permission_id}>{description}</List.Item>)}
+      />
+    );
+  }
+
   getFields() {
     return {
       permissions: {
         renderEdit: this.renderEditPermissions.bind(this),
         renderDisplay: this.renderDisplayPermissions.bind(this),
+      },
+      groups: {
+        renderEdit: this.renderEditGroups.bind(this),
+        renderDisplay: this.renderDisplayGroups.bind(this),
       }
     }
   }
@@ -97,6 +143,10 @@ const mapStateToProps = (state) => {
     loadingUsers: state.app.loading.users,
     userPermissions: state.app.userPermissions,
     loadingUserPermissions: state.app.loading.userPermissions,
+    groups: state.app.groups,
+    loadingGroups: state.app.loading.groups,
+    permissions: state.app.permissions,
+    loadingPermissions: state.app.loading.permissions,
   }
 };
 

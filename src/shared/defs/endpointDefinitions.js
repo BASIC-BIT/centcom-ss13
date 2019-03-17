@@ -1,4 +1,5 @@
 import getUserPermissions from '../sql/get/userPermissions.sql';
+import getUserGroups from '../sql/get/userGroups.sql';
 import editUserPermissions from '../sql/update/userPermissions.sql';
 
 export default {
@@ -154,33 +155,52 @@ export default {
     postTransform: (objects) => objects.map(permission_id => ({ permission_id })),
     bulkUpdate: true, //must have a SINGLE filter field to work (and a SINGLE matcher in the path)
   },
+  groups: {
+    path: '/groups',
+    name: 'groups',
+    singularDisplayName: 'group',
+    table: 'user_groups',
+    fields: {
+      name: {
+        type: 'STRING',
+        name: 'Name',
+        menuKey: true, //must be the only field with menuKey
+        displayOrder: 1,
+      },
+      description: {
+        type: 'STRING',
+        name: 'Description',
+        displayOrder: 2,
+      },
+    },
+  },
   userGroups: {
     path: '/userGroups',
-    name: 'user groups',
-    singularDisplayName: 'user group',
-    table: 'user_groups',
-    fields: [
-      {
-        name: 'name',
-      },
-      {
-        name: 'description',
-      },
-    ],
-  },
-  groupMembers: {
-    path: '/groupMembers',
+    postPath: '/users/([0-9]+)/groups',
+    uiPath: '/userGroups',
+    uiPostPath: '/users/:userId/groups',
     name: 'group members',
     singularDisplayName: 'group member',
     table: 'user_group_members',
-    fields: [
-      {
-        name: 'user_id',
+    fields: {
+      group_id: {},
+      user_id: {
+        filter: true,
       },
-      {
-        name: 'group_id',
-      },
-    ],
+    },
+    params: {
+      userId: {
+        type: 'numeric',
+        // tableRef: 'user_permissions',
+        keyRef: 'user_id',
+        // foreignTable: 'users',
+        // foreignKey: 'id',
+        matchIndex: 1,
+      }
+    },
+    overrideGetSql: getUserGroups,
+    postTransform: (objects) => objects.map(group_id => ({ group_id })),
+    bulkUpdate: true, //must have a SINGLE filter field to work (and a SINGLE matcher in the path)
   },
   groupPermissions: {
     path: '/groupPermissions',

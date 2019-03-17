@@ -226,7 +226,7 @@ describe('CentCom Server', () => {
     });
   });
 
-  it.skip('should get user permissions', async () => {
+  it('should get user permissions', async () => {
     mysqlQueryStub
     .withArgs('USE centcom;\n' +
       'SELECT\n' +
@@ -239,11 +239,10 @@ describe('CentCom Server', () => {
       'LEFT JOIN permissions\n' +
       '    ON user_permissions.permission_id = permissions.id\n' +
       'LEFT JOIN users\n' +
-      '    ON user_permissions.user_id = users.id\n' +
-      'WHERE user_permissions.user_id = 5;')
+      '    ON user_permissions.user_id = users.id;')
     .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
     const event = createRequest({
-      path: '/users/5/permissions',
+      path: '/userPermissions',
       httpMethod: 'GET',
     });
     const output = await promisify(handler.handler)(event, {});
@@ -262,6 +261,77 @@ describe('CentCom Server', () => {
       path: '/users/5/permissions',
       httpMethod: 'POST',
       body: '[3, 6, 13, 15]',
+    });
+    const output = await promisify(handler.handler)(event, {});
+
+    expect(output.body).to.equal(JSON.stringify(['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]]));
+    expect(output.statusCode).to.equal(201);
+  });
+
+  it.skip('should get user group memberships', async () => {
+    mysqlQueryStub
+    .withArgs('USE centcom;\nSELECT\n' +
+      '    user_group_members.id AS id,\n' +
+      '    user_group_members.user_id AS user_id,\n' +
+      '    user_group_members.group_id AS group_id,\n' +
+      '    user_groups.name AS name,\n' +
+      '    user_groups.description AS description\n' +
+      'FROM user_group_members\n' +
+      'LEFT JOIN user_groups\n' +
+      '    ON user_group_members.group_id = user_groups.id\n' +
+      'LEFT JOIN users\n' +
+      '    ON user_group_members.user_id = users.id;')
+    .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+    const event = createRequest({
+      path: '/userGroups',
+      httpMethod: 'GET',
+    });
+    const output = await promisify(handler.handler)(event, {});
+
+    expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
+    expect(output.statusCode).to.equal(200);
+  });
+
+  it('should post bulk user group memberships', async () => {
+    mysqlQueryStub
+    .withArgs('USE centcom;\n' +
+      'DELETE FROM user_group_members WHERE user_group_members.user_id = 5;\n' +
+      'INSERT INTO user_group_members (group_id, user_id) VALUES (3,5), (6,5), (13,5), (15,5);')
+    .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+    const event = createRequest({
+      path: '/users/5/groups',
+      httpMethod: 'POST',
+      body: '[3, 6, 13, 15]',
+    });
+    const output = await promisify(handler.handler)(event, {});
+
+    expect(output.body).to.equal(JSON.stringify(['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]]));
+    expect(output.statusCode).to.equal(201);
+  });
+  it('should get user groups', async () => {
+    mysqlQueryStub
+    .withArgs('USE centcom;\n' +
+      'SELECT * FROM user_groups;')
+    .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+    const event = createRequest({
+      path: '/groups',
+      httpMethod: 'GET',
+    });
+    const output = await promisify(handler.handler)(event, {});
+
+    expect(output.body).to.equal(JSON.stringify([{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]));
+    expect(output.statusCode).to.equal(200);
+  });
+
+  it('should post user groups', async () => {
+    mysqlQueryStub
+    .withArgs('USE centcom;\n' +
+      'INSERT INTO user_groups (name, description) VALUES (\'TEST\', \'a group!\');')
+    .yieldsRight(undefined, ['ok', [{ id: 1, title: 'foo', content: 'bar' }, { id: 2, title: 'baz', content: 'quux' }]], { foo: 'bar' });
+    const event = createRequest({
+      path: '/groups',
+      httpMethod: 'POST',
+      body: '{ "name": "TEST", "description": "a group!" }',
     });
     const output = await promisify(handler.handler)(event, {});
 

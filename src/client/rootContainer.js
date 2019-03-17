@@ -20,6 +20,8 @@ class RootContainer extends React.Component {
     this.props.fetch('permissions');
     this.props.fetch('users');
     this.props.fetch('userPermissions');
+    this.props.fetch('groups');
+    this.props.fetch('userGroups');
   }
   render() {
     return (
