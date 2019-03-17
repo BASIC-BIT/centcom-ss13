@@ -15,7 +15,7 @@ class SplashPage extends React.Component {
     super(props);
   }
   render() {
-    if(!this.props.config) {
+    if(this.props.config === undefined) {
       return (<LoadingIndicator center />);
     }
     return (

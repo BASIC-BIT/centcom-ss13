@@ -13,7 +13,7 @@ const style = {
 
 class PageFooter extends React.Component {
   render() {
-    if(!this.props.config) {
+    if(this.props.config === undefined) {
       return (<Footer style={style}><Spin /></Footer>);
     }
 

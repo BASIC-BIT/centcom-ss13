@@ -56,7 +56,7 @@ class UserPermissionsEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.permissions || this.props.loadingPermissions || !this.props.userPermissions || this.props.loadingUserPermissions || !this.props.user_id;
+    return this.props.permissions === undefined || this.props.loadingPermissions || this.props.userPermissions === undefined || this.props.loadingUserPermissions || this.props.user_id === undefined;
   }
 
   render() {

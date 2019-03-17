@@ -28,7 +28,7 @@ class ServerDetails extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={!this.props.servers}>
+        <Spin spinning={this.props.servers === undefined}>
           <Card title="Server Stats" style={panelCardStyle}>
             <Tabs
               type="card"

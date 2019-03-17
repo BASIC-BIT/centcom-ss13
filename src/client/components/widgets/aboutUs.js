@@ -36,7 +36,7 @@ class AboutUs extends React.Component {
   }
 
   isLoading() {
-    return !this.props.config;
+    return this.props.config === undefined;
   }
 
   wrapWithLinkIfExists(Component, configKey) {

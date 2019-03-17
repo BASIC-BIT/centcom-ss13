@@ -23,7 +23,7 @@ class Health extends React.Component {
   }
 
   getContent() {
-    if(!this.props.config) {
+    if(this.props.config === undefined) {
       return (<Skeleton active />);
     }
 

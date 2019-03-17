@@ -54,7 +54,7 @@ class BookEditor extends React.Component {
   }
 
   isLoading() {
-    return this.props.loadingBooks || this.props.loadingBookCategories || !this.props.books || !this.props.bookCategories;
+    return this.props.loadingBooks || this.props.loadingBookCategories || this.props.books === undefined || this.props.bookCategories === undefined;
   }
 
   refresh() {

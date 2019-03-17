@@ -8,7 +8,7 @@ import {sortAlphabeticalByKey} from "../../utils/sorters";
 
 const db = new DB();
 
-class PermissionsEditor extends React.Component {
+class GroupsEditor extends React.Component {
   constructor(props) {
     super(props);
 
@@ -16,25 +16,25 @@ class PermissionsEditor extends React.Component {
   }
 
   getObjects() {
-    return this.props.permissions;
+    return this.props.groups;
   }
 
   getObject(id) {
-    return this.props.permissions.find(permission => permission.id === id);
+    return this.props.groups.find(group => group.id === id);
   }
 
   isLoading() {
-    return this.props.permissions === undefined || this.props.loadingPermissions;
+    return this.props.groups === undefined || this.props.loadingGroups;
   }
 
   refresh() {
-    this.props.fetch('permissions');
+    this.props.fetch('groups');
   }
 
-  getMenuItems(permissions) {
-    return permissions
+  getMenuItems(groups) {
+    return groups
     .sort(sortAlphabeticalByKey('description'))
-    .map(permission => (<Menu.Item key={permission.id}>{permission.name}</Menu.Item>));
+    .map(group => (<Menu.Item key={group.id}>{group.name}</Menu.Item>));
   }
 
   getFields() {
@@ -46,7 +46,7 @@ class PermissionsEditor extends React.Component {
     return (
       <React.Fragment>
         <EditableList
-          defKey="permissions"
+          defKey="groups"
           isLoading={this.isLoading.bind(this)}
           getObjects={this.getObjects.bind(this)}
           getMenuItems={this.getMenuItems.bind(this)}
@@ -61,8 +61,8 @@ class PermissionsEditor extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    permissions: state.app.permissions,
-    loadingPermissions: state.app.loading.permissions,
+    groups: state.app.groups,
+    loadingGroups: state.app.loading.groups,
   }
 };
 
@@ -71,4 +71,4 @@ const mapDispatchToProps = { ...actions };
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(PermissionsEditor);
+)(GroupsEditor);

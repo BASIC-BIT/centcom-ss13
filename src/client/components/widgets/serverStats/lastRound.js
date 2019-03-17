@@ -5,7 +5,7 @@ import actions from "../../../actions/index";
 
 class LastRound extends React.Component {
   getContent() {
-    if(!this.props.servers) {
+    if(this.props.servers === undefined) {
       return (<Skeleton active />);
     }
 

@@ -46,7 +46,7 @@ class Info extends React.Component {
   }
 
   getContent() {
-    if(!this.props.servers) {
+    if(this.props.servers === undefined) {
       return (<Skeleton active />);
     }
 

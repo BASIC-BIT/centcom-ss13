@@ -181,6 +181,7 @@
     flex-direction: column;
     height: 100%;
     .buttonContainer {
+      z-index: 50;
       margin-bottom: 20px;
       position: absolute;
       right: 20px;
@@ -218,10 +219,23 @@
     .userPermissionsEditorContainer {
       margin-top: 20px;
       margin-left: 5px;
+      margin-bottom: 15px;
     }
 
     .userPermissionsContentContainer {
       margin-top: 10px;
+      margin-bottom: 15px;
+    }
+
+    .userGroupsEditorContainer {
+      margin-top: 20px;
+      margin-left: 5px;
+      margin-bottom: 15px;
+    }
+
+    .userGroupsContentContainer {
+      margin-top: 10px;
+      margin-bottom: 15px;
     }
   }
 

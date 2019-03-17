@@ -36,7 +36,7 @@ class PageSidebar extends React.Component {
   }
 
   isLoading() {
-    return !this.props.config;
+    return this.props.config === undefined;
   }
 
   render() {
@@ -109,9 +109,15 @@ class PageSidebar extends React.Component {
                   <span>Permissions</span>
                 </Link>
               </Menu.Item>
+              <Menu.Item key={`/panel/admin/groups`}>
+                <Link to={`/panel/admin/groups`}>
+                  <Icon type="usergroup-add" />
+                  <span>User Groups</span>
+                </Link>
+              </Menu.Item>
               <Menu.Item key={`/panel/admin/users`}>
                 <Link to={`/panel/admin/users`}>
-                  <Icon type="usergroup-add" />
+                  <Icon type="user" />
                   <span>User Manager</span>
                 </Link>
               </Menu.Item>

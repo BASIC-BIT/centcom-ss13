@@ -22,7 +22,7 @@ class Statistics extends React.Component {
   }
 
   getContent() {
-    if(!this.props.servers) {
+    if(this.props.servers === undefined) {
       return (<Skeleton active />);
     }
 
@@ -49,7 +49,7 @@ class Statistics extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={!this.props.servers}>
+        <Spin spinning={this.props.servers === undefined}>
           <Card title="Statistics" style={panelCardStyle}>
             {this.getContent()}
           </Card>

@@ -124,6 +124,17 @@ export default {
           console.log('saving', values);
           db.upsert('userPermissions', values, params);
         },
+      },
+      groups: {
+        type: 'CUSTOM',
+        name: 'Groups:',
+        custom: true,
+        omit: true,
+        displayOrder: 5,
+        saveHandler: (db, values, params = []) => {
+          console.log('saving', values);
+          db.upsert('userGroups', values, params);
+        },
       }
     },
   },

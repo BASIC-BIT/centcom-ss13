@@ -16,7 +16,7 @@ const titleStyle = {
 
 class PageHeader extends React.Component {
   render() {
-    if(!this.props.config) {
+    if(this.props.config === undefined) {
       return (<Header style={style}><Spin /></Header>);
     }
 

@@ -38,7 +38,7 @@ class Intro extends React.Component {
   }
 
   getContent() {
-    if (!this.props.servers || !this.props.config) {
+    if (this.props.servers === undefined || this.props.config === undefined) {
       return (
         <Spin><div className="panelIntro"></div></Spin>
       );

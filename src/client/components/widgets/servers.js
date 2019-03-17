@@ -50,7 +50,7 @@ class Servers extends React.Component {
   render() {
     return (
       <Col className="gutter-row" {...this.getDefaultWidgetColProps()}>
-        <Spin spinning={!this.props.servers}>
+        <Spin spinning={this.props.servers === undefined}>
           <Card title="Servers" style={panelCardStyle}>
             <Table
               showHeader={false}

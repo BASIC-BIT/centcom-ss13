@@ -23,16 +23,16 @@ class UsersEditor extends React.Component {
   }
 
   isLoading() {
-    return !this.props.users ||
+    return this.props.users === undefined ||
       this.props.loadingUsers ||
-      !this.props.userPermissions ||
+      this.props.userPermissions === undefined ||
       this.props.loadingUserPermissions ||
-      !this.props.userGroups ||
+      this.props.userGroups === undefined ||
       this.props.loadingUserGroups ||
-      !this.props.permissions ||
+      this.props.permissions === undefined ||
       this.props.loadingPermissions ||
-      !this.props.groups ||
-      !this.props.loadingGroups;
+      this.props.groups === undefined ||
+      this.props.loadingGroups === undefined;
   }
 
   refresh() {
@@ -141,6 +141,8 @@ const mapStateToProps = (state) => {
   return {
     users: state.app.users,
     loadingUsers: state.app.loading.users,
+    userGroups: state.app.userGroups,
+    loadingUserGroups: state.app.loading.userGroups,
     userPermissions: state.app.userPermissions,
     loadingUserPermissions: state.app.loading.userPermissions,
     groups: state.app.groups,
