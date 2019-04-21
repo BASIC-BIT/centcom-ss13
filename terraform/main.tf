@@ -393,11 +393,6 @@ resource "aws_db_subnet_group" "default" {
   }
 }
 
-resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAitEyjwuO7mI6AmUHwzli27Ks+xMihfXSgSKYPnkXoP0Z2B7+p/5vyE0uMDD+MS80ylGeS3eALku8qqZkm3Qk3NQdq9ZQAw+esSAvycpQ12fipkSiAm1C4RvTPph4zpFlHvEJjuEbv33yzn3Q0qhGLkdf+ZlDHsarjPJPVP5P2EDTCmJuquuJu17Y2Zw4qbpt83ze5p68qmag6EE+YihzbSZAS/vNACXQfGUjrcSiDg8NllHn16U2ndoEoz+SDPCdLMWF/KkYRqEUBUgzIVeQGEhYWEZQPZiafTfJVSFc8dBrgHYiupe+wQCmKGEVzuTCrkxpV/jqf8P6gwaRLoxzmQ== rsa-key-20190217"
-}
-
 variable "max_availability_zones" {
   default = "2"
 }

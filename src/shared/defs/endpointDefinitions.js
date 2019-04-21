@@ -121,7 +121,6 @@ export default {
         omit: true,
         displayOrder: 4,
         saveHandler: (db, values, params = []) => {
-          console.log('saving', values);
           db.upsert('userPermissions', values, params);
         },
       },
