@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import LoadingIndicator from "./loadingIndicator";
 import { connect } from 'react-redux'
 import actions from "../actions/index";
+import {Redirect} from "react-router";
 
 const splashStyle = {
   textAlign: 'center',
@@ -21,11 +22,7 @@ class SplashPage extends React.Component {
     return (
       <div style={splashStyle}>
         <h1>{this.props.config.splash_title_text}</h1>
-        <div>
-          <Link to={`/panel`}>
-            <Button type="primary" style={{ margin: '10px' }}>Enter the Bridge</Button>
-          </Link>
-        </div>
+        <Redirect to="/panel" />
       </div>
     );
   }
