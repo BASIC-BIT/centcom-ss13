@@ -46,6 +46,12 @@ export default class EditableList extends React.Component {
       );
     }
 
+    if(this.props.displayOnly) {
+      return (<div className="editableListContentContainer" ref={this.contentContainer}>
+        {this.displayContent()}
+      </div>);
+    }
+
     return (
       <div className="editableListContentContainer" ref={this.contentContainer}>
         <Affix
@@ -337,9 +343,9 @@ export default class EditableList extends React.Component {
       <Layout style={{ padding: '24px 0 0 0', background: '#fff' }} className="editableListMenuContainer">
         <Sider width={250} style={{ background: '#fff', overflowY: 'auto', }}>
           <div className="editableListCreateButtonContainer">
-            <Button key="create" type="primary" className="editableListCreateButton"
-                    onClick={this.startCreate.bind(this)}>Create</Button>
-            {this.props.renderHeaderButtons()}
+            {!this.props.displayOnly && <Button key="create" type="primary" className="editableListCreateButton"
+                    onClick={this.startCreate.bind(this)}>Create</Button>}
+            {!this.props.displayOnly && this.props.renderHeaderButtons()}
             <Button key="refresh" className="refreshButton" onClick={this.props.refresh.bind(this)}><Icon type="redo"/></Button>
           </div>
           <div className="searchBarContainer">

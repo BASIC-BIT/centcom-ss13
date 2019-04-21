@@ -51,12 +51,6 @@ class PageSidebar extends React.Component {
         <div className="logo" />
         <Spin spinning={this.isLoading()} wrapperClassName="sidebar-loading-container">
           <Menu theme="dark" selectedKeys={this.state.selectedKeys} mode="inline">
-            <Menu.Item key={`/`}>
-              <Link to={`/`}>
-                <Icon type="desktop" />
-                <span>Splash Page</span>
-              </Link>
-            </Menu.Item>
             {this.props.config && this.props.config.community_name && <Menu.Item key={`/panel`}>
               <Link to={`/panel`}>
                 <Icon type="home" />
@@ -87,6 +81,12 @@ class PageSidebar extends React.Component {
                 <span>Wiki</span>
               </a>
             </Menu.Item>}
+            <Menu.Item key={`/panel/book`}>
+              <Link to={`/panel/book`}>
+                <Icon type="book" />
+                <span>Book Viewer</span>
+              </Link>
+            </Menu.Item>
             <SubMenu
               key="admin_menu"
               title={<span><Icon type="pie-chart" /><span>Admin</span></span>}
